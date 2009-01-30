@@ -34,8 +34,8 @@ Requirements
 
 EMGM has the following requirements:
 
-*  [GHC] 6.8.1 - It has been tested with versions 6.8.3 and 6.9.20080916.
-*  [Cabal] library 1.2.1 - It has been tested with versions 1.2.3 and 1.4.0.1.
+*  [GHC] version 6.8.1 or later - It has been tested with versions 6.8.3 and 6.10.1.
+*  [Cabal] library version 1.2.1 or later - It has been tested with versions 1.2.4.0 and 1.6.0.1.
 
 [GHC]: http://www.haskell.org/ghc/
 [Cabal]: http://www.haskell.org/cabal/
@@ -157,13 +157,14 @@ You can also [view the files online].
 In addition to the requirements for using the library, EMGM has the following
 requirements for development:
 
-*  Cabal library 1.4.0.1 - This is preferred for uploading to HackageDB. Some
+*  Cabal library 1.4.0.1 or later - This is preferred for uploading to HackageDB. Some
    issues were encountered with the current flags setup in emgm.cabal that gave
    errors in an older version of Cabal.
-*  [QuickCheck 2.0] - Required for testing.
-*  HUnit 1.2 - Required for testing.
+*  [QuickCheck] 2.1 - Required for testing.
+*  [HUnit] 1.2 - Required for testing.
 
-[QuickCheck 2.0]: http://darcs.haskell.org/QuickCheck/
+[QuickCheck]: http://hackage.haskell.org/cgi-bin/hackage-scripts/package/QuickCheck
+[HUnit]: http://hackage.haskell.org/cgi-bin/hackage-scripts/package/HUnit
 
 ### Configuring ###
 
