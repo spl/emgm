@@ -1,0 +1,310 @@
+{-# LANGUAGE CPP                    #-}
+
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Generics.EMGM
+-- Copyright   :  (c) 2008 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-- Stability   :  experimental
+-- Portability :  non-portable
+--
+-- EMGM is \"Extensible and Modular Generics for the Masses,\" a library for
+-- datatype-generic programming in Haskell.
+--
+-- This module exports the most commonly used types, classes, and functions. The
+-- documentation is organized by topic for convenient access.
+--
+-- For more in-depth documentation, refer to one of the modules in these
+-- hierarchies:
+--
+-- * "Generics.EMGM.Common" - Common infrastructure for supporting datatypes and
+-- defining functions.
+--
+-- * "Generics.EMGM.Data" - Datatypes with predefined support in EMGM.
+--
+-- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
+-----------------------------------------------------------------------------
+
+module Generics.EMGM (
+
+  -- * Common Infrastructure
+  --
+  -- | This is the collection of types, classes, and functions used to define
+  -- generic functions and to build representations for datatypes.
+
+  -- ** Datatype Representation
+  --
+  -- | These are the types and functions required to represent a datatype for
+  -- use by generic functions.
+
+  -- *** Structure Representation Types
+  --
+  -- | The unit, sum, and product types form the sum-of-products view for a
+  -- Haskell datatype.
+
+  Unit(..),
+  (:+:)(..),
+  (:*:)(..),
+
+  -- *** Embedding-Projection Pair
+  --
+  -- | A pair of a function and its inverse form the isomorphism between a
+  -- datatype and its structure representation.
+
+  EP(..),
+
+  -- *** Constructor Description
+  --
+  -- | A description of the syntax of each constructor provides useful auxiliary
+  -- information for some generic functions.
+
+  ConDescr(..),
+  ConType(..),
+
+  Fixity(..),
+  prec,
+  minPrec,
+  maxPrec,
+  appPrec,
+  recPrec,
+
+  -- ** Representation Dispatchers
+  --
+  -- | Type classes simplify the application of generic functions by providing
+  -- (a.k.a. \"dispatching\") the appropriate structure representation. These
+  -- classes are divided into the kinds they support (monomorphic, functor, and
+  -- bifunctor).
+  --
+  -- Note that the numerical suffix represents the number of generic type
+  -- variables used in the generic function. No suffix represents 1 generic type
+  -- variable.
+
+  -- *** Monomorphic
+  --
+  -- | All types of kind @*@ should have an instance here. This includes types
+  -- applied to type variables: @[a]@, @'Maybe' a@, @'Either' a b@, etc.
+
+  Rep(..),
+
+  -- *** Functor
+  --
+  -- | Types of kind @* -> *@ should have an instance here. This includes @[]@,
+  -- 'Maybe', etc.
+
+  FRep(..),
+  FRep2(..),
+  FRep3(..),
+
+  -- *** Bifunctor
+  --
+  -- | Types of kind @* -> * -> *@ should have an instance here. This includes
+  -- @(,)@, 'Either', etc.
+
+  BiFRep2(..),
+
+  -- ** Generic Function Definition
+  --
+  -- | Generic functions are instances of these classes. The value-level
+  -- structure representation of datatypes is implemented using the members of
+  -- these classes. Thus, a generic function is simply a case statement on the
+  -- value-level structure.
+  --
+  -- Note that the numerical suffix represents the number of generic type
+  -- variables used in the generic function. No suffix represents 1 generic type
+  -- variable.
+
+  Generic(..),
+  Generic2(..),
+  Generic3(..),
+
+  -- ** Deriving Representation
+  --
+  -- | The simplest way to get a representation for a datatype is using the
+  -- following functions in a Template Haskell declaration, e.g. @$('derive'
+  -- ''MyType)@. This generates all of the appropriate instances, e.g. 'Rep',
+  -- 'FRep', etc., for the type @MyType@.
+  --
+  -- For more details or more flexibility in what is derived, see
+  -- "Generics.EMGM.Common.Derive".
+
+  derive,
+  deriveWith,
+  Modifier(..),
+  Modifiers,
+
+  -- * Generic Functions
+  --
+  -- | The following collection of functions use the common EMGM infrastructure
+  -- to work on all datatypes that have instances for a certain representation
+  -- dispatcher. These functions are categorized by the core generic
+  -- functionality. For example, 'flattenr' is a type of \"crush\" function,
+  -- because it is defined by the 'Generic' instance of the @newtype 'Crush'@.
+  --
+  -- More information for each of these is available in its respective module.
+
+  -- ** Collect Functions
+  --
+  -- | Functions that collect values of one type from values of a possibly
+  -- different type.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Collect".
+
+  Collect(..),
+
+  collect,
+
+  -- ** Compare Functions
+  --
+  -- | Functions that compare two values to determine an ordering.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Compare".
+
+  Compare(..),
+
+  compare,
+
+  eq,
+  neq,
+
+  lt,
+  lteq,
+
+  gt,
+  gteq,
+
+  min,
+  max,
+
+  -- ** Crush Functions
+  --
+  -- | Functions that crush a polymorphic functor container into an iteration
+  -- over its elements.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Crush".
+
+  Crush(..),
+  Assoc(..),
+
+  crush,
+  crushl,
+  crushr,
+
+  flatten,
+  flattenl,
+  flattenr,
+
+  first,
+  firstl,
+  firstr,
+
+  and,
+  or,
+
+  any,
+  all,
+
+  sum,
+  product,
+
+  minimum,
+  maximum,
+
+  elem,
+  notElem,
+
+  -- ** Enum Functions
+  --
+  -- | Functions that enumerate the values of a datatype.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Enum".
+
+  Enum(..),
+
+  enum,
+  enumN,
+
+  empty,
+
+  -- ** Map Functions
+  --
+  -- | Functions that apply non-generic functions to every element in a
+  -- polymorphic (functor or bifunctor) container.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Map".
+
+  Map(..),
+
+  map,
+
+  replace,
+
+  bimap,
+
+  -- ** Read Functions
+  --
+  -- | Functions similar to @deriving 'Prelude.Read'@ that parse a string and return a
+  -- value of a datatype.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Read".
+
+  Read(..),
+
+  readPrec,
+  readP,
+
+  readsPrec,
+  reads,
+
+  read,
+
+  -- ** Show Functions
+  --
+  -- | Functions similar to @deriving 'Prelude.Show'@ that return a string
+  -- representation of a value of a datatype.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Show".
+
+  Show(..),
+
+  showsPrec,
+  shows,
+
+  show,
+
+  -- ** UnzipWith Functions
+  --
+  -- | Functions that split a polymorphic functor values into two structurally
+  -- equilvalent values.
+  --
+  -- For more details, see "Generics.EMGM.Functions.UnzipWith".
+
+  UnzipWith(..),
+
+  unzip,
+  unzipWith,
+
+  -- ** ZipWith Functions
+  --
+  -- | Functions that combine two structurally equilvalent, polymorphic functor
+  -- values into one.
+  --
+  -- For more details, see "Generics.EMGM.Functions.ZipWith".
+
+  ZipWith(..),
+
+  zip,
+  zipWith,
+
+) where
+
+import qualified Prelude
+
+import Generics.EMGM.Common
+import Generics.EMGM.Functions
+
+-- Hide the embedding-projection pairs and constructor descriptions. We don't
+-- want to export them to the world. We only want the instances.
+import Generics.EMGM.Data ()
+
