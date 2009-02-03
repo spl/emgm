@@ -229,8 +229,10 @@ module Generics.EMGM (
 
   -- ** Map Functions
   --
-  -- | Functions that apply non-generic functions to every element in a
-  -- polymorphic (functor or bifunctor) container.
+  -- | Functions that translate values of one type to values of another. This
+  -- includes map-like functions that apply non-generic functions to every
+  -- element in a polymorphic (functor or bifunctor) container. It also includes
+  -- 'cast', a configurable, type-safe casting function.
   --
   -- For more details, see "Generics.EMGM.Functions.Map".
 
@@ -241,6 +243,8 @@ module Generics.EMGM (
   replace,
 
   bimap,
+
+  cast,
 
   -- ** Read Functions
   --

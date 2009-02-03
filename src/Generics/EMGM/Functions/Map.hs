@@ -11,12 +11,15 @@
 -- Stability   :  experimental
 -- Portability :  non-portable
 --
--- Summary: Generic function that applies a (non-generic) function to all
--- elements contained in a polymorphic datatype.
+-- Summary: Generic functions that translate values of one type into values of
+-- another.
 --
--- 'map' is a generic version of the @Prelude@ @map@ function. It works on all
--- supported container datatypes of kind @* -> *@. The 'map' function is
+-- 'map' is a generic version of the @Prelude@ @map@ function. It works
+-- on all supported container datatypes of kind @* -> *@. The 'map' function is
 -- equivalent to 'fmap' after @deriving 'Functor'@ if that were possible.
+--
+-- 'cast' is a generic and configurable function for converting a value of one
+-- type into a value of another using instances provided by the programmer.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM.Functions.Map (
@@ -24,6 +27,7 @@ module Generics.EMGM.Functions.Map (
   map,
   replace,
   bimap,
+  cast,
 ) where
 
 import Prelude hiding (map)
@@ -69,7 +73,8 @@ instance Generic2 Map where
 map :: (FRep2 Map f) => (a -> b) -> f a -> f b
 map = selMap . frep2 . Map
 
--- | Replace all @a@-values in @as@ with @b@.
+-- | Replace all @a@-values in @as@ with @b@. This is a convenience function for
+-- the implementation @'map' ('const' b) as@.
 replace :: (FRep2 Map f) => f a -> b -> f b
 replace as b = map (const b) as
 
@@ -77,5 +82,41 @@ replace as b = map (const b) as
 -- every @a@-element and the function @g :: b -> d@ to every @b@-element. The
 -- result is a value with transformed elements: @F c d@.
 bimap :: (BiFRep2 Map f) => (a -> c) -> (b -> d) -> f a b -> f c d
-bimap f g = selMap $ bifrep2 (Map f) (Map g)
+bimap f g = selMap (bifrep2 (Map f) (Map g))
+
+-- | Cast a value of one type into a value of another. This is a configurable
+-- function that allows you to define your own type-safe conversions for a
+-- variety of types.
+--
+-- @cast@ works with instances of @'Rep' ('Map' i) o@ in which you choose the
+-- input type @i@ and the output type @o@ and implement the function of type @i
+-- -> o@.
+--
+-- Here are some examples of instances (and flags you will need or want):
+--
+-- >   {-# LANGUAGE MultiParamTypeClasses  #-}
+-- >   {-# LANGUAGE FlexibleContexts       #-}
+-- >   {-# LANGUAGE FlexibleInstances      #-}
+-- >   {-# OPTIONS_GHC -fno-warn-orphans   #-}
+--
+-- @
+--   instance 'Rep' ('Map' 'Int') 'Char' where
+--     'rep' = 'Map' 'chr'
+-- @
+--
+-- @
+--   instance 'Rep' ('Map' 'Float') 'Double' where
+--     'rep' = 'Map' 'realToFrac'
+-- @
+--
+-- @
+--   instance 'Rep' ('Map' 'Integer') 'Integer' where
+--     'rep' = 'Map' (+42)
+-- @
+--
+-- There are no pre-defined instances, and a call to @cast@ will not compile if
+-- no instances for the input and output type pair is found, so you must define
+-- instances in order to use @cast@.
+cast :: (Rep (Map a) b) => a -> b
+cast = selMap rep
 
