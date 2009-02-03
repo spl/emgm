@@ -56,6 +56,7 @@ extra-source-files:     README,
                         tests/Crush.hs,
                         tests/Derive.hs,
                         tests/Enum.hs,
+                        tests/Everywhere.hs,
                         tests/Main.hs,
                         tests/Map.hs,
                         tests/ReadShow.hs,
@@ -112,6 +113,7 @@ Library
                         Generics.EMGM.Functions.Compare
                         Generics.EMGM.Functions.Crush
                         Generics.EMGM.Functions.Enum
+                        Generics.EMGM.Functions.Everywhere
                         Generics.EMGM.Functions.Map
                         Generics.EMGM.Functions.Read
                         Generics.EMGM.Functions.Show

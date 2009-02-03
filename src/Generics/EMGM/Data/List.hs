@@ -30,6 +30,7 @@ module Generics.EMGM.Data.List (
 
 import Generics.EMGM.Common
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -95,4 +96,7 @@ instance (Generic3 g) => FRep3 g [] where
 
 instance Rep (Collect [a]) [a] where
   rep = Collect (:[])
+
+instance Rep (Everywhere [a]) [a] where
+  rep = Everywhere (\f x -> f x)
 

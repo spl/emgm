@@ -35,18 +35,18 @@ import Generics.EMGM.Common.Representation
 -- list of values of another type.
 --
 -- For datatypes to work with Collect, a special instance must be given. This
--- instance is trivial to write. Given a type @D@, the 'Rep' instance looks like
+-- instance is trivial to write. Given a type @T@, the 'Rep' instance looks like
 -- this:
 --
 -- >  {-# LANGUAGE OverlappingInstances #-}
 -- >
--- >  data D = ...
+-- >  data T = ...
 -- >
--- >  instance Rep (Collect D) D where
+-- >  instance Rep (Collect T) T where
 -- >    rep = Collect (:[])
 --
 -- (Note the requirement of overlapping instances.) This instance triggers when
--- the result type (the first @D@) matches some value type (the second @D@)
+-- the result type (the first @T@) matches some value type (the second @T@)
 -- contained within the argument to 'collect'. See the source of this module for
 -- more examples.
 newtype Collect b a = Collect { selCollect :: a -> [b] }
@@ -107,23 +107,23 @@ instance Rep (Collect Char) Char where
 -- collecting.
 --
 -- @collect@ works by searching a datatype for values that are the same type as
--- the return type specified. Here are some examples using the same value but
+-- the return type specified. Here are some examples using the same value with
 -- different return types:
 --
 -- @
---   ghci> let x = [Left 1, Right 'a', Left 2] :: [Either Int Char]
---   ghci> collect x :: [Int]
+--   ghci> let x = ['Left' 1, 'Right' \'a\', 'Left' 2] :: ['Either' 'Int' 'Char']
+--   ghci> collect x :: ['Int']
 --   [1,2]
---   ghci> collect x :: [Char]
+--   ghci> collect x :: ['Char']
 --   \"a\"
 --   ghci> collect x == x
---   True
+--   'True'
 -- @
 --
--- Note that the numerical constants have been declared @Int@ using the type
--- annotation. Since these natively have the type @Num a => a@, you may need to
--- give explicit types. By design, there is no connection that can be inferred
--- between the return type and the argument type.
+-- Note that the numerical constants have been declared 'Int' using the type
+-- annotation. Since these natively have the type @'Num' a => a@, you may need
+-- to give explicit types. By design, there is no connection that can be
+-- inferred between the return type and the argument type.
 --
 -- @collect@ only works if there is an instance for the return type as described
 -- in the @newtype 'Collect'@.

@@ -57,6 +57,7 @@ module Generics.EMGM.Data.Tuple (
 
 import Generics.EMGM.Common
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- 0: ()
@@ -246,4 +247,25 @@ instance Rep (Collect (a,b,c,d,e,f)) (a,b,c,d,e,f) where
 
 instance Rep (Collect (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
   rep = Collect (:[])
+
+instance Rep (Everywhere ()) () where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b)) (a,b) where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b,c)) (a,b,c) where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b,c,d)) (a,b,c,d) where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b,c,d,e)) (a,b,c,d,e) where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b,c,d,e,f)) (a,b,c,d,e,f) where
+  rep = Everywhere (\f x -> f x)
+
+instance Rep (Everywhere (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
+  rep = Everywhere (\f x -> f x)
 

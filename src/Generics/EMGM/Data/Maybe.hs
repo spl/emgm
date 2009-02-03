@@ -34,6 +34,7 @@ module Generics.EMGM.Data.Maybe (
 
 import Generics.EMGM.Common
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 #ifndef __HADDOCK__
 
@@ -107,6 +108,9 @@ instance (Generic3 g) => FRep3 g Maybe where
 
 instance Rep (Collect (Maybe a)) (Maybe a) where
   rep = Collect (:[])
+
+instance Rep (Everywhere (Maybe a)) (Maybe a) where
+  rep = Everywhere (\f x -> f x)
 
 #endif
 

@@ -14,7 +14,7 @@ module Derive (tests) where
 -- Imports
 --------------------------------------------------------------------------------
 
-import Data.Char (ord)
+import Data.Char (ord, toUpper)
 import Test.HUnit
 
 import Generics.EMGM as G
@@ -132,6 +132,7 @@ $(declareEP ''F)
 $(deriveRep ''F)
 $(deriveFRep ''F)
 $(deriveCollect ''F)
+$(deriveEverywhere ''F)
 
 test_manual1 =
   "show $ map ord (C 'a' 4)" ~:
@@ -140,6 +141,10 @@ test_manual1 =
 test_manual2 =
   "collect (F (4::Integer) 3)" ~:
     assert (collect (F (4::Integer) 3) `eq` ([F 4 3::F Integer]))
+
+test_manual3 =
+  "everywhere toUpper (F 'x' 3)" ~:
+    assert (everywhere toUpper (F 'x' 3) `eq` F 'X' 3)
 
 --------------------------------------------------------------------------------
 -- Test collection
@@ -153,5 +158,6 @@ tests =
     , test_DefinedAs1
     , test_manual1
     , test_manual2
+    , test_manual3
     ]
 

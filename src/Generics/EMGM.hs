@@ -144,9 +144,9 @@ module Generics.EMGM (
   --
   -- More information for each of these is available in its respective module.
 
-  -- ** Collect Functions
+  -- ** Collect Function
   --
-  -- | Functions that collect values of one type from values of a possibly
+  -- | Function that collects values of one type from values of a possibly
   -- different type.
   --
   -- For more details, see "Generics.EMGM.Functions.Collect".
@@ -226,6 +226,16 @@ module Generics.EMGM (
   enumN,
 
   empty,
+
+  -- ** Everywhere Function
+  --
+  -- | Function that applies a transformation everywhere in a top-down manner.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Everywhere".
+
+  Everywhere(..),
+
+  everywhere,
 
   -- ** Map Functions
   --

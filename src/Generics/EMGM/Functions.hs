@@ -17,6 +17,7 @@ module Generics.EMGM.Functions (
   module Generics.EMGM.Functions.Compare,
   module Generics.EMGM.Functions.Crush,
   module Generics.EMGM.Functions.Enum,
+  module Generics.EMGM.Functions.Everywhere,
   module Generics.EMGM.Functions.Map,
   module Generics.EMGM.Functions.Read,
   module Generics.EMGM.Functions.Show,
@@ -29,6 +30,7 @@ import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Compare
 import Generics.EMGM.Functions.Crush
 import Generics.EMGM.Functions.Enum
+import Generics.EMGM.Functions.Everywhere
 import Generics.EMGM.Functions.Map
 import Generics.EMGM.Functions.Read
 import Generics.EMGM.Functions.Show

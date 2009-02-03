@@ -8,6 +8,7 @@ import qualified ReadShow       (tests)
 import qualified Compare        (tests)
 import qualified Collect        (tests)
 import qualified Enum           (tests)
+import qualified Everywhere     (tests)
 import qualified ZipWith        (tests)
 import qualified UnzipWith      (tests)
 import qualified Map            (tests)
@@ -23,6 +24,7 @@ tests =
            , Compare.tests
            , Collect.tests
            , Enum.tests
+           , Everywhere.tests
            , ZipWith.tests
            , UnzipWith.tests
            , Map.tests

@@ -69,6 +69,7 @@ module Generics.EMGM.Common.Derive (
   --   $(deriveRep ''T)
   --   $(deriveFRep ''T)
   --   $(deriveCollect ''T)
+  --   $(deriveEverywhere ''T)
   -- @
 
   -- ** Constructor Description Declaration
@@ -112,6 +113,7 @@ module Generics.EMGM.Common.Derive (
   -- | Use the following to generate instances specific to certain functions.
 
   deriveCollect,
+  deriveEverywhere,
 
 ) where
 
@@ -144,6 +146,7 @@ import Generics.EMGM.Common.Base2
 import Generics.EMGM.Common.Base3
 import Generics.EMGM.Common.Representation
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 #endif
 
 -----------------------------------------------------------------------------
@@ -292,13 +295,16 @@ deriveWith mods typeName = do
           _ -> []
 
   collectInstDec <- mkRepCollectInst dt
+  everywhereInstDec <- mkRepEverywhereInst dt
 
   return $
     conDescrDecs           ++
     epDecs                 ++
     repInstDecs            ++
     higherOrderRepInstDecs ++
-    [collectInstDec]
+    [collectInstDec
+    ,everywhereInstDec
+    ]
 
 #else
 
@@ -378,8 +384,10 @@ deriveWith = undefined
 -- @
 --
 -- @
---   instance 'Rep' ('Collect' 'Char') 'Char' where
---     'rep' = 'Collect' (:[])
+--   instance 'Rep' ('Collect' (T a)) (T a) where
+--     'rep' = 'Collect' (\\x -> [x])
+--   instance 'Rep' ('Everywhere' (T a)) (T a) where
+--     'rep' = 'Everywhere' (\\f x -> f x)
 -- @
 --
 -- Note that the constructor description @conC@ and embedding-project pair @epT@
@@ -535,4 +543,24 @@ deriveCollect typeName = do
 deriveCollect = undefined
 
 #endif
+
+--------------------------------------------------------------------------------
+
+-- | Generate a @'Rep' 'Everywhere' T@ instance declaration for a type @T@. See
+-- 'derive' for an example.
+deriveEverywhere :: Name -> Q [Dec]
+
+#ifndef __HADDOCK__
+
+deriveEverywhere typeName = do
+  (dt, _) <- declareConDescrsBase [] typeName
+  everywhereInstDec <- mkRepEverywhereInst dt
+  return [everywhereInstDec]
+
+#else
+
+deriveEverywhere = undefined
+
+#endif
+
 

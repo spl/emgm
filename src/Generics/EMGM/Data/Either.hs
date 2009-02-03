@@ -34,6 +34,7 @@ module Generics.EMGM.Data.Either (
 
 import Generics.EMGM.Common
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 #ifndef __HADDOCK__
 
@@ -89,6 +90,9 @@ instance (Generic2 g) => BiFRep2 g Either where
 
 instance Rep (Collect (Either a b)) (Either a b) where
   rep = Collect (:[])
+
+instance Rep (Everywhere (Either a b)) (Either a b) where
+  rep = Everywhere (\f x -> f x)
 
 #endif
 

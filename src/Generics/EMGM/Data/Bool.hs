@@ -34,6 +34,7 @@ module Generics.EMGM.Data.Bool (
 
 import Generics.EMGM.Common
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 #ifndef __HADDOCK__
 
@@ -84,6 +85,9 @@ instance (Generic g) => Rep g Bool where
 
 instance Rep (Collect Bool) Bool where
   rep = Collect (:[])
+
+instance Rep (Everywhere Bool) Bool where
+  rep = Everywhere (\f x -> f x)
 
 #endif
 

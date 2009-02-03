@@ -26,6 +26,7 @@ module Generics.EMGM.Common.Derive.Instance (
   mkFRep3Inst,
   mkBiFRep2Inst,
   mkRepCollectInst,
+  mkRepEverywhereInst,
 #endif
 ) where
 
@@ -44,6 +45,7 @@ import Generics.EMGM.Common.Base3
 import Generics.EMGM.Common.Derive.Common
 
 import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- Types
@@ -258,6 +260,15 @@ mkRepInstWith opt epName g dt = InstanceD cxt' typ [dec]
     typ = mkRepInstT opt dt gVar
     dec = mkRepD opt epName dt
 
+-- | Make the instance for a function-specific Rep instance
+mkRepFunctionInst :: DT -> Name -> Q Exp -> Q Dec
+mkRepFunctionInst dt newtypeName repExpQ = do
+  let t = mkAppliedType OptRep dt
+  let typ = mkRepInstT OptRep dt (AppT (ConT newtypeName) t)
+  e <- repExpQ
+  let dec = ValD (VarP 'rep) (NormalB e) []
+  return $ InstanceD [] typ [dec]
+
 -----------------------------------------------------------------------------
 -- Exported Functions
 -----------------------------------------------------------------------------
@@ -285,11 +296,12 @@ mkBiFRep2Inst ra rb = mkRepInstWith (OptBiFRep2 ra rb)
 -- | Make the instance for a Rep Collect T (where T is the type)
 mkRepCollectInst :: DT -> Q Dec
 mkRepCollectInst dt = do
-  let t = mkAppliedType OptRep dt
-  let typ = mkRepInstT OptRep dt (AppT (ConT ''Collect) t)
-  e <- [|Collect (\x -> [x])|]
-  let dec = ValD (VarP 'rep) (NormalB e) []
-  return $ InstanceD [] typ [dec]
+  mkRepFunctionInst dt ''Collect [|Collect (\x -> [x])|]
+
+-- | Make the instance for a Rep Everywhere T (where T is the type)
+mkRepEverywhereInst :: DT -> Q Dec
+mkRepEverywhereInst dt =
+  mkRepFunctionInst dt ''Everywhere [|Everywhere (\f x -> f x)|]
 
 #endif
 
