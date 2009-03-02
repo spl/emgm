@@ -3,7 +3,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive.Functions
+-- Module      :  Generics.EMGM.Derive.Functions
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- Summary: Code for generating function-specific instances in TH.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive.Functions (
+module Generics.EMGM.Derive.Functions (
 #ifndef __HADDOCK__
   mkRepCollectInst,
   mkRepEverywhereInst,
@@ -32,7 +32,7 @@ import Language.Haskell.TH
 
 import Generics.EMGM.Common.Representation
 import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Derive.Common
 
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere

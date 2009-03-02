@@ -6,7 +6,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive
+-- Module      :  Generics.EMGM.Derive
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 -- TH.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive.Instance (
+module Generics.EMGM.Derive.Instance (
 #ifndef __HADDOCK__
   RepOpt(..),
   RepFunNames(..),
@@ -39,8 +39,8 @@ import Control.Monad (liftM)
 import Language.Haskell.TH
 
 import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Derive.Common
-import Generics.EMGM.Common.Derive.EP
+import Generics.EMGM.Derive.Common
+import Generics.EMGM.Derive.EP
 
 -----------------------------------------------------------------------------
 -- Types

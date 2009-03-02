@@ -12,6 +12,7 @@ import Data.Char (ord, chr)
 
 import Base ((~|:))
 import Generics.EMGM hiding (Show)
+import Generics.EMGM.Derive
 
 --------------------------------------------------------------------------------
 -- Fixed-point stuff

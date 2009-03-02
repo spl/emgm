@@ -25,6 +25,9 @@
 -- * "Generics.EMGM.Data" - Datatypes with predefined support in EMGM.
 --
 -- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
+--
+-- * "Generics.EMGM.Derive" - Generating the EMGM representation for a datatype.
+--
 -----------------------------------------------------------------------------
 
 module Generics.EMGM (
@@ -121,18 +124,13 @@ module Generics.EMGM (
 
   -- ** Deriving Representation
   --
-  -- | The simplest way to get a representation for a datatype is using the
-  -- following functions in a Template Haskell declaration, e.g. @$('derive'
-  -- ''MyType)@. This generates all of the appropriate instances, e.g. 'Rep',
-  -- 'FRep', etc., for the type @MyType@.
-  --
-  -- For more details or more flexibility in what is derived, see
-  -- "Generics.EMGM.Common.Derive".
-
-  derive,
-  deriveWith,
-  Modifier(..),
-  Modifiers,
+  -- | The necessary values and instances for using EMGM with a user-defined
+  -- datatype can be generated automatically using Template Haskell. By
+  -- necessity, there are a number of exported values for this process that are
+  -- unrelated to other uses of the EMGM library. In order to not export these
+  -- signatures more than necessary, you should import "Generics.EMGM.Derive"
+  -- for deriving the representation. Note that "Generics.EMGM" does not export
+  -- anything in "Generics.EMGM.Derive".
 
   -- * Generic Functions
   --

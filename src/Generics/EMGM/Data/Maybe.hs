@@ -32,9 +32,7 @@ module Generics.EMGM.Data.Maybe (
   bifrep2Maybe,
 ) where
 
-import Generics.EMGM.Common
-import Generics.EMGM.Functions.Collect
-import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Derive
 
 #ifndef __HADDOCK__
 

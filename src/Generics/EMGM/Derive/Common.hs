@@ -3,7 +3,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive
+-- Module      :  Generics.EMGM.Derive
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- Summary: Common types and functions used in the deriving code.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive.Common where
+module Generics.EMGM.Derive.Common where
 
 -----------------------------------------------------------------------------
 -- Imports

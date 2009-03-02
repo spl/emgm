@@ -13,7 +13,7 @@ import Prelude hiding (Read, Show)
 import qualified Prelude as P (Read, Show)
 import Data.Generics (Data, Typeable)
 
-import Generics.EMGM
+import Generics.EMGM.Derive
 
 infixr 6 :^:
 infixl 5 :<>:

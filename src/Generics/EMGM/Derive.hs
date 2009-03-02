@@ -3,7 +3,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive
+-- Module      :  Generics.EMGM.Derive
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -11,15 +11,21 @@
 -- Stability   :  experimental
 -- Portability :  non-portable
 --
--- Summary: Functions for generating support for using a datatype with EMGM.
+-- Summary: Functions for generating the representation for using a datatype
+-- with EMGM.
+--
+-- The simplest way to get a representation for a datatype is using 'derive' in
+-- a Template Haskell declaration, e.g. @$('derive' ''MyType)@. This generates
+-- all of the appropriate instances, e.g. 'Rep', 'FRep', etc., for the type
+-- @MyType@.
 --
 -- Generating datatype support can be done in a fully automatic way using
 -- 'derive' or 'deriveWith', or it can be done piecemeal using a number of other
 -- functions. For most needs, the automatic approach is fine. But if you find
--- you need more control, use the manual deriving approach described here.
+-- you need more control, use the manual deriving approach.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive (
+module Generics.EMGM.Derive (
 
   -- * Automatic Instance Deriving
   --
@@ -40,8 +46,8 @@ module Generics.EMGM.Common.Derive (
   Modifier(..),
   Modifiers,
 
-  deriveAllRep,
-  deriveAllRepWith,
+  deriveMono,
+  deriveMonoWith,
 
   -- * Manual Instance Deriving
   --
@@ -62,14 +68,14 @@ module Generics.EMGM.Common.Derive (
   --
   -- @
   --   module Example where
-  --   import Generics.EMGM.Common.Derive
+  --   import Generics.EMGM.Derive
   --   data T a = C a Int
   -- @
   --
   -- @
   --   $(declareConDescrs ''T)
   --   $(declareEP ''T)
-  --   $(declareAllRepFuns ''T)
+  --   $(declareRepValues ''T)
   --   $(deriveRep ''T)
   --   $(deriveFRep ''T)
   --   $(deriveCollect ''T)
@@ -96,11 +102,11 @@ module Generics.EMGM.Common.Derive (
   -- | Use the following to generate only the representation values that are
   -- used in the instances for 'rep', 'frep', etc.
 
-  declareAllRepFuns,
-  declareAllRepFunsWith,
+  declareRepValues,
+  declareRepValuesWith,
 
-  declareRepFun,
-  declareRepFunWith,
+  declareMonoRep,
+  declareMonoRepWith,
 
   -- ** Rep Instance Deriving
   --
@@ -132,6 +138,14 @@ module Generics.EMGM.Common.Derive (
   deriveEverywhere,
   deriveEverywhere',
 
+  -- * Exported Modules
+  --
+  -- | Re-export these modules for generated code.
+
+  module Generics.EMGM.Common,
+  module Generics.EMGM.Functions.Collect,
+  module Generics.EMGM.Functions.Everywhere,
+
 ) where
 
 -----------------------------------------------------------------------------
@@ -143,8 +157,8 @@ import Prelude
 import Language.Haskell.TH
 import Data.Maybe (catMaybes)
 
-import Generics.EMGM.Common.Derive.Common
-import Generics.EMGM.Common.Derive.Functions
+import Generics.EMGM.Derive.Common
+import Generics.EMGM.Derive.Functions
 
 -- We ignore these imports for Haddock, because Haddock does not like Template
 -- Haskell expressions in many places.
@@ -152,20 +166,15 @@ import Generics.EMGM.Common.Derive.Functions
 -- See http://code.google.com/p/emgm/issues/detail?id=21
 --
 #ifndef __HADDOCK__
-import Generics.EMGM.Common.Derive.ConDescr (mkConDescr)
-import Generics.EMGM.Common.Derive.EP (mkEP)
-import Generics.EMGM.Common.Derive.Instance
+import Generics.EMGM.Derive.ConDescr (mkConDescr)
+import Generics.EMGM.Derive.EP (mkEP)
+import Generics.EMGM.Derive.Instance
 #endif
 
--- These are imported only for Haddock.
-#ifdef __HADDOCK__
-import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Base2
-import Generics.EMGM.Common.Base3
-import Generics.EMGM.Common.Representation
+import Generics.EMGM.Common
+
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
-#endif
 
 -----------------------------------------------------------------------------
 -- General functions
@@ -352,7 +361,7 @@ deriveWith = undefined
 --
 -- @
 --   module Example where
---   import "Generics.EMGM"
+--   import "Generics.EMGM.Derive"
 --   data T a = C a 'Int'
 -- @
 --
@@ -364,7 +373,7 @@ deriveWith = undefined
 -- following (annotated) code:
 --
 -- @
---   -- (1) Constructor description declarations (1 per constructor)
+--   -- (1) Constructor description declarations
 -- @
 --
 -- @
@@ -373,7 +382,7 @@ deriveWith = undefined
 -- @
 --
 -- @
---   -- (2) Embedding-projection pair declarations (1 per type)
+--   -- (2) Embedding-projection pair declaration
 -- @
 --
 -- @
@@ -384,45 +393,90 @@ deriveWith = undefined
 -- @
 --
 -- @
---   -- (3) 'Rep' instance (1 per type)
+--   -- (3) Representation values
+-- @
+--
+-- @
+--   repT :: ('Generic' g, 'Rep' g a, 'Rep' g 'Int') => g (T a)
+--   repT = 'rtype' epT ('rcon' conC ('rprod' 'rep' 'rep'))
+-- @
+--
+-- @
+--   frepT :: ('Generic' g) => g a1 -> g (T a1)
+--   frepT a = 'rtype' epT ('rcon' conC ('rprod' a 'rint'))
+-- @
+--
+-- @
+--   frep2T :: ('Generic2' g) => g a1 a2 -> g (T a1) (T a2)
+--   frep2T a = 'rtype2' epT epT ('rcon2' conC ('rprod2' a 'rint2'))
+-- @
+--
+-- @
+--   frep3T :: ('Generic3' g) => g a1 a2 a3 -> g (T a1) (T a2) (T a3)
+--   frep3T a = 'rtype3' epT epT epT ('rcon3' conC ('rprod3' a 'rint3'))
+-- @
+--
+-- @
+--   bifrep2T :: ('Generic2' g) => g a1 a2 -> g (T a1) (T a2)
+--   bifrep2T a = 'rtype2' epT epT ('rcon2' conC ('rprod2' a 'rint2'))
+-- @
+--
+-- @
+--   -- (4) Representation instances
 -- @
 --
 -- @
 --   instance ('Generic' g, 'Rep' g a, 'Rep' g 'Int') => 'Rep' g (T a) where
---     'rep' = 'rtype' epT ('rcon' conC ('rprod' 'rep' 'rep'))
--- @
---
--- @
---   -- (4) Higher arity instances if applicable (either 'FRep', 'FRep2', and
---   -- 'FRep3' together, or 'BiFRep2')
+--     'rep' = repT
 -- @
 --
 -- @
 --   instance ('Generic' g) => 'FRep' g T where
---     'frep' ra = 'rtype' epT ('rcon' conC ('rprod' ra 'rint'))
+--     'frep' = frepT
 -- @
 --
 -- @
---   -- In this case, similar instances would be generated for 'FRep2' and 'FRep3'.
+--   instance ('Generic2' g) => 'FRep2' g T where
+--     'frep2' = frep2T
 -- @
 --
 -- @
---   -- (5) Function-specific instances (1 per type)
+--   instance ('Generic3' g) => 'FRep3' g T where
+--     'frep3' = frep3T
+-- @
+--
+-- @
+--   -- In this case, no instances for 'BiFRep2' is generated, because T is not
+--   -- a bifunctor type; however, the bifrep2T value is always generated in
+--   -- case T is used in a bifunctor type.
+-- @
+--
+-- @
+--   -- (5) Generic function-specific instances
 -- @
 --
 -- @
 --   instance 'Rep' ('Collect' (T a)) (T a) where
 --     'rep' = 'Collect' (\\x -> [x])
---   instance 'Rep' ('Everywhere' (T a)) (T a) where
---     'rep' = 'Everywhere' (\\f x -> f x)
+-- @
+--
+-- @
+--   instance ('Rep' ('Everywhere' (T a)) a, 'Rep' ('Everywhere' (T a)) 'Int')
+--            => 'Rep' ('Everywhere' (T a)) (T a) where
+--     'rep' = 'Everywhere' (\\f x ->
+--       case x of
+--         C v1 v2 -> f (C ('selEverywhere' 'rep' f v1) ('selEverywhere' 'rep' f v2))
+-- @
+--
+-- @
 --   instance 'Rep' ('Everywhere'' (T a)) (T a) where
 --     'rep' = 'Everywhere'' (\\f x -> f x)
 -- @
 --
--- Note that the constructor description @conC@ and embedding-project pair @epT@
--- are top-level values. This allows them to be shared between multiple
--- instances. If these names conflict with your own, you may want to put the
--- @$(derive ...)@ declaration in its own module and restrict the export list.
+-- Note that all the values are top-level. This allows them to be shared between
+-- multiple instances. For example, if you have two mutually recursive functor
+-- datatypes, you may need to have each other's derived code in scope.
+
 derive :: Name -> Q [Dec]
 derive = deriveWith []
 
@@ -475,13 +529,13 @@ declareEP = declareEPWith []
 
 --------------------------------------------------------------------------------
 
--- | Same as 'declareRepFun' except that you can pass a list of name
+-- | Same as 'declareMonoRep' except that you can pass a list of name
 -- modifications to the deriving mechanism. See 'deriveWith' for an example.
-declareRepFunWith :: Modifiers -> Name -> Q [Dec]
+declareMonoRepWith :: Modifiers -> Name -> Q [Dec]
 
 #ifndef __HADDOCK__
 
-declareRepFunWith mods typeName = do
+declareMonoRepWith mods typeName = do
   (dt, _) <- declareConDescrsBase mods typeName
   (ep, _) <- declareEPBase mods dt
   (repFunName, repFunDecs) <- mkRepFun mods OptRep dt ep
@@ -489,24 +543,27 @@ declareRepFunWith mods typeName = do
 
 #else
 
-declareRepFunWith = undefined
+declareMonoRepWith = undefined
 
 #endif
 
--- | Generate a declaration of a representation value for a type. This is the
--- value that would be used for 'rep' in an instance of 'Rep'.
-declareRepFun :: Name -> Q [Dec]
-declareRepFun = declareRepFunWith []
+-- | Generate the declaration of a monomorphic representation value for a type.
+-- This is the value used for 'rep' in an instance of 'Rep'. The difference with
+-- 'declareRepValues' is that 'declareRepValues' generates generates all
+-- representation values (including 'frep', 'frep2', etc.). See 'derive' for an
+-- example.
+declareMonoRep :: Name -> Q [Dec]
+declareMonoRep = declareMonoRepWith []
 
 --------------------------------------------------------------------------------
 
--- | Same as 'declareAllRepFuns' except that you can pass a list of name
+-- | Same as 'declareRepValues' except that you can pass a list of name
 -- modifications to the deriving mechanism. See 'deriveWith' for an example.
-declareAllRepFunsWith :: Modifiers -> Name -> Q [Dec]
+declareRepValuesWith :: Modifiers -> Name -> Q [Dec]
 
 #ifndef __HADDOCK__
 
-declareAllRepFunsWith mods typeName = do
+declareRepValuesWith mods typeName = do
   (dt, _) <- declareConDescrsBase mods typeName
   (ep, _) <- declareEPBase mods dt
   (funNames, funDecs) <- declareRepFunsBase mods dt ep
@@ -514,17 +571,14 @@ declareAllRepFunsWith mods typeName = do
 
 #else
 
-declareAllRepFunsWith = undefined
+declareRepValuesWith = undefined
 
 #endif
 
 -- | Generate declarations of all representation values for a type. These
--- functions are used in 'rep', 'frep', ..., 'bifrep2'. The difference between
--- @declareAllRepFuns@ and 'declareRepFun' is that 'declareRepFun' generates
--- /only/ the value for 'rep', not the others. See 'derive' for an example.
-
-declareAllRepFuns :: Name -> Q [Dec]
-declareAllRepFuns = declareAllRepFunsWith []
+-- functions are used in 'rep', 'frep', ..., 'bifrep2'.
+declareRepValues :: Name -> Q [Dec]
+declareRepValues = declareRepValuesWith []
 
 --------------------------------------------------------------------------------
 
@@ -555,13 +609,13 @@ deriveRep = deriveRepWith []
 
 --------------------------------------------------------------------------------
 
--- | Same as 'deriveAllRep' except that you can pass a list of name
+-- | Same as 'deriveMono' except that you can pass a list of name
 -- modifications to the deriving mechanism. See 'deriveWith' for an example.
-deriveAllRepWith :: Modifiers -> Name -> Q [Dec]
+deriveMonoWith :: Modifiers -> Name -> Q [Dec]
 
 #ifndef __HADDOCK__
 
-deriveAllRepWith mods typeName = do
+deriveMonoWith mods typeName = do
   (dt, conDescrDecs) <- declareConDescrsBase mods typeName
   (epName, epDecs) <- declareEPBase mods dt
   (repFunName, repFunDecs) <- mkRepFun mods OptRep dt epName
@@ -581,24 +635,24 @@ deriveAllRepWith mods typeName = do
 
 #else
 
-deriveAllRepWith = undefined
+deriveMonoWith = undefined
 
 #endif
 
--- | Same as 'derive' except that only the 'Rep'-related representation value
--- and instance are generated. This is a convenience function that can be used
--- instead of the following declarations:
+-- | Same as 'derive' except that only the monomorphic 'Rep' representation
+-- value and instance are generated. This is a convenience function that can be
+-- used instead of the following declarations:
 --
 -- @
 --   $(declareConDescrs ''T)
 --   $(declareEP ''T)
---   $(declareRepFun ''T)
+--   $(declareMonoRep ''T)
 --   $(deriveRep ''T)
 --   $(deriveFRep ''T)
 --   $(deriveCollect ''T)
 -- @
-deriveAllRep :: Name -> Q [Dec]
-deriveAllRep = deriveAllRepWith []
+deriveMono :: Name -> Q [Dec]
+deriveMono = deriveMonoWith []
 
 --------------------------------------------------------------------------------
 

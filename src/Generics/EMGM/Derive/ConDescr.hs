@@ -3,7 +3,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive.ConDescr
+-- Module      :  Generics.EMGM.Derive.ConDescr
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- Summary: Code for generating a value of 'ConDescr' in TH.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive.ConDescr (
+module Generics.EMGM.Derive.ConDescr (
 #ifndef __HADDOCK__
   mkConDescr,
 #endif
@@ -29,7 +29,7 @@ module Generics.EMGM.Common.Derive.ConDescr (
 import Language.Haskell.TH
 
 import qualified Generics.EMGM.Common.Representation as ER -- EMGM Rep
-import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Derive.Common
 
 -----------------------------------------------------------------------------
 -- General functions

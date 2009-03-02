@@ -19,8 +19,8 @@ import Data.Char (ord, toUpper)
 import Test.HUnit
 
 import Generics.EMGM as G
+import Generics.EMGM.Derive
 import Generics.EMGM.Data
-import Generics.EMGM.Common.Derive
 
 --------------------------------------------------------------------------------
 -- Test deriving for functor type
@@ -126,7 +126,7 @@ data F a = F a Int
 
 $(declareConDescrs ''F)
 $(declareEP ''F)
-$(declareAllRepFuns ''F)
+$(declareRepValues ''F)
 $(deriveRep ''F)
 $(deriveFRep ''F)
 $(deriveCollect ''F)

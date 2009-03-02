@@ -3,7 +3,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Derive.EP
+-- Module      :  Generics.EMGM.Derive.EP
 -- Copyright   :  (c) 2008 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- Summary: Code for generating the 'EP' value in TH.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Derive.EP (
+module Generics.EMGM.Derive.EP (
 #ifndef __HADDOCK__
   mkEP,
 #endif
@@ -33,7 +33,7 @@ import qualified Data.Generics as SYB
 
 import Generics.EMGM.Common.Representation
 import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Derive.Common
 import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------

@@ -33,39 +33,39 @@
 
 module Generics.EMGM.Data.TH where
 
-import Generics.EMGM.Common hiding (Fixity, ConDescr(..))
+import Generics.EMGM.Derive hiding (conName, Fixity, conFixity)
 import Language.Haskell.TH
 
 #ifndef __HADDOCK__
 
-$(deriveAllRep ''Name)
-$(deriveAllRep ''Dec)
-$(deriveAllRep ''Exp)
-$(deriveAllRep ''Con)
-$(deriveAllRep ''Type)
-$(deriveAllRep ''Match)
-$(deriveAllRep ''Clause)
-$(deriveAllRep ''Body)
-$(deriveAllRep ''Guard)
-$(deriveAllRep ''Stmt)
-$(deriveAllRep ''Range)
-$(deriveAllRep ''Lit)
-$(deriveAllRep ''Pat)
-$(deriveAllRep ''Strict)
-$(deriveAllRep ''Foreign)
-$(deriveAllRep ''Callconv)
-$(deriveAllRep ''Safety)
-$(deriveAllRep ''FunDep)
-$(deriveAllRep ''Info)
+$(deriveMono ''Name)
+$(deriveMono ''Dec)
+$(deriveMono ''Exp)
+$(deriveMono ''Con)
+$(deriveMono ''Type)
+$(deriveMono ''Match)
+$(deriveMono ''Clause)
+$(deriveMono ''Body)
+$(deriveMono ''Guard)
+$(deriveMono ''Stmt)
+$(deriveMono ''Range)
+$(deriveMono ''Lit)
+$(deriveMono ''Pat)
+$(deriveMono ''Strict)
+$(deriveMono ''Foreign)
+$(deriveMono ''Callconv)
+$(deriveMono ''Safety)
+$(deriveMono ''FunDep)
+$(deriveMono ''Info)
 
 #ifdef TH_LOC_DERIVEREP
 -- This type is only provided in template-haskell-2.3 (included with GHC 6.10)
 -- and up.
-$(deriveAllRep ''Loc)
+$(deriveMono ''Loc)
 #endif
 
-$(deriveAllRep ''Fixity)
-$(deriveAllRep ''FixityDirection)
+$(deriveMono ''Fixity)
+$(deriveMono ''FixityDirection)
 
 #endif
 
