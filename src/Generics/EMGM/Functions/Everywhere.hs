@@ -16,6 +16,27 @@
 --
 -- Summary: Generic functions that apply a transformation at every location of
 -- one type in a value of a possibly different type.
+--
+-- The functions 'everywhere' and 'everywhere'' have exactly the same type, but
+-- they apply the transformation in different fashions. 'everywhere' uses
+-- bottom-up application while 'everywhere'' uses a top-down approach. This may
+-- make a difference if you have recursive datatypes or use nested pattern
+-- matching in the higher-order function.
+--
+-- These functions are very similar to others with the same names in the \"Scrap
+-- Your Boilerplate\" library (@syb@ package). The SYB functions use rank-2
+-- types, while the EMGM functions use a single class constraint. Compare the
+-- types of the following:
+--
+-- @
+--   -- SYB
+--   everywhere :: (forall a. 'Data' a => a -> a) -> forall a. 'Data' a => a -> a
+-- @
+--
+-- @
+--   -- EMGM
+--   everywhere :: (Rep (Everywhere a) b) => (a -> a) -> b -> b
+-- @
 --------------------------------------------------------------------------------
 
 module Generics.EMGM.Functions.Everywhere (
@@ -27,6 +48,10 @@ module Generics.EMGM.Functions.Everywhere (
 
 import Generics.EMGM.Common.Base
 import Generics.EMGM.Common.Representation
+
+#ifdef __HADDOCK__
+import Data.Generics (Data)
+#endif
 
 --------------------------------------------------------------------------------
 -- Types
@@ -43,20 +68,24 @@ import Generics.EMGM.Common.Representation
 -- >   {-# LANGUAGE OverlappingInstances #-}
 --
 -- @
---   data T a = Val a | Rec T
+--   data T a = Val a | Rec (T a)
 -- @
 --
 -- @
---   instance 'Rep' (Everywhere T) T where
+--   instance ('Rep' (Everywhere (T a)) (T a), 'Rep' (Everywhere (T a)) a) => 'Rep' (Everywhere (T a)) (T a) where
 --     'rep' = Everywhere app
 --       where
---         app f (Rec t) = f (Rec (selEverywhere 'rep' f t))
---         app f other   = f other
+--         app f x =
+--           case x of
+--             Val v1 -> f (Val (selEverywhere 'rep' f v1))
+--             Rec v1 -> f (Rec (selEverywhere 'rep' f v1))
 -- @
 --
--- (Note the requirement of overlapping instances.) This instance is triggered
--- when the function type (the first @T@) matches some value type (the second
--- @T@) contained within the argument to 'everywhere'.
+-- Note the requirement of overlapping instances.
+--
+-- This instance is triggered when the function type (the first @T a@ in @'Rep'
+-- (Everywhere (T a)) (T a)@) matches some value type (the second @T a@)
+-- contained within the argument to 'everywhere'.
 newtype Everywhere a b = Everywhere { selEverywhere :: (a -> a) -> b -> b }
 
 --------------------------------------------------------------------------------
@@ -106,7 +135,7 @@ instance Rep (Everywhere Char) Char where
 --------------------------------------------------------------------------------
 
 -- | Apply a transformation @a -> a@ to values of type @a@ within the argument
--- of type @b@ in a bottom-up manner. Values that dhave type match @a@ are
+-- of type @b@ in a bottom-up manner. Values that do not have type @a@ are
 -- passed through 'id'.
 --
 -- @everywhere@ works by searching the datatype @b@ for values that are the same
@@ -160,6 +189,12 @@ everywhere f = selEverywhere rep f
 --   instance 'Rep' (Everywhere' U) U where
 --     'rep' = Everywhere' ($)
 -- @
+--
+-- Note the requirement of overlapping instances.
+--
+-- This instance is triggered when the function type (the first @U@ in @'Rep'
+-- (Everywhere U) U@) matches some value type (the second @U@) contained within
+-- the argument to 'everywhere''.
 newtype Everywhere' a b = Everywhere' { selEverywhere' :: (a -> a) -> b -> b }
 
 --------------------------------------------------------------------------------
@@ -213,8 +248,8 @@ instance Rep (Everywhere' Char) Char where
 -- through 'id'.
 --
 -- @everywhere'@ is the same as 'everywhere' with the exception of recursive
--- datatypes. For example, here is the same example used in the documentation
--- for 'everywhere'.
+-- datatypes. For example, compare the example used in the documentation for
+-- 'everywhere' with the following.
 --
 -- @
 --   ghci> let f t = case t of { Val i -> Val (i+(1::'Int')); other -> other }
