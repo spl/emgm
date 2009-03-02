@@ -29,7 +29,7 @@ module Generics.EMGM.Data.List (
   bifrep2List,
 ) where
 
-import Generics.EMGM.Derive
+import Generics.EMGM.Derive.Internal
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair

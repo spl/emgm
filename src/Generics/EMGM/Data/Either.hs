@@ -32,7 +32,7 @@ module Generics.EMGM.Data.Either (
   bifrep2Either,
 ) where
 
-import Generics.EMGM.Derive
+import Generics.EMGM.Derive.Internal
 
 #ifndef __HADDOCK__
 

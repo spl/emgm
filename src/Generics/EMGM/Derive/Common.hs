@@ -97,11 +97,11 @@ data RepNames
 
 data RepFunNames
   = RepFunNames
-  { repFunName          :: Name
-  , frepFunName         :: Name
-  , frep2FunName        :: Name
-  , frep3FunName        :: Name
-  , bifrep2FunName      :: Name
+  { repFunN     :: Name
+  , frepFunN    :: Name
+  , frep2FunN   :: Name
+  , frep3FunN   :: Name
+  , bifrep2FunN :: Name
   }
 
 -----------------------------------------------------------------------------
@@ -231,11 +231,11 @@ repNames OptFRep3    = RepNames ''Generic3 'rint3 'rinteger3 'rfloat3 'rdouble3 
 repNames OptBiFRep2  = RepNames ''Generic2 'rint2 'rinteger2 'rfloat2 'rdouble2 'rchar2 'runit2 'rsum2 'rprod2 'rcon2 'rtype2 ''BiFRep2 'bifrep2
 
 funName :: RepOpt -> RepFunNames -> Name
-funName OptRep      = repFunName
-funName OptFRep     = frepFunName
-funName OptFRep2    = frep2FunName
-funName OptFRep3    = frep3FunName
-funName OptBiFRep2  = bifrep2FunName
+funName OptRep      = repFunN
+funName OptFRep     = frepFunN
+funName OptFRep2    = frep2FunN
+funName OptFRep3    = frep3FunN
+funName OptBiFRep2  = bifrep2FunN
 
 -- | Get the actual name that is analogous to each of these function names. This
 -- allows the code to be generic across different instance definitions.

@@ -20,7 +20,6 @@ import Test.HUnit
 
 import Generics.EMGM as G
 import Generics.EMGM.Derive
-import Generics.EMGM.Data
 
 --------------------------------------------------------------------------------
 -- Test deriving for functor type

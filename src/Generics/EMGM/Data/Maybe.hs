@@ -32,7 +32,7 @@ module Generics.EMGM.Data.Maybe (
   bifrep2Maybe,
 ) where
 
-import Generics.EMGM.Derive
+import Generics.EMGM.Derive.Internal
 
 #ifndef __HADDOCK__
 

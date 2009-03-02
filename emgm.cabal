@@ -1,5 +1,5 @@
 name:                   emgm
-version:                0.2
+version:                0.3
 synopsis:               Extensible and Modular Generics for the Masses
 homepage:               http://www.cs.uu.nl/wiki/GenericProgramming/EMGM
 description:
@@ -11,27 +11,34 @@ description:
   because they all share a common structure, we can write generic functions that
   work on this structure.
   .
-  The library provides three main components:
+  The primary features of the library are:
   .
-  (1) 'Common' - /A common foundation for building generic functions and adding support for datatypes./
-  This includes the collection of datatypes (e.g. sum, product, unit) and type
-  classes (e.g. 'Generic', 'Rep'), that are used throughout the library. This is
-  what you need to define your own generic functions, to add generic support for
-  your datatype, or to define ad-hoc cases.
+  * /A platform for building generic functions and adding support for user-defined datatypes./
   .
-  (2) 'Data' - /Support for using standard datatypes generically./
-  Types such as @[a]@, tuples, and @Maybe@ are built into Haskell or come
-  included in the standard libraries. EMGM provides full support for generic
-  functions on these datatypes. The modules in this component are also useful as
-  guides when adding generic support for your own datatypes.
+  EMGM includes an important collection of datatypes (e.g. sum, product, and
+  unit) and type classes (e.g. @Generic@ and @Rep@). Everything you need for
+  your own generic functions or datatypes can be found here.
   .
-  (3) 'Functions' - /A collection of useful generic functions./
-  These work with a variety of datatypes and provide a wide range of operations.
-  For example, there is 'crush', a generalization of the fold functions. It is
-  one of the most useful functions, because it allows you to flexibly extract
-  the elements of a polymorphic container.
+  * /Many useful generic functions./
   .
-  For more information on the EMGM library, see the homepage:
+  These provide a wide range of functionality. For example, there is @crush@
+  ("Generics.EMGM.Functions.Crush"), a generalization of the foldl/foldr
+  functions, that allows you to flexibly extract the elements of a polymorphic
+  container. Now, you can do many of the operations with your container that
+  were previously only available for lists.
+  .
+  Different generic functions work with different kinds of types as well. For
+  example, @collect@ works with any fully applied type while @bimap@ only works
+  with bifunctor types such as @Either@ or @(,)@ (pairs).
+  .
+  * /Support for standard and user-defined datatypes./
+  .
+  EMGM provides full support for standard types such as @[]@ (lists), tuples,
+  and @Maybe@ as well as many types you define in your own code. Using the
+  Template Haskell functions provided in "Generics.EMGM.Derive", it is very
+  simple to add support for using generic functions with your datatype
+  .
+  For more information on EMGM, see the homepage:
   <http://www.cs.uu.nl/wiki/GenericProgramming/EMGM>
 
 category:               Generics
@@ -116,7 +123,6 @@ Library
                         Generics.EMGM.Functions.UnzipWith
 
                         -- Supported datatypes
-                        Generics.EMGM.Data
                         Generics.EMGM.Data.Bool
                         Generics.EMGM.Data.Either
                         Generics.EMGM.Data.List
@@ -132,6 +138,7 @@ Library
                         Generics.EMGM.Derive.EP
                         Generics.EMGM.Derive.Functions
                         Generics.EMGM.Derive.Instance
+                        Generics.EMGM.Derive.Internal
 
   build-depends:        base >= 3.0 && < 4.0,
                         template-haskell >= 2.2 && < 2.4

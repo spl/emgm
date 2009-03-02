@@ -30,7 +30,6 @@ module Generics.EMGM.Derive.Functions (
 
 import Language.Haskell.TH
 
-import Generics.EMGM.Common.Representation
 import Generics.EMGM.Common.Base
 import Generics.EMGM.Derive.Common
 
@@ -41,10 +40,10 @@ import Generics.EMGM.Functions.Everywhere
 
 -- | Make the instance for a function-specific Rep instance
 mkRepFunctionInst :: DT -> Name -> Q Cxt -> Q Exp -> Q Dec
-mkRepFunctionInst dt newtypeName ctx repExpQ = do
+mkRepFunctionInst dt newtypeName ctx bodyExp = do
   let t = mkAppliedType OptRep dt
   let typ = mkRepInstT OptRep dt (appT (conT newtypeName) t)
-  let dec = valD (varP 'rep) (normalB repExpQ) []
+  let dec = valD (varP 'rep) (normalB bodyExp) []
   instanceD ctx typ [dec]
 
 --------------------------------------------------------------------------------
@@ -77,11 +76,10 @@ mkRepEverywhereInst :: DT -> Q Dec
 mkRepEverywhereInst dt = do
   let dtyp = mkAppliedType OptRep dt
   let typ = appT (conT ''Everywhere) dtyp
-  let exp = appE (conE 'Everywhere) (mkEverywhereFunE dt)
+  let bodyExp = appE (conE 'Everywhere) (mkEverywhereFunE dt)
   repCtx <- mkRepInstCxt OptRep typ dt
   let ctx = return (tail repCtx)
-  mkRepFunctionInst dt ''Everywhere ctx exp
-  where
+  mkRepFunctionInst dt ''Everywhere ctx bodyExp
 
 --------------------------------------------------------------------------------
 

@@ -45,8 +45,8 @@ f_list_char1 :: String -> String
 f_list_char1 = G.map toLower
 
 f_list_char2 :: String -> String
-f_list_char2 (c:cs) = []
-f_list_char2 []     = []
+f_list_char2 (_:_) = []
+f_list_char2 []    = []
 
 f_unit :: () -> ()
 f_unit = id

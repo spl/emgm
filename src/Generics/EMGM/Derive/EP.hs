@@ -27,14 +27,11 @@ module Generics.EMGM.Derive.EP (
 -----------------------------------------------------------------------------
 
 import Language.Haskell.TH
-import qualified Data.Generics as SYB
 
 -- TODO: List imports
 
 import Generics.EMGM.Common.Representation
-import Generics.EMGM.Common.Base
 import Generics.EMGM.Derive.Common
-import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- General functions
@@ -93,7 +90,7 @@ toClauses   = consClauses (consReps unitP prodP VarP sumP) (map (dataE id))
 -- | Given a function that translates constructors to clause (plus direction), a
 -- possible type string name, and a type name, make a function declaration.
 mkFunD :: ([NCon] -> [Clause]) -> DT -> Name -> Dec
-mkFunD mkClauses dt funName = FunD funName (mkClauses (ncons dt))
+mkFunD mkClauses dt funNm = FunD funNm (mkClauses (ncons dt))
 
 --------------------------------------------------------------------------------
 

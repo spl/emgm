@@ -33,7 +33,7 @@
 
 module Generics.EMGM.Data.TH where
 
-import Generics.EMGM.Derive hiding (conName, Fixity, conFixity)
+import Generics.EMGM.Derive.Internal hiding (conName, conFixity, Fixity)
 import Language.Haskell.TH
 
 #ifndef __HADDOCK__

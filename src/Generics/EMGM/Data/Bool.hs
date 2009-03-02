@@ -32,7 +32,7 @@ module Generics.EMGM.Data.Bool (
   bifrep2Bool,
 ) where
 
-import Generics.EMGM.Derive
+import Generics.EMGM.Derive.Internal
 
 #ifndef __HADDOCK__
 

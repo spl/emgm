@@ -25,8 +25,7 @@
 
 module Ex02AddingDatatypeSupport where
 
-import Generics.EMGM.Common
-import Generics.EMGM.Data()
+import Generics.EMGM.Derive
 import qualified Generics.EMGM.Functions as G
 
 -- Using generic functions on your own datatypes

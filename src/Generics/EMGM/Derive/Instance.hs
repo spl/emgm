@@ -34,13 +34,10 @@ module Generics.EMGM.Derive.Instance (
 -----------------------------------------------------------------------------
 
 import Data.List (transpose)
-import Control.Monad (liftM)
 
 import Language.Haskell.TH
 
-import Generics.EMGM.Common.Base
 import Generics.EMGM.Derive.Common
-import Generics.EMGM.Derive.EP
 
 -----------------------------------------------------------------------------
 -- Types
@@ -96,8 +93,8 @@ typSyn typ = do
   case info of
     TyConI dec ->
       case dec of
-        TySynD _ _ typ ->
-          return (Just typ)
+        TySynD _ _ unSynTyp ->
+          return (Just unSynTyp)
         _ ->
           return Nothing
     _ ->
@@ -127,9 +124,9 @@ varRepExp mods opt dt =
             Just nm ->
               varE nm
             Nothing -> do
-              ts <- typSyn typ
-              case ts of
-                Just t  -> go t
+              mts <- typSyn typ
+              case mts of
+                Just ts  -> go ts
                 Nothing -> varE (toFunName mods opt typ)
 
         AppT (ConT typ) a ->
@@ -243,9 +240,9 @@ mkRepFun mods opt dt ep = do
   sig <- sigD nm (mkRepFunSigT opt dt)
 
   -- Value of function
-  let exp = rtypeE opt ep (repSopE mods opt dt)
+  let bodyExp = rtypeE opt ep (repSopE mods opt dt)
   let args = caseRep opt [] (map varP (tvars dt))
-  fun <- funD nm [clause args (normalB exp) []]
+  fun <- funD nm [clause args (normalB bodyExp) []]
 
   return (nm, [sig, fun])
   --return (nm, [])

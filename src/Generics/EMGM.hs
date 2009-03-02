@@ -22,12 +22,9 @@
 -- * "Generics.EMGM.Common" - Common infrastructure for supporting datatypes and
 -- defining functions.
 --
--- * "Generics.EMGM.Data" - Datatypes with predefined support in EMGM.
---
 -- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
 --
 -- * "Generics.EMGM.Derive" - Generating the EMGM representation for a datatype.
---
 -----------------------------------------------------------------------------
 
 module Generics.EMGM (
@@ -321,7 +318,10 @@ import qualified Prelude
 import Generics.EMGM.Common
 import Generics.EMGM.Functions
 
--- Hide the embedding-projection pairs and constructor descriptions. We don't
--- want to export them to the world. We only want the instances.
-import Generics.EMGM.Data ()
+-- Export the instances from these
+import Generics.EMGM.Data.Bool()
+import Generics.EMGM.Data.Either()
+import Generics.EMGM.Data.List()
+import Generics.EMGM.Data.Maybe()
+import Generics.EMGM.Data.Tuple()
 
