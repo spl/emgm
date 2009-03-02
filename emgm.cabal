@@ -71,10 +71,6 @@ tested-with:            GHC == 6.8.3, GHC == 6.10.1
 
 --------------------------------------------------------------------------------
 
-flag th23
-  description:          Define a CPP flag that enables conditional compilation
-                        for template-haskell package version 2.3 and newer.
-
 flag test
   description:          Enable the test configuration: Build the test
                         executable, reduce build time.
@@ -136,15 +132,7 @@ Library
                         Generics.EMGM.Common.Derive.Instance
 
   build-depends:        base >= 3.0 && < 4.0,
-                        template-haskell < 2.4
-
-  -- Include deriveRep for Loc. This was introduced with
-  -- template-haskell-2.3, included with GHC 6.10.
-  if flag(th23)
-    build-depends:      template-haskell >= 2.3
-    cpp-options:        -DTH_LOC_DERIVEREP
-  else
-    build-depends:      template-haskell < 2.3
+                        template-haskell >= 2.2 && < 2.4
 
   extensions:           CPP
 
@@ -173,15 +161,7 @@ Executable test
   main-is:              Main.hs
 
   build-depends:        base >= 3.0 && < 4.0,
-                        template-haskell < 2.4
-
-  -- Include deriveRep for Loc. This was introduced with
-  -- template-haskell-2.3, included with GHC 6.10.
-  if flag(th23)
-    build-depends:      template-haskell >= 2.3
-    cpp-options:        -DTH_LOC_DERIVEREP
-  else
-    build-depends:      template-haskell < 2.3
+                        template-haskell >= 2.2 && < 2.4
 
   -- Only enable the build-depends here if configured with "-ftest". This
   -- allows users to use EMGM without having to install QuickCheck.
