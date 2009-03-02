@@ -30,6 +30,11 @@ module Generics.EMGM.Data.Bool (
   epBool,
   conFalse,
   conTrue,
+  repBool,
+  frepBool,
+  frep2Bool,
+  frep3Bool,
+  bifrep2Bool,
 ) where
 
 import Generics.EMGM.Common

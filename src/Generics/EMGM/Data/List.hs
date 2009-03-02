@@ -26,6 +26,11 @@ module Generics.EMGM.Data.List (
   epList,
   conNil,
   conCons,
+  repList,
+  frepList,
+  frep2List,
+  frep3List,
+  bifrep2List,
 ) where
 
 import Generics.EMGM.Common
@@ -61,38 +66,44 @@ conCons :: ConDescr
 conCons = ConDescr ":" 2 [] (Infixr 5)
 
 -- | Representation for lists in 'Generic'
-rList :: (Generic g) => g a -> g [a]
-rList ra =
+repList :: (Generic g) => g a -> g [a]
+repList ra =
   rtype epList
-    (rcon conNil runit `rsum` rcon conCons (ra `rprod` rList ra))
+    (rcon conNil runit `rsum` rcon conCons (ra `rprod` repList ra))
+
+frepList :: (Generic g) => g a -> g [a]
+frepList = repList
 
 -- | Representation for lists in 'Generic2'
-rList2 :: (Generic2 g) => g a b -> g [a] [b]
-rList2 ra =
+frep2List :: (Generic2 g) => g a b -> g [a] [b]
+frep2List ra =
   rtype2 epList epList
-    (rcon2 conNil runit2 `rsum2` rcon2 conCons (ra `rprod2` rList2 ra))
+    (rcon2 conNil runit2 `rsum2` rcon2 conCons (ra `rprod2` frep2List ra))
+
+bifrep2List :: (Generic2 g) => g a b -> g [a] [b]
+bifrep2List = frep2List
 
 -- | Representation for lists in 'Generic3'
-rList3 :: (Generic3 g) => g a b c -> g [a] [b] [c]
-rList3 ra =
+frep3List :: (Generic3 g) => g a b c -> g [a] [b] [c]
+frep3List ra =
   rtype3 epList epList epList
-    (rcon3 conNil runit3 `rsum3` rcon3 conCons (ra `rprod3` rList3 ra))
+    (rcon3 conNil runit3 `rsum3` rcon3 conCons (ra `rprod3` frep3List ra))
 
 -----------------------------------------------------------------------------
 -- Instance declarations
 -----------------------------------------------------------------------------
 
 instance (Generic g, Rep g a) => Rep g [a] where
-  rep = rList rep
+  rep = repList rep
 
 instance (Generic g) => FRep g [] where
-  frep = rList
+  frep = repList
 
 instance (Generic2 g) => FRep2 g [] where
-  frep2 = rList2
+  frep2 = frep2List
 
 instance (Generic3 g) => FRep3 g [] where
-  frep3 = rList3
+  frep3 = frep3List
 
 instance Rep (Collect [a]) [a] where
   rep = Collect (:[])

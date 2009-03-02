@@ -38,34 +38,34 @@ import Language.Haskell.TH
 
 #ifndef __HADDOCK__
 
-$(derive ''Name)
-$(derive ''Dec)
-$(derive ''Exp)
-$(derive ''Con)
-$(derive ''Type)
-$(derive ''Match)
-$(derive ''Clause)
-$(derive ''Body)
-$(derive ''Guard)
-$(derive ''Stmt)
-$(derive ''Range)
-$(derive ''Lit)
-$(derive ''Pat)
-$(derive ''Strict)
-$(derive ''Foreign)
-$(derive ''Callconv)
-$(derive ''Safety)
-$(derive ''FunDep)
-$(derive ''Info)
+$(deriveAllRep ''Name)
+$(deriveAllRep ''Dec)
+$(deriveAllRep ''Exp)
+$(deriveAllRep ''Con)
+$(deriveAllRep ''Type)
+$(deriveAllRep ''Match)
+$(deriveAllRep ''Clause)
+$(deriveAllRep ''Body)
+$(deriveAllRep ''Guard)
+$(deriveAllRep ''Stmt)
+$(deriveAllRep ''Range)
+$(deriveAllRep ''Lit)
+$(deriveAllRep ''Pat)
+$(deriveAllRep ''Strict)
+$(deriveAllRep ''Foreign)
+$(deriveAllRep ''Callconv)
+$(deriveAllRep ''Safety)
+$(deriveAllRep ''FunDep)
+$(deriveAllRep ''Info)
 
 #ifdef TH_LOC_DERIVEREP
 -- This type is only provided in template-haskell-2.3 (included with GHC 6.10)
 -- and up.
-$(derive ''Loc)
+$(deriveAllRep ''Loc)
 #endif
 
-$(derive ''Fixity)
-$(derive ''FixityDirection)
+$(deriveAllRep ''Fixity)
+$(deriveAllRep ''FixityDirection)
 
 #endif
 

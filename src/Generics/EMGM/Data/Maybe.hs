@@ -30,6 +30,11 @@ module Generics.EMGM.Data.Maybe (
   epMaybe,
   conNothing,
   conJust,
+  repMaybe,
+  frepMaybe,
+  frep2Maybe,
+  frep3Maybe,
+  bifrep2Maybe,
 ) where
 
 import Generics.EMGM.Common

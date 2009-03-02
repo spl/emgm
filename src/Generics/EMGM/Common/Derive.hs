@@ -40,6 +40,9 @@ module Generics.EMGM.Common.Derive (
   Modifier(..),
   Modifiers,
 
+  deriveAllRep,
+  deriveAllRepWith,
+
   -- * Manual Instance Deriving
   --
   -- | Use the functions in this section for more control over the declarations
@@ -66,6 +69,7 @@ module Generics.EMGM.Common.Derive (
   -- @
   --   $(declareConDescrs ''T)
   --   $(declareEP ''T)
+  --   $(declareRepFun ''Name)
   --   $(deriveRep ''T)
   --   $(deriveFRep ''T)
   --   $(deriveCollect ''T)
@@ -86,6 +90,17 @@ module Generics.EMGM.Common.Derive (
 
   declareEP,
   declareEPWith,
+
+  -- ** Representation Value Declaration
+  --
+  -- | Use the following to generate only the representation values that are
+  -- used in the instances for 'rep', 'frep', etc.
+
+  declareAllRepFuns,
+  declareAllRepFunsWith,
+
+  declareRepFun,
+  declareRepFunWith,
 
   -- ** Rep Instance Deriving
   --
@@ -214,23 +229,32 @@ declareEPBase mods dt = do
   toName <- newName "to"
   return (mkEP mods dt fromName toName)
 
-deriveRepBase :: DT -> Name  -> Name  -> Q [Dec]
-deriveRepBase dt epName g = do
-  repInstDec <- mkRepInst epName g dt
-  return [repInstDec]
+declareRepFunsBase :: Modifiers -> DT -> Name -> Q (RepFunNames, [Dec])
+declareRepFunsBase mods dt ep = do
+  (repFunName,     repFunDecs)     <- mkRepFun mods OptRep      dt ep
+  (frepFunName,    frepFunDecs)    <- mkRepFun mods OptFRep     dt ep
+  (frep2FunName,   frep2FunDecs)   <- mkRepFun mods OptFRep2    dt ep
+  (frep3FunName,   frep3FunDecs)   <- mkRepFun mods OptFRep3    dt ep
+  (bifrep2FunName, bifrep2FunDecs) <- mkRepFun mods OptBiFRep2  dt ep
+  return
+    ( RepFunNames repFunName frepFunName frep2FunName frep3FunName bifrep2FunName
+    , repFunDecs ++ frepFunDecs ++ frep2FunDecs ++ frep3FunDecs ++ bifrep2FunDecs
+    )
 
-deriveFRepBase :: DT -> Name -> Name -> Name -> Q [Dec]
-deriveFRepBase dt epName g ra = do
-  frepInstDec <- mkFRepInst ra epName g dt
-  frep2InstDec <- mkFRep2Inst ra epName g dt
-  frep3InstDec <- mkFRep3Inst ra epName g dt
-  return [frepInstDec, frep2InstDec, frep3InstDec]
-  where
+deriveRepBase :: DT -> RepFunNames -> Name -> Q [Dec]
+deriveRepBase dt funs g =
+  mkRepInst OptRep funs g dt
 
-deriveBiFRepBase :: DT -> Name -> Name -> Name -> Name -> Q [Dec]
-deriveBiFRepBase dt epName g ra rb = do
-  bifrep2InstDec <- mkBiFRep2Inst ra rb epName g dt
-  return [bifrep2InstDec]
+deriveFRepBase :: DT -> RepFunNames -> Name -> Q [Dec]
+deriveFRepBase dt funs g = do
+  frepInstDec <- mkRepInst OptFRep funs g dt
+  frep2InstDec <- mkRepInst OptFRep2 funs g dt
+  frep3InstDec <- mkRepInst OptFRep3 funs g dt
+  return (frepInstDec ++ frep2InstDec ++ frep3InstDec)
+
+deriveBiFRepBase :: DT -> RepFunNames -> Name -> Q [Dec]
+deriveBiFRepBase dt funs g =
+  mkRepInst OptBiFRep2 funs g dt
 
 #endif
 
@@ -282,17 +306,15 @@ deriveWith :: Modifiers -> Name -> Q [Dec]
 deriveWith mods typeName = do
   (dt, conDescrDecs) <- declareConDescrsBase mods typeName
   (epName, epDecs) <- declareEPBase mods dt
+  (funNames, funDecs) <- declareRepFunsBase mods dt epName
 
   g <- newName "g"
-  repInstDecs <- deriveRepBase dt epName g
-
-  ra <- newName "ra"
-  rb <- newName "rb"
+  repInstDecs <- deriveRepBase dt funNames g
 
   higherOrderRepInstDecs <-
     case length (tvars dt) of
-      1 -> deriveFRepBase dt epName g ra
-      2 -> deriveBiFRepBase dt epName g ra rb
+      1 -> deriveFRepBase dt funNames g
+      2 -> deriveBiFRepBase dt funNames g
       _ -> return []
 
   collectInstDec <- mkRepCollectInst dt
@@ -302,6 +324,7 @@ deriveWith mods typeName = do
   return $
     conDescrDecs           ++
     epDecs                 ++
+    funDecs                ++
     repInstDecs            ++
     higherOrderRepInstDecs ++
     [collectInstDec
@@ -451,6 +474,59 @@ declareEP = declareEPWith []
 
 --------------------------------------------------------------------------------
 
+-- | Same as 'declareRepFun' except that you can pass a list of name
+-- modifications to the deriving mechanism. See 'deriveWith' for an example.
+declareRepFunWith :: Modifiers -> Name -> Q [Dec]
+
+#ifndef __HADDOCK__
+
+declareRepFunWith mods typeName = do
+  (dt, _) <- declareConDescrsBase mods typeName
+  (ep, _) <- declareEPBase mods dt
+  (repFunName, repFunDecs) <- mkRepFun mods OptRep dt ep
+  return repFunDecs
+
+#else
+
+declareRepFunWith = undefined
+
+#endif
+
+-- | Generate a declaration of a representation value for a type. This is the
+-- value that would be used for 'rep' in an instance of 'Rep'.
+declareRepFun :: Name -> Q [Dec]
+declareRepFun = declareRepFunWith []
+
+--------------------------------------------------------------------------------
+
+-- | Same as 'declareAllRepFuns' except that you can pass a list of name
+-- modifications to the deriving mechanism. See 'deriveWith' for an example.
+declareAllRepFunsWith :: Modifiers -> Name -> Q [Dec]
+
+#ifndef __HADDOCK__
+
+declareAllRepFunsWith mods typeName = do
+  (dt, _) <- declareConDescrsBase mods typeName
+  (ep, _) <- declareEPBase mods dt
+  (funNames, funDecs) <- declareRepFunsBase mods dt ep
+  return funDecs
+
+#else
+
+declareAllRepFunsWith = undefined
+
+#endif
+
+-- | Generate declarations of all representation values for a type. These
+-- functions are used in 'rep', 'frep', ..., 'bifrep2'. The difference between
+-- @declareAllRepFuns@ and 'declareRepFun' is that 'declareRepFun' generates
+-- /only/ the value for 'rep', not the others. See 'derive' for an example.
+
+declareAllRepFuns :: Name -> Q [Dec]
+declareAllRepFuns = declareAllRepFunsWith []
+
+--------------------------------------------------------------------------------
+
 -- | Same as 'deriveRep' except that you can pass a list of name modifications
 -- to the deriving mechanism. See 'deriveWith' for an example.
 deriveRepWith :: Modifiers -> Name -> Q [Dec]
@@ -459,9 +535,10 @@ deriveRepWith :: Modifiers -> Name -> Q [Dec]
 
 deriveRepWith mods typeName = do
   (dt, _) <- declareConDescrsBase mods typeName
-  (epName, _) <- declareEPBase mods dt
+  (ep, _) <- declareEPBase mods dt
+  (funNames, _) <- declareRepFunsBase mods dt ep
   g <- newName "g"
-  repInstDecs <- deriveRepBase dt epName g
+  repInstDecs <- deriveRepBase dt funNames g
   return repInstDecs
 
 #else
@@ -477,6 +554,54 @@ deriveRep = deriveRepWith []
 
 --------------------------------------------------------------------------------
 
+-- | Same as 'deriveAllRep' except that you can pass a list of name
+-- modifications to the deriving mechanism. See 'deriveWith' for an example.
+deriveAllRepWith :: Modifiers -> Name -> Q [Dec]
+
+#ifndef __HADDOCK__
+
+deriveAllRepWith mods typeName = do
+  (dt, conDescrDecs) <- declareConDescrsBase mods typeName
+  (epName, epDecs) <- declareEPBase mods dt
+  (repFunName, repFunDecs) <- mkRepFun mods OptRep dt epName
+  let funNames = RepFunNames repFunName undefined undefined undefined undefined
+
+  g <- newName "g"
+  repInstDecs <- deriveRepBase dt funNames g
+
+  collectInstDec <- mkRepCollectInst dt
+
+  return $
+    conDescrDecs           ++
+    epDecs                 ++
+    repFunDecs             ++
+    repInstDecs            ++
+    [collectInstDec]
+
+#else
+
+deriveAllRepWith = undefined
+
+#endif
+
+-- | Same as 'derive' except that only the 'Rep'-related representation value
+-- and instance are generated. This is a convenience function that can be used
+-- instead of the following declarations:
+--
+-- @
+--   $(declareConDescrs ''T)
+--   $(declareEP ''T)
+--   $(declareRepFun ''T)
+--   $(deriveRep ''T)
+--   $(deriveFRep ''T)
+--   $(deriveCollect ''T)
+-- @
+deriveAllRep :: Name -> Q [Dec]
+deriveAllRep = deriveAllRepWith []
+
+--------------------------------------------------------------------------------
+
+
 -- | Same as 'deriveFRep' except that you can pass a list of name modifications
 -- to the deriving mechanism. See 'deriveWith' for an example.
 deriveFRepWith :: Modifiers -> Name -> Q [Dec]
@@ -486,9 +611,9 @@ deriveFRepWith :: Modifiers -> Name -> Q [Dec]
 deriveFRepWith mods typeName = do
   (dt, _) <- declareConDescrsBase mods typeName
   (epName, _) <- declareEPBase mods dt
+  (funNames, _) <- declareRepFunsBase mods dt epName
   g <- newName "g"
-  ra <- newName "ra"
-  frepInstDecs <- deriveFRepBase dt epName g ra
+  frepInstDecs <- deriveFRepBase dt funNames g
   return frepInstDecs
 
 #else
@@ -513,10 +638,9 @@ deriveBiFRepWith :: Modifiers -> Name -> Q [Dec]
 deriveBiFRepWith mods typeName = do
   (dt, _) <- declareConDescrsBase mods typeName
   (epName, _) <- declareEPBase mods dt
+  (funNames, _) <- declareRepFunsBase mods dt epName
   g <- newName "g"
-  ra <- newName "ra"
-  rb <- newName "rb"
-  bifrepInstDecs <- deriveBiFRepBase dt epName g ra rb
+  bifrepInstDecs <- deriveBiFRepBase dt funNames g
   return bifrepInstDecs
 
 #else

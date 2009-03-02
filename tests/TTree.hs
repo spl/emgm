@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell          #-}
 {-# LANGUAGE FlexibleInstances        #-}
+{-# LANGUAGE FlexibleContexts         #-}
 {-# LANGUAGE MultiParamTypeClasses    #-}
 {-# LANGUAGE DeriveDataTypeable       #-}
 {-# LANGUAGE UndecidableInstances     #-}

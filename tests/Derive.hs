@@ -2,6 +2,7 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverlappingInstances       #-}
 {-# LANGUAGE UndecidableInstances       #-}
@@ -18,7 +19,7 @@ import Data.Char (ord, toUpper)
 import Test.HUnit
 
 import Generics.EMGM as G
-import Generics.EMGM.Data.Tuple (epTuple2, conTuple2)
+import Generics.EMGM.Data
 import Generics.EMGM.Common.Derive
 
 --------------------------------------------------------------------------------
@@ -36,8 +37,8 @@ data B a
   | B4 (B Double)
   | B5 (Maybe a)
   | B6 (A (Maybe [a]))
---  | B7 (Int -> a)         -- UNSUPPORTED
---  | B8 (a,a)              -- UNSUPPORTED
+  | B7 (a,a)
+--  | B_ (Int -> a)         -- UNSUPPORTED
 
 -- We only support a functor type containing constant types or another functor
 -- type. In other words, we don't support higher arity type constructors (>1
@@ -46,28 +47,24 @@ data B a
 $(derive ''B)
 
 --------------------------------------------------------------------------------
--- Test for contained tuple
+-- Test for other things
 --------------------------------------------------------------------------------
 
--- We don't currently support deriving representations for the following type,
--- but one should be able to do this manually.
-
 data C a
-  = C (a,Int)
+  = C1 (a,Int) -- ^ odd tuple
+  | C2 String  -- ^ type synonym
+  | C3 (a,a,a) (a,a,a,a) (a,a,C a,a,a) (a,a,a,a,a,a) (a,a,a,a,a,a,a)
+       -- ^ tuples and type constructor application up to arity 7.
+  | C4 a -- ^ included so we don't get the warning about the repC function's
+         -- argument being defined but not used.
+  deriving (Eq, Prelude.Show)
 
-epC = EP fromC toC
+$(derive ''C)
+
+test_mapC = "map ord (C3 ...)" ~: G.map ord i ~?= o
   where
-    fromC (C v1) = v1
-    toC v1 = C v1
-
--- | Representation for @(a,b)@ in 'Generic'
-rTuple2 :: (Generic g) => g a -> g b -> g (a,b)
-rTuple2 ra rb = rtype epTuple2 $ rcon conTuple2 (ra `rprod` rb)
-
--- Could potentially support the types with the below, but it would only work
--- for types that we know about, e.g. tuples and Either.
-instance (Generic g) => FRep g C where
-  frep ra = rtype epC (rTuple2 ra rint)
+    i = C3 ('a','a','a') ('b','b','b','b') ('c','c',C2 "blah",'c','c') ('d','d','d','d','d','d') ('e','e','e','e','e','e','e')
+    o = C3 (97,97,97) (98,98,98,98) (99,99,C2 "blah",99,99) (100,100,100,100,100,100) (101,101,101,101,101,101,101)
 
 --------------------------------------------------------------------------------
 -- Test for deriving bifunctor type
@@ -80,7 +77,7 @@ data D a b
   | D4 (D a b) (D a b)
   | D5 (D b a)
   | D6 (Either a b) (b,a) (b,Int)
---  | D6 [a]            -- UNSUPPORTED
+  | D7 [a]
 
 -- We only support a bifunctor type containing constant types or another
 -- bifunctor type. In other words, we don't support a bifunctor type containing
@@ -129,6 +126,7 @@ data F a = F a Int
 
 $(declareConDescrs ''F)
 $(declareEP ''F)
+$(declareAllRepFuns ''F)
 $(deriveRep ''F)
 $(deriveFRep ''F)
 $(deriveCollect ''F)
@@ -152,7 +150,8 @@ test_manual3 =
 
 tests =
   "Derive" ~:
-    [ test_ChangeTo1
+    [ test_mapC
+    , test_ChangeTo1
     , test_ChangeTo2
     , test_ChangeTo3
     , test_DefinedAs1

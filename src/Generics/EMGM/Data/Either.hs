@@ -30,6 +30,11 @@ module Generics.EMGM.Data.Either (
   epEither,
   conLeft,
   conRight,
+  repEither,
+  frepEither,
+  frep2Either,
+  frep3Either,
+  bifrep2Either,
 ) where
 
 import Generics.EMGM.Common
