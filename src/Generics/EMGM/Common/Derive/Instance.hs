@@ -27,6 +27,7 @@ module Generics.EMGM.Common.Derive.Instance (
   mkBiFRep2Inst,
   mkRepCollectInst,
   mkRepEverywhereInst,
+  mkRepEverywhereInst',
 #endif
 ) where
 
@@ -302,6 +303,11 @@ mkRepCollectInst dt = do
 mkRepEverywhereInst :: DT -> Q Dec
 mkRepEverywhereInst dt =
   mkRepFunctionInst dt ''Everywhere [|Everywhere (\f x -> f x)|]
+
+-- | Make the instance for a Rep Everywhere' T (where T is the type)
+mkRepEverywhereInst' :: DT -> Q Dec
+mkRepEverywhereInst' dt =
+  mkRepFunctionInst dt ''Everywhere' [|Everywhere' (\f x -> f x)|]
 
 #endif
 
