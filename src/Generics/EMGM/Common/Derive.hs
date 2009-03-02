@@ -144,6 +144,7 @@ import Language.Haskell.TH
 import Data.Maybe (catMaybes)
 
 import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Common.Derive.Functions
 
 -- We ignore these imports for Haddock, because Haddock does not like Template
 -- Haskell expressions in many places.

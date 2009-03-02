@@ -132,6 +132,7 @@ Library
   other-modules:        Generics.EMGM.Common.Derive.Common
                         Generics.EMGM.Common.Derive.ConDescr
                         Generics.EMGM.Common.Derive.EP
+                        Generics.EMGM.Common.Derive.Functions
                         Generics.EMGM.Common.Derive.Instance
 
   build-depends:        base >= 3.0 && < 4.0,

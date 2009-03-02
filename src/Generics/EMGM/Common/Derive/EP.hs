@@ -17,7 +17,6 @@
 module Generics.EMGM.Common.Derive.EP (
 #ifndef __HADDOCK__
   mkEP,
-  mkEverywhereFunE,
 #endif
 ) where
 
@@ -40,38 +39,6 @@ import Generics.EMGM.Functions.Everywhere
 -----------------------------------------------------------------------------
 -- General functions
 -----------------------------------------------------------------------------
-
-unitE :: Exp
-unitE = ConE 'Unit
-
-prodE :: Exp -> Exp -> Exp
-prodE a b = (InfixE (Just a) (ConE '(:*:)) (Just b))
-
-sumE :: Name -> Exp -> Exp
-sumE name x = AppE (ConE name) x
-
-unitP :: Pat
-unitP = ConP 'Unit []
-
-prodP :: Pat -> Pat -> Pat
-prodP a b = (InfixP a '(:*:) b)
-
-sumP :: Name -> Pat -> Pat
-sumP name x = ConP name [x]
-
-dataE :: Maybe (Exp -> Exp) -> NCon -> Exp
-dataE fexp (NCon name _ _ vars) =
-  foldl (\e -> AppE e . app . VarE) (ConE name) vars
-  where 
-    app e =
-      case fexp of
-        Nothing -> e
-        Just f  -> f e
-
-dataP :: NCon -> Pat
-dataP (NCon name _ _ vars) = ConP name (map VarP vars)
-
---------------------------------------------------------------------------------
 
 -- | Apply an inductive function @fn@ recursively @n@ times. Then, apply a base
 -- function @fz@. Restriction: @n >= 0@.
@@ -121,7 +88,7 @@ consClauses mkPats mkExps cons = zipWith mkClause (mkPats cons) (mkExps cons)
 -- the clause for each component of the embedding-projection pair.
 fromClauses, toClauses :: [NCon] -> [Clause]
 fromClauses = consClauses (map dataP) (consReps unitE prodE VarE sumE)
-toClauses   = consClauses (consReps unitP prodP VarP sumP) (map (dataE Nothing))
+toClauses   = consClauses (consReps unitP prodP VarP sumP) (map (dataE id))
 
 -- | Given a function that translates constructors to clause (plus direction), a
 -- possible type string name, and a type name, make a function declaration.
@@ -156,24 +123,6 @@ mkEP mods dt fromName toName = (epName, [epSig, epDec])
     body = AppE (AppE (ConE 'EP) (VarE fromName)) (VarE toName)
     epSig = mkEpSig dt epName
     epDec = ValD (VarP epName) (NormalB body) [fromDec, toDec]
-
---------------------------------------------------------------------------------
-
-mkEverywhereFunE :: DT -> Q Exp
-mkEverywhereFunE dt = lamE [fpat, xpat] caseExp
-  where
-    f = mkName "f"
-    x = mkName "x"
-    xpat = varP x
-    fpat = varP f
-    appSel = AppE (AppE (AppE (VarE 'selEverywhere) (VarE 'rep)) (VarE f))
-    appF = appE (varE f)
-    caseExp = caseE (varE x) matches
-    matches = zipWith mkMatch pats exps
-    mkMatch p e = match (return p) (normalB (appF (return e))) []
-    ncs = ncons dt
-    pats = map dataP ncs
-    exps = map (dataE (Just appSel)) ncs
 
 #endif
 
