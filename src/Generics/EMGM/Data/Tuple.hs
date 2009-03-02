@@ -1,5 +1,6 @@
 {-# LANGUAGE TypeOperators          #-}
 {-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE OverlappingInstances   #-}
 {-# OPTIONS -fno-warn-orphans       #-}
@@ -412,45 +413,123 @@ instance Rep (Collect (a,b,c,d,e,f)) (a,b,c,d,e,f) where
 instance Rep (Collect (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
   rep = Collect (:[])
 
-instance Rep (Everywhere ()) () where
-  rep = Everywhere ($)
-
 instance Rep (Everywhere' ()) () where
   rep = Everywhere' ($)
-
-instance Rep (Everywhere (a,b)) (a,b) where
-  rep = Everywhere ($)
 
 instance Rep (Everywhere' (a,b)) (a,b) where
   rep = Everywhere' ($)
 
-instance Rep (Everywhere (a,b,c)) (a,b,c) where
-  rep = Everywhere ($)
-
 instance Rep (Everywhere' (a,b,c)) (a,b,c) where
   rep = Everywhere' ($)
-
-instance Rep (Everywhere (a,b,c,d)) (a,b,c,d) where
-  rep = Everywhere ($)
 
 instance Rep (Everywhere' (a,b,c,d)) (a,b,c,d) where
   rep = Everywhere' ($)
 
-instance Rep (Everywhere (a,b,c,d,e)) (a,b,c,d,e) where
-  rep = Everywhere ($)
-
 instance Rep (Everywhere' (a,b,c,d,e)) (a,b,c,d,e) where
   rep = Everywhere' ($)
-
-instance Rep (Everywhere (a,b,c,d,e,f)) (a,b,c,d,e,f) where
-  rep = Everywhere ($)
 
 instance Rep (Everywhere' (a,b,c,d,e,f)) (a,b,c,d,e,f) where
   rep = Everywhere' ($)
 
-instance Rep (Everywhere (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
-  rep = Everywhere ($)
-
 instance Rep (Everywhere' (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
   rep = Everywhere' ($)
+
+instance Rep (Everywhere ()) () where
+  rep = Everywhere ($)
+
+instance
+  ( Rep (Everywhere (a,b)) a
+  , Rep (Everywhere (a,b)) b
+  ) => Rep (Everywhere (a,b)) (a,b) where
+  rep = Everywhere
+    (\z (a,b) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      )
+    )
+
+instance
+  ( Rep (Everywhere (a,b,c)) a
+  , Rep (Everywhere (a,b,c)) b
+  , Rep (Everywhere (a,b,c)) c
+  ) => Rep (Everywhere (a,b,c)) (a,b,c) where
+  rep = Everywhere
+    (\z (a,b,c) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      , selEverywhere rep z c
+      )
+    )
+
+instance
+  ( Rep (Everywhere (a,b,c,d)) a
+  , Rep (Everywhere (a,b,c,d)) b
+  , Rep (Everywhere (a,b,c,d)) c
+  , Rep (Everywhere (a,b,c,d)) d
+  ) => Rep (Everywhere (a,b,c,d)) (a,b,c,d) where
+  rep = Everywhere
+    (\z (a,b,c,d) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      , selEverywhere rep z c
+      , selEverywhere rep z d
+      )
+    )
+
+instance
+  ( Rep (Everywhere (a,b,c,d,e)) a
+  , Rep (Everywhere (a,b,c,d,e)) b
+  , Rep (Everywhere (a,b,c,d,e)) c
+  , Rep (Everywhere (a,b,c,d,e)) d
+  , Rep (Everywhere (a,b,c,d,e)) e
+  ) => Rep (Everywhere (a,b,c,d,e)) (a,b,c,d,e) where
+  rep = Everywhere
+    (\z (a,b,c,d,e) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      , selEverywhere rep z c
+      , selEverywhere rep z d
+      , selEverywhere rep z e
+      )
+    )
+
+instance
+  ( Rep (Everywhere (a,b,c,d,e,f)) a
+  , Rep (Everywhere (a,b,c,d,e,f)) b
+  , Rep (Everywhere (a,b,c,d,e,f)) c
+  , Rep (Everywhere (a,b,c,d,e,f)) d
+  , Rep (Everywhere (a,b,c,d,e,f)) e
+  , Rep (Everywhere (a,b,c,d,e,f)) f
+  ) => Rep (Everywhere (a,b,c,d,e,f)) (a,b,c,d,e,f) where
+  rep = Everywhere
+    (\z (a,b,c,d,e,f) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      , selEverywhere rep z c
+      , selEverywhere rep z d
+      , selEverywhere rep z e
+      , selEverywhere rep z f
+      )
+    )
+
+instance
+  ( Rep (Everywhere (a,b,c,d,e,f,h)) a
+  , Rep (Everywhere (a,b,c,d,e,f,h)) b
+  , Rep (Everywhere (a,b,c,d,e,f,h)) c
+  , Rep (Everywhere (a,b,c,d,e,f,h)) d
+  , Rep (Everywhere (a,b,c,d,e,f,h)) e
+  , Rep (Everywhere (a,b,c,d,e,f,h)) f
+  , Rep (Everywhere (a,b,c,d,e,f,h)) h
+  ) => Rep (Everywhere (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
+  rep = Everywhere
+    (\z (a,b,c,d,e,f,h) -> z
+      ( selEverywhere rep z a
+      , selEverywhere rep z b
+      , selEverywhere rep z c
+      , selEverywhere rep z d
+      , selEverywhere rep z e
+      , selEverywhere rep z f
+      , selEverywhere rep z h
+      )
+    )
 

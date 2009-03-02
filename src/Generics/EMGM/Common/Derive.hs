@@ -69,7 +69,7 @@ module Generics.EMGM.Common.Derive (
   -- @
   --   $(declareConDescrs ''T)
   --   $(declareEP ''T)
-  --   $(declareRepFun ''Name)
+  --   $(declareAllRepFuns ''T)
   --   $(deriveRep ''T)
   --   $(deriveFRep ''T)
   --   $(deriveCollect ''T)

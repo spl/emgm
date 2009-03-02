@@ -16,7 +16,8 @@
 
 module Generics.EMGM.Common.Derive.EP (
 #ifndef __HADDOCK__
-  mkEP
+  mkEP,
+  mkEverywhereFunE,
 #endif
 ) where
 
@@ -27,11 +28,14 @@ module Generics.EMGM.Common.Derive.EP (
 -----------------------------------------------------------------------------
 
 import Language.Haskell.TH
+import qualified Data.Generics as SYB
 
 -- TODO: List imports
 
 import Generics.EMGM.Common.Representation
+import Generics.EMGM.Common.Base
 import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- General functions
@@ -55,8 +59,14 @@ prodP a b = (InfixP a '(:*:) b)
 sumP :: Name -> Pat -> Pat
 sumP name x = ConP name [x]
 
-dataE :: NCon -> Exp
-dataE (NCon name _ _ vars) = foldl (\e -> AppE e . VarE) (ConE name) vars
+dataE :: Maybe (Exp -> Exp) -> NCon -> Exp
+dataE fexp (NCon name _ _ vars) =
+  foldl (\e -> AppE e . app . VarE) (ConE name) vars
+  where 
+    app e =
+      case fexp of
+        Nothing -> e
+        Just f  -> f e
 
 dataP :: NCon -> Pat
 dataP (NCon name _ _ vars) = ConP name (map VarP vars)
@@ -101,10 +111,6 @@ consReps unit prod var sum_ = repsSums sum_ . prods
 
 --------------------------------------------------------------------------------
 
--- | Map constructors to syntax elements for datatypes
-consDatas :: (NCon -> a) -> [NCon] -> [a]
-consDatas mkData = map mkData
-
 -- | Create a list of clauses from a list of constructors
 consClauses :: (a -> [Pat]) -> (a -> [Exp]) -> a -> [Clause]
 consClauses mkPats mkExps cons = zipWith mkClause (mkPats cons) (mkExps cons)
@@ -114,8 +120,8 @@ consClauses mkPats mkExps cons = zipWith mkClause (mkPats cons) (mkExps cons)
 -- | Given the constructors of a datatype, create a pair of the direction and
 -- the clause for each component of the embedding-projection pair.
 fromClauses, toClauses :: [NCon] -> [Clause]
-fromClauses = consClauses (consDatas dataP) (consReps unitE prodE VarE sumE)
-toClauses   = consClauses (consReps unitP prodP VarP sumP) (consDatas dataE)
+fromClauses = consClauses (map dataP) (consReps unitE prodE VarE sumE)
+toClauses   = consClauses (consReps unitP prodP VarP sumP) (map (dataE Nothing))
 
 -- | Given a function that translates constructors to clause (plus direction), a
 -- possible type string name, and a type name, make a function declaration.
@@ -150,6 +156,24 @@ mkEP mods dt fromName toName = (epName, [epSig, epDec])
     body = AppE (AppE (ConE 'EP) (VarE fromName)) (VarE toName)
     epSig = mkEpSig dt epName
     epDec = ValD (VarP epName) (NormalB body) [fromDec, toDec]
+
+--------------------------------------------------------------------------------
+
+mkEverywhereFunE :: DT -> Q Exp
+mkEverywhereFunE dt = lamE [fpat, xpat] caseExp
+  where
+    f = mkName "f"
+    x = mkName "x"
+    xpat = varP x
+    fpat = varP f
+    appSel = AppE (AppE (AppE (VarE 'selEverywhere) (VarE 'rep)) (VarE f))
+    appF = appE (varE f)
+    caseExp = caseE (varE x) matches
+    matches = zipWith mkMatch pats exps
+    mkMatch p e = match (return p) (normalB (appF (return e))) []
+    ncs = ncons dt
+    pats = map dataP ncs
+    exps = map (dataE (Just appSel)) ncs
 
 #endif
 

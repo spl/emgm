@@ -96,8 +96,14 @@ instance (Generic2 g) => BiFRep2 g Either where
 instance Rep (Collect (Either a b)) (Either a b) where
   rep = Collect (:[])
 
-instance Rep (Everywhere (Either a b)) (Either a b) where
-  rep = Everywhere ($)
+instance (Rep (Everywhere (Either a b)) a, Rep (Everywhere (Either a b)) b)
+         => Rep (Everywhere (Either a b)) (Either a b) where
+  rep = Everywhere app
+    where
+      app f x =
+        case x of
+          Left a  -> f (Left (selEverywhere rep f a))
+          Right b -> f (Right (selEverywhere rep f b))
 
 instance Rep (Everywhere' (Either a b)) (Either a b) where
   rep = Everywhere' ($)

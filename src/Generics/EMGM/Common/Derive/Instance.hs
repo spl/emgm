@@ -45,6 +45,7 @@ import Generics.EMGM.Common.Base
 import Generics.EMGM.Common.Base2
 import Generics.EMGM.Common.Base3
 import Generics.EMGM.Common.Derive.Common
+import Generics.EMGM.Common.Derive.EP
 
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
@@ -432,12 +433,12 @@ mkRepInstT :: RepOpt -> DT -> Q Type -> Q Type
 mkRepInstT opt dt funType = mkRepT opt funType (mkAppliedType opt dt)
 
 -- | Make the instance for a function-specific Rep instance
-mkRepFunctionInst :: DT -> Name -> Q Exp -> Q Dec
-mkRepFunctionInst dt newtypeName repExpQ = do
+mkRepFunctionInst :: DT -> Name -> Q Cxt -> Q Exp -> Q Dec
+mkRepFunctionInst dt newtypeName ctx repExpQ = do
   let t = mkAppliedType OptRep dt
   let typ = mkRepInstT OptRep dt (appT (conT newtypeName) t)
   let dec = valD (varP 'rep) (normalB repExpQ) []
-  instanceD (return []) typ [dec]
+  instanceD ctx typ [dec]
 
 -----------------------------------------------------------------------------
 -- Exported Functions
@@ -461,17 +462,23 @@ mkRepInst opt funs g dt = do
 -- | Make the instance for a Rep Collect T (where T is the type)
 mkRepCollectInst :: DT -> Q Dec
 mkRepCollectInst dt = do
-  mkRepFunctionInst dt ''Collect [|Collect (\x -> [x])|]
+  mkRepFunctionInst dt ''Collect (return []) [|Collect (\x -> [x])|]
 
 -- | Make the instance for a Rep Everywhere T (where T is the type)
 mkRepEverywhereInst :: DT -> Q Dec
-mkRepEverywhereInst dt =
-  mkRepFunctionInst dt ''Everywhere [|Everywhere (\f x -> f x)|]
+mkRepEverywhereInst dt = do
+  let dtyp = mkAppliedType OptRep dt
+  let typ = appT (conT ''Everywhere) dtyp
+  let exp = appE (conE 'Everywhere) (mkEverywhereFunE dt)
+  repCtx <- mkRepInstCxt OptRep typ dt
+  let ctx = return (tail repCtx)
+  mkRepFunctionInst dt ''Everywhere ctx exp
+  where
 
 -- | Make the instance for a Rep Everywhere' T (where T is the type)
 mkRepEverywhereInst' :: DT -> Q Dec
 mkRepEverywhereInst' dt =
-  mkRepFunctionInst dt ''Everywhere' [|Everywhere' (\f x -> f x)|]
+  mkRepFunctionInst dt ''Everywhere' (return []) [|Everywhere' (\f x -> f x)|]
 
 #endif
 

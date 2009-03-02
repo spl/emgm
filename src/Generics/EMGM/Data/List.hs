@@ -1,5 +1,6 @@
 {-# LANGUAGE TypeOperators          #-}
 {-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE OverlappingInstances   #-}
 {-# OPTIONS -fno-warn-orphans       #-}
@@ -108,13 +109,13 @@ instance (Generic3 g) => FRep3 g [] where
 instance Rep (Collect [a]) [a] where
   rep = Collect (:[])
 
-instance Rep (Everywhere [a]) [a] where
+instance (Rep (Everywhere [a]) a) => Rep (Everywhere [a]) [a] where
   rep = Everywhere app
     where
       app f x =
         case x of
           []   -> f []
-          a:as -> f (a : selEverywhere rep f as)
+          a:as -> f (selEverywhere rep f a : selEverywhere rep f as)
 
 instance Rep (Everywhere' [a]) [a] where
   rep = Everywhere' ($)
