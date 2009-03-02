@@ -98,5 +98,13 @@ instance Rep (Collect [a]) [a] where
   rep = Collect (:[])
 
 instance Rep (Everywhere [a]) [a] where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere app
+    where
+      app f x =
+        case x of
+          []   -> f []
+          a:as -> f (a : selEverywhere rep f as)
+
+instance Rep (Everywhere' [a]) [a] where
+  rep = Everywhere' ($)
 

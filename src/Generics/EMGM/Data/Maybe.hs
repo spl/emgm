@@ -110,7 +110,10 @@ instance Rep (Collect (Maybe a)) (Maybe a) where
   rep = Collect (:[])
 
 instance Rep (Everywhere (Maybe a)) (Maybe a) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (Maybe a)) (Maybe a) where
+  rep = Everywhere' ($)
 
 #endif
 

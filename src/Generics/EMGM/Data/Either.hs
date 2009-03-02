@@ -92,7 +92,10 @@ instance Rep (Collect (Either a b)) (Either a b) where
   rep = Collect (:[])
 
 instance Rep (Everywhere (Either a b)) (Either a b) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (Either a b)) (Either a b) where
+  rep = Everywhere' ($)
 
 #endif
 

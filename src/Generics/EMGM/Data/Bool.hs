@@ -87,7 +87,10 @@ instance Rep (Collect Bool) Bool where
   rep = Collect (:[])
 
 instance Rep (Everywhere Bool) Bool where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' Bool) Bool where
+  rep = Everywhere' ($)
 
 #endif
 

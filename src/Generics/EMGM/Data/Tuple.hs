@@ -249,23 +249,44 @@ instance Rep (Collect (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
   rep = Collect (:[])
 
 instance Rep (Everywhere ()) () where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' ()) () where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b)) (a,b) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b)) (a,b) where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b,c)) (a,b,c) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b,c)) (a,b,c) where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b,c,d)) (a,b,c,d) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b,c,d)) (a,b,c,d) where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b,c,d,e)) (a,b,c,d,e) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b,c,d,e)) (a,b,c,d,e) where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b,c,d,e,f)) (a,b,c,d,e,f) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b,c,d,e,f)) (a,b,c,d,e,f) where
+  rep = Everywhere' ($)
 
 instance Rep (Everywhere (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
-  rep = Everywhere (\f x -> f x)
+  rep = Everywhere ($)
+
+instance Rep (Everywhere' (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
+  rep = Everywhere' ($)
 

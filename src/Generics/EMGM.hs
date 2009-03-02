@@ -227,15 +227,20 @@ module Generics.EMGM (
 
   empty,
 
-  -- ** Everywhere Function
+  -- ** Everywhere Functions
   --
-  -- | Function that applies a transformation everywhere in a top-down manner.
+  -- | Functions that apply a transformation at every location of one type in a
+  -- value of a possibly different type.
   --
   -- For more details, see "Generics.EMGM.Functions.Everywhere".
 
   Everywhere(..),
 
   everywhere,
+
+  Everywhere'(..),
+
+  everywhere',
 
   -- ** Map Functions
   --
