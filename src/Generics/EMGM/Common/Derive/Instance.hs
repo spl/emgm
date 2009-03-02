@@ -107,17 +107,11 @@ typeUnknownError :: Int -> RepOpt -> Type -> Q a
 typeUnknownError i opt t = do
   error $ "Error #" ++ show i ++ ": Unsupported type for " ++ show opt ++ ": " ++ show t
 
-varExp :: RepOpt -> DT -> Type -> Q Exp
-varExp opt dt t =
-  let repVar = varE (repN opt) in
-  case t of
-    VarT v -> if v `elem` tvars dt then varE v else typeUnknownError 34 opt t
-    _      -> repVar
-
-varHOExp :: Modifiers -> RepOpt -> DT -> Type -> Q Exp
-varHOExp mods opt dt = go
+-- | Produce the variable expression for the appropriate 'rep', 'frep', etc.
+varRepExp :: Modifiers -> RepOpt -> DT -> Type -> Q Exp
+varRepExp mods opt dt =
+  caseRep opt (varE (repN opt)) . go
   where
-    repE = varE (repN opt)
     typE nm = varE (toFunName mods opt nm)
 
     appFun t = foldl appE (typE t) . map go
@@ -161,11 +155,6 @@ varHOExp mods opt dt = go
 
         _ ->
           typeUnknownError 50 opt t
-
--- | Produce the variable expression for the appropriate 'rep', 'frep', etc.
-varRepExp :: Modifiers -> RepOpt -> DT -> Type -> Q Exp
-varRepExp mods opt dt t =
-  caseRep opt (varExp opt dt t) (varHOExp mods opt dt t)
 
 -- | Construct the expression for the appropriate 'rtype', 'rtype2', etc.
 rtypeE :: RepOpt -> Name -> Q Exp -> Q Exp
@@ -216,7 +205,7 @@ mkRepFunSigT opt dt = do
   -- Build a list of lists of type variable names. Each sublist is the set of
   -- parameters to each 'g' type in the function arguments. For 'rep', we keep
   -- the original type variable list, because it's also used in the context.
-  let mkVarNameList _ c = map (\i -> mkName (c:show i)) [1..(genTypeVars opt)]
+  let mkVarNameList _ c = map (\i -> mkName (c:show i)) [1..genTypeVars opt]
   let varNameLists =
         caseRep opt
           (map (:[]) (tvars dt))
@@ -228,7 +217,7 @@ mkRepFunSigT opt dt = do
   -- Build a list of argument types using the variable name list of lists from
   -- above.
   let mkArrArgs as = appT arrowT (foldl appT gvar (map varT as))
-  let args = map mkArrArgs varNameLists
+  let args = caseRep opt [] (map mkArrArgs varNameLists)
 
   -- The return type
   let retTyp = mkSigReturnT opt gvar (tname dt) varNameLists
@@ -252,12 +241,11 @@ mkRepFun mods opt dt ep = do
 
   -- Signature of function
   sig <- sigD nm (mkRepFunSigT opt dt)
-  -- report False $ "sig <" ++ show opt ++ ">:\n  " ++ pprint sig
 
   -- Value of function
   let exp = rtypeE opt ep (repSopE mods opt dt)
-  fun <- funD nm [clause (map varP (tvars dt)) (normalB exp) []]
-  -- report False $ "fun <" ++ show opt ++ ">:\n  " ++ pprint fun
+  let args = caseRep opt [] (map varP (tvars dt))
+  fun <- funD nm [clause args (normalB exp) []]
 
   return (nm, [sig, fun])
   --return (nm, [])
@@ -269,12 +257,8 @@ mkRepFun mods opt dt ep = do
 -- | Make the instance for a representation type class
 mkRepInst :: RepOpt -> RepFunNames -> Name -> DT -> Q [Dec]
 mkRepInst opt funs g dt = do
-  let body =
-        caseRep opt
-          (mkAppliedFun (repFunName funs) (map (const 'rep) (tvars dt)))
-          (varE (funName opt funs))
+  let body = varE (funName opt funs)
   let dec = valD (varP (repN opt)) (normalB body) []
-  -- let dec = valD (varP (repN opt)) (normalB (varE (mkName "undefined"))) []
   let gvar = varT g
   let ctx = mkRepInstCxt opt gvar dt
   let typ = mkRepInstT opt dt gvar

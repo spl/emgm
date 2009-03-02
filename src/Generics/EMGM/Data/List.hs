@@ -16,11 +16,6 @@
 -- Portability :  non-portable
 --
 -- Summary: Generic representation and instances for lists.
---
--- The main purpose of this module is to export the instances for the
--- representation dispatchers 'Rep', 'FRep', 'FRep2', and 'FRep3'. For the rare
--- cases in which it is needed, this module also exports the
--- embedding-projection pair and constructor description.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM.Data.List (
@@ -50,7 +45,7 @@ toList :: Unit :+: (a :*: [a]) -> [a]
 toList (L Unit)        =  []
 toList (R (a :*: as))  =  a : as
 
--- | Embedding-projection pair for lists
+-- | Embedding-projection pair for lists.
 epList :: EP [a] (Unit :+: (a :*: [a]))
 epList = EP fromList toList
 
@@ -58,36 +53,43 @@ epList = EP fromList toList
 -- Representation values
 -----------------------------------------------------------------------------
 
--- | Constructor description for ''nil'': @[]@
+-- | Constructor description for ''nil'': @[]@.
 conNil :: ConDescr
 conNil = ConDescr "[]" 0 [] Nonfix
 
--- | Constructor description for ''cons'': @(:)@
+-- | Constructor description for ''cons'': @(:)@.
 conCons :: ConDescr
 conCons = ConDescr ":" 2 [] (Infixr 5)
 
--- | Representation for lists in 'Generic'
-repList :: (Generic g) => g a -> g [a]
-repList ra =
-  rtype epList
-    (rcon conNil runit `rsum` rcon conCons (ra `rprod` repList ra))
-
+-- | Representation of lists for 'frep'.
 frepList :: (Generic g) => g a -> g [a]
-frepList = repList
+frepList ra =
+  rtype
+    epList
+    (rcon conNil runit `rsum` rcon conCons (ra `rprod` frepList ra))
 
--- | Representation for lists in 'Generic2'
+-- | Representation of lists for 'rep'.
+repList :: (Generic g, Rep g a) => g [a]
+repList =
+  frepList rep
+
+-- | Representation of lists for 'frep2'.
 frep2List :: (Generic2 g) => g a b -> g [a] [b]
 frep2List ra =
-  rtype2 epList epList
+  rtype2
+    epList epList
     (rcon2 conNil runit2 `rsum2` rcon2 conCons (ra `rprod2` frep2List ra))
 
+-- | Representation of lists for 'bifrep2'.
 bifrep2List :: (Generic2 g) => g a b -> g [a] [b]
-bifrep2List = frep2List
+bifrep2List =
+  frep2List
 
--- | Representation for lists in 'Generic3'
+-- | Representation of lists for 'frep3'.
 frep3List :: (Generic3 g) => g a b c -> g [a] [b] [c]
 frep3List ra =
-  rtype3 epList epList epList
+  rtype3
+    epList epList epList
     (rcon3 conNil runit3 `rsum3` rcon3 conCons (ra `rprod3` frep3List ra))
 
 -----------------------------------------------------------------------------
@@ -95,10 +97,10 @@ frep3List ra =
 -----------------------------------------------------------------------------
 
 instance (Generic g, Rep g a) => Rep g [a] where
-  rep = repList rep
+  rep = repList
 
 instance (Generic g) => FRep g [] where
-  frep = repList
+  frep = frepList
 
 instance (Generic2 g) => FRep2 g [] where
   frep2 = frep2List

@@ -19,11 +19,6 @@
 -- Portability :  non-portable
 --
 -- Summary: Generic representation and instances for 'Bool'.
---
--- The main purpose of this module is to export the instances for the
--- representation dispatcher 'Rep'. For the rare cases in which it is needed,
--- this module also exports the embedding-projection pair and constructor
--- description.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM.Data.Bool (
@@ -61,7 +56,7 @@ toBool :: Unit :+: Unit -> Bool
 toBool (L Unit) = False
 toBool (R Unit) = True
 
--- | Embedding-projection pair for 'Bool'
+-- | Embedding-projection pair for 'Bool'.
 epBool :: EP Bool (Unit :+: Unit)
 epBool = EP fromBool toBool
 
@@ -69,24 +64,51 @@ epBool = EP fromBool toBool
 -- Representation values
 -----------------------------------------------------------------------------
 
--- | Constructor description for 'False'
+-- | Constructor description for 'False'.
 conFalse :: ConDescr
 conFalse = ConDescr "False" 0 [] Nonfix
 
--- | Constructor description for 'True'
+-- | Constructor description for 'True'.
 conTrue :: ConDescr
 conTrue = ConDescr "True" 0 [] Nonfix
 
--- | Representation for 'Bool' in 'Generic'
-rBool :: (Generic g) => g Bool
-rBool = rtype epBool (rcon conFalse runit `rsum` rcon conTrue runit)
+-- | Representation of 'Bool' for 'rep'.
+repBool :: (Generic g) => g Bool
+repBool =
+  rtype
+    epBool
+    (rcon conFalse runit `rsum` rcon conTrue runit)
+
+-- | Representation of 'Bool' for 'frep'.
+frepBool :: (Generic g) => g Bool
+frepBool =
+  repBool
+
+-- | Representation of 'Bool' for 'frep2'.
+frep2Bool :: (Generic2 g) => g Bool Bool
+frep2Bool =
+  rtype2
+    epBool epBool
+    (rcon2 conFalse runit2 `rsum2` rcon2 conTrue runit2)
+
+-- | Representation of 'Bool' for 'frep3'.
+frep3Bool :: (Generic3 g) => g Bool Bool Bool
+frep3Bool =
+  rtype3
+    epBool epBool epBool
+    (rcon3 conFalse runit3 `rsum3` rcon3 conTrue runit3)
+
+-- | Representation of 'Bool' for 'bifrep2'.
+bifrep2Bool :: (Generic2 g) => g Bool Bool
+bifrep2Bool =
+  frep2Bool
 
 -----------------------------------------------------------------------------
 -- Instance declarations
 -----------------------------------------------------------------------------
 
 instance (Generic g) => Rep g Bool where
-  rep = rBool
+  rep = repBool
 
 instance Rep (Collect Bool) Bool where
   rep = Collect (:[])
