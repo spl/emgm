@@ -216,19 +216,21 @@ declareEPBase mods dt = do
 
 deriveRepBase :: DT -> Name  -> Name  -> Q [Dec]
 deriveRepBase dt epName g = do
-  return [mkRepInst epName g dt]
+  repInstDec <- mkRepInst epName g dt
+  return [repInstDec]
 
 deriveFRepBase :: DT -> Name -> Name -> Name -> Q [Dec]
-deriveFRepBase dt epName g ra =
+deriveFRepBase dt epName g ra = do
+  frepInstDec <- mkFRepInst ra epName g dt
+  frep2InstDec <- mkFRep2Inst ra epName g dt
+  frep3InstDec <- mkFRep3Inst ra epName g dt
   return [frepInstDec, frep2InstDec, frep3InstDec]
   where
-    frepInstDec  = mkFRepInst  ra epName g dt
-    frep2InstDec = mkFRep2Inst ra epName g dt
-    frep3InstDec = mkFRep3Inst ra epName g dt
 
 deriveBiFRepBase :: DT -> Name -> Name -> Name -> Name -> Q [Dec]
-deriveBiFRepBase dt epName g ra rb =
-  return [mkBiFRep2Inst ra rb epName g dt]
+deriveBiFRepBase dt epName g ra rb = do
+  bifrep2InstDec <- mkBiFRep2Inst ra rb epName g dt
+  return [bifrep2InstDec]
 
 #endif
 
@@ -285,16 +287,13 @@ deriveWith mods typeName = do
   repInstDecs <- deriveRepBase dt epName g
 
   ra <- newName "ra"
-  frepInstDecs <- deriveFRepBase dt epName g ra
-
   rb <- newName "rb"
-  bifrepInstDecs <- deriveBiFRepBase dt epName g ra rb
 
-  let higherOrderRepInstDecs =
-        case length (tvars dt) of
-          1 -> frepInstDecs
-          2 -> bifrepInstDecs
-          _ -> []
+  higherOrderRepInstDecs <-
+    case length (tvars dt) of
+      1 -> deriveFRepBase dt epName g ra
+      2 -> deriveBiFRepBase dt epName g ra rb
+      _ -> return []
 
   collectInstDec <- mkRepCollectInst dt
   everywhereInstDec <- mkRepEverywhereInst dt

@@ -38,6 +38,8 @@ module Generics.EMGM.Common.Derive.Instance (
 -----------------------------------------------------------------------------
 
 import Data.List (nub)
+import Control.Monad (liftM)
+
 import Language.Haskell.TH
 
 import Generics.EMGM.Common.Base
@@ -106,65 +108,67 @@ repN      = repN'      . repNames
 
 -- Given a name for a constant type and the rep option, get an appropriate
 -- expression name.
-conTypeExpName :: Name -> RepOpt -> Name
-conTypeExpName typeName =
+conTypeExpName :: Name -> RepOpt -> Q Name
+conTypeExpName typeName opt = return $
   case nameBase typeName of
-    "Int"     -> rintN
-    "Integer" -> rintegerN
-    "Float"   -> rfloatN
-    "Double"  -> rdoubleN
-    "Char"    -> rcharN
+    "Int"     -> rintN opt
+    "Integer" -> rintegerN opt
+    "Float"   -> rfloatN opt
+    "Double"  -> rdoubleN opt
+    "Char"    -> rcharN opt
     n         -> error $ "Error! Unsupported constant type: " ++ n
 
-typeUnknownError :: Type -> a
-typeUnknownError t = error $ "Error! Unsupported type: " ++ pprint t
+typeUnknownError :: Int -> Type -> Q a
+typeUnknownError i t = do
+  report False $ "Error #" ++ show i ++ "! Unsupported type: " ++ show t
+  return undefined
 
 -- | When defining a representation with one type variable (e.g. 'frep',
 -- 'frep2', 'frep3'), find the expression that will represent the given 'Type'
 -- value.
 --
 -- Note that this may be changed to support a larger variety of types.
-var1Exp :: Name -> RepOpt -> Type -> Exp
+var1Exp :: Name -> RepOpt -> Type -> Q Exp
 var1Exp typeVarName opt = toExp
   where
-    toExp (AppT (ConT _) arg) = AppE (VarE (repN opt)) (toExp arg)
-    toExp (ConT typeName)     = VarE (conTypeExpName typeName opt)
-    toExp (VarT _)            = VarE typeVarName
-    toExp t                   = typeUnknownError t
+    toExp (AppT (ConT _) arg) = appE (varE (repN opt)) (toExp arg)
+    toExp (ConT typeName)     = conTypeExpName typeName opt >>= varE
+    toExp (VarT _)            = varE typeVarName
+    toExp t                   = typeUnknownError 33 t
 
 -- | When defining a representation with two type variables (e.g. 'bifrep2'),
 -- find the expression that will represent the given 'Type' value.
 --
 -- Note that this may be changed to support a larger variety of types.
-var2Exp :: Name -> Name -> RepOpt -> DT -> Type -> Exp
+var2Exp :: Name -> Name -> RepOpt -> DT -> Type -> Q Exp
 var2Exp name1 name2 opt dt = toExp
   where
     toExp (AppT (AppT (ConT _) arg1) arg2) = app2 arg1 arg2
-    toExp (ConT typeName)                  = VarE (conTypeExpName typeName opt)
-    toExp t@(VarT name) | name == tv1      = VarE name1
-                        | name == tv2      = VarE name2
-                        | otherwise        = typeUnknownError t
-    toExp t                                = typeUnknownError t
+    toExp (ConT typeName)                  = conTypeExpName typeName opt >>= varE
+    toExp t@(VarT name) | name == tv1      = varE name1
+                        | name == tv2      = varE name2
+                        | otherwise        = typeUnknownError 32 t
+    toExp t                                = typeUnknownError 31 t
     tv1:tv2:_ = tvars dt
-    app2 arg1 arg2 = AppE (AppE (VarE (repN opt)) (toExp arg1)) (toExp arg2)
+    app2 arg1 arg2 = appE (appE (varE (repN opt)) (toExp arg1)) (toExp arg2)
 
 -- | Produce the variable expression for the appropriate 'rep', 'frep', etc.
-varRepExp :: RepOpt -> DT -> Type -> Exp
+varRepExp :: RepOpt -> DT -> Type -> Q Exp
 varRepExp opt dt t =
   case opt of
-    OptRep                 -> VarE (repN opt)
+    OptRep                 -> varE (repN opt)
     OptFRep name           -> var1Exp name opt t
     OptFRep2 name          -> var1Exp name opt t
     OptFRep3 name          -> var1Exp name opt t
     OptBiFRep2 name1 name2 -> var2Exp name1 name2 opt dt t
 
 -- | Construct the lambda abstraction for the appropriate 'rep', 'frep', etc.
-repLamE :: RepOpt -> Exp -> Exp
+repLamE :: RepOpt -> Q Exp -> Q Exp
 repLamE OptRep                   = id
-repLamE (OptFRep name)           = LamE [VarP name]
-repLamE (OptFRep2 name)          = LamE [VarP name]
-repLamE (OptFRep3 name)          = LamE [VarP name]
-repLamE (OptBiFRep2 name1 name2) = LamE [VarP name1, VarP name2]
+repLamE (OptFRep name)           = lamE [varP name]
+repLamE (OptFRep2 name)          = lamE [varP name]
+repLamE (OptFRep3 name)          = lamE [varP name]
+repLamE (OptBiFRep2 name1 name2) = lamE [varP name1, varP name2]
 
 -- | Type constructor arity: The number of type variables to remove in an
 -- instance type.
@@ -176,7 +180,7 @@ typeArity (OptFRep3 _)     = 1
 typeArity (OptBiFRep2 _ _) = 2
 
 -- | Construct the expression for the appropriate 'rtype', 'rtype2', etc.
-rtypeE :: RepOpt -> Name -> Exp -> Exp
+rtypeE :: RepOpt -> Name -> Q Exp -> Q Exp
 rtypeE opt epName sopE =
   case opt of
     OptRep           -> appToSop ep1
@@ -185,9 +189,9 @@ rtypeE opt epName sopE =
     (OptFRep3 _)     -> appToSop ep3
     (OptBiFRep2 _ _) -> appToSop ep2
   where
-    appToEp e = AppE e (VarE epName)
-    appToSop eps = AppE eps sopE
-    ep1 = appToEp (VarE (rtypeN opt))
+    appToEp e = appE e (varE epName)
+    appToSop eps = appE eps sopE
+    ep1 = appToEp (varE (rtypeN opt))
     ep2 = appToEp ep1
     ep3 = appToEp ep2
 
@@ -195,46 +199,50 @@ rtypeE opt epName sopE =
 
 -- | Construct the sum-of-product expression for the appropriate 'rep', 'frep',
 -- 'frep2', etc.
-repSopE :: RepOpt -> DT -> Exp
-repSopE opt dt = mkSopDT inject unit mkSum mkProd wrapProd dt
+repSopE :: RepOpt -> DT -> Q Exp
+repSopE opt dt =
+  mkSopDT inject unit mkSum mkProd wrapProd dt
   where
-    mkSum = AppE . AppE (VarE $ rsumN opt)
-    mkProd = AppE . AppE (VarE $ rprodN opt)
-    unit = VarE $ runitN opt
     inject = varRepExp opt dt
-    wrapProd ncon = AppE (AppE (VarE (rconN opt)) (VarE (cdescr ncon)))
+    mkSum = appE . appE (varE (rsumN opt))
+    mkProd = appE . appE (varE (rprodN opt))
+    unit = varE (runitN opt)
+    wrapProd ncon = appE (appE (varE (rconN opt)) (varE (cdescr ncon)))
 
 -- | Make the declaration of the value for the rep instance
-mkRepD :: RepOpt -> Name -> DT -> Dec
-mkRepD opt epName dt = ValD (VarP (repN opt)) (NormalB (lamExp rtypeExp)) []
+mkRepD :: RepOpt -> Name -> DT -> Q Dec
+mkRepD opt epName dt = valD (varP (repN opt)) (normalB lamExp) []
   where
     sopExp = repSopE opt dt
     rtypeExp = rtypeE opt epName sopExp
-    lamExp = repLamE opt
+    lamExp = repLamE opt rtypeExp
 
 --------------------------------------------------------------------------------
 
-mkGenericT :: RepOpt -> Type -> Type
-mkGenericT opt = AppT (ConT (genericCN opt))
+mkGenericT :: RepOpt -> Q Type -> Q Type
+mkGenericT opt = appT (conT (genericCN opt))
 
-mkRepT :: RepOpt -> Type -> Type -> Type
-mkRepT opt funType = AppT (AppT (ConT (repCN opt)) funType)
+mkRepT :: RepOpt -> Q Type -> Q Type -> Q Type
+mkRepT opt funType = appT (appT (conT (repCN opt)) funType)
 
 -- | Make the rep instance context
-mkRepInstCxt :: RepOpt -> Type -> [NCon] -> Cxt
-mkRepInstCxt opt funType = insGeneric . checkRepOpt . addRepCxt
-  where
-    -- Build a list of the 'Rep' class constraints
-    addRepCxt = nub . toRepCxt . toConArgTypes
-    toConArgTypes = concatMap cargtypes
-    toRepCxt = map $ mkRepT opt funType
+mkRepInstCxt :: RepOpt -> Q Type -> [NCon] -> Q Cxt
+mkRepInstCxt opt funType ncs = do
 
-    -- Only allow the actual 'Rep' class constraints, not one of the 'FRep'
-    -- classes
-    checkRepOpt = if opt == OptRep then id else const []
+  -- Build a list of the 'Rep' class constraints
+  repConstraints <-
+    case opt of
+      OptRep -> do
+        let constrArgTypes = concatMap cargtypes ncs
+        liftM nub $ mapM (mkRepT opt funType . return) constrArgTypes
+      _ ->
+        return []
 
-    -- Insert the 'Generic' class constraint
-    insGeneric = (:) $ mkGenericT opt funType
+  -- Build the 'Generic' class constraint
+  genConstraint <- mkGenericT opt funType
+
+  -- Combine the 'Generic' and 'Rep' constraints
+  return (genConstraint : repConstraints)
 
 dropLast :: Int -> [a] -> [a]
 dropLast n xs = if len > n then take (len - n) xs else []
@@ -242,22 +250,22 @@ dropLast n xs = if len > n then take (len - n) xs else []
     len = length xs
 
 -- | Make a type as applied to its type variables (if any) from a DT
-mkAppliedType :: RepOpt -> DT -> Type
+mkAppliedType :: RepOpt -> DT -> Q Type
 mkAppliedType opt dt = appTypeCon varTypes
   where
-    appTypeCon = foldl AppT (ConT (tname dt)) . dropLast (typeArity opt)
-    varTypes = map VarT (tvars dt)
+    appTypeCon = foldl appT (conT (tname dt)) . dropLast (typeArity opt)
+    varTypes = map varT (tvars dt)
 
 -- | Make the rep instance type
-mkRepInstT :: RepOpt -> DT -> Type -> Type
+mkRepInstT :: RepOpt -> DT -> Q Type -> Q Type
 mkRepInstT opt dt funType = mkRepT opt funType (mkAppliedType opt dt)
 
 -- | Make the instance for a representation type class
-mkRepInstWith :: RepOpt -> Name -> Name -> DT -> Dec
-mkRepInstWith opt epName g dt = InstanceD cxt' typ [dec]
+mkRepInstWith :: RepOpt -> Name -> Name -> DT -> Q Dec
+mkRepInstWith opt epName g dt = instanceD ctx typ [dec]
   where
-    gVar = VarT g
-    cxt' = mkRepInstCxt opt gVar (ncons dt)
+    gVar = varT g
+    ctx = mkRepInstCxt opt gVar (ncons dt)
     typ = mkRepInstT opt dt gVar
     dec = mkRepD opt epName dt
 
@@ -265,33 +273,32 @@ mkRepInstWith opt epName g dt = InstanceD cxt' typ [dec]
 mkRepFunctionInst :: DT -> Name -> Q Exp -> Q Dec
 mkRepFunctionInst dt newtypeName repExpQ = do
   let t = mkAppliedType OptRep dt
-  let typ = mkRepInstT OptRep dt (AppT (ConT newtypeName) t)
-  e <- repExpQ
-  let dec = ValD (VarP 'rep) (NormalB e) []
-  return $ InstanceD [] typ [dec]
+  let typ = mkRepInstT OptRep dt (appT (conT newtypeName) t)
+  let dec = valD (varP 'rep) (normalB repExpQ) []
+  instanceD (return []) typ [dec]
 
 -----------------------------------------------------------------------------
 -- Exported Functions
 -----------------------------------------------------------------------------
 
 -- | Make the instance for 'Rep'
-mkRepInst :: Name -> Name -> DT -> Dec
+mkRepInst :: Name -> Name -> DT -> Q Dec
 mkRepInst = mkRepInstWith OptRep
 
 -- | Make the instance for 'FRep'
-mkFRepInst :: Name -> Name -> Name -> DT -> Dec
+mkFRepInst :: Name -> Name -> Name -> DT -> Q Dec
 mkFRepInst = mkRepInstWith . OptFRep
 
 -- | Make the instance for 'FRep2'
-mkFRep2Inst :: Name -> Name -> Name -> DT -> Dec
+mkFRep2Inst :: Name -> Name -> Name -> DT -> Q Dec
 mkFRep2Inst = mkRepInstWith . OptFRep2
 
 -- | Make the instance for 'FRep3'
-mkFRep3Inst :: Name -> Name -> Name -> DT -> Dec
+mkFRep3Inst :: Name -> Name -> Name -> DT -> Q Dec
 mkFRep3Inst = mkRepInstWith . OptFRep3
 
 -- | Make the instance for 'BiFRep2'
-mkBiFRep2Inst :: Name -> Name -> Name -> Name -> DT -> Dec
+mkBiFRep2Inst :: Name -> Name -> Name -> Name -> DT -> Q Dec
 mkBiFRep2Inst ra rb = mkRepInstWith (OptBiFRep2 ra rb)
 
 -- | Make the instance for a Rep Collect T (where T is the type)
