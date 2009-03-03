@@ -23,6 +23,28 @@
 -- 'derive' or 'deriveWith', or it can be done piecemeal using a number of other
 -- functions. For most needs, the automatic approach is fine. But if you find
 -- you need more control, use the manual deriving approach.
+--
+-- Naming conventions:
+--
+-- * @derive@ - Template Haskell function that generates instance declarations
+-- (and possibly also value declarations).
+--
+-- * @declare@ - Template Haskell function that generates only value
+-- declarations.
+--
+-- * @ep@ - Embedding-project pair.
+--
+-- * @con@ - Constructor description.
+--
+-- * @rep@ - Value representation meant for 'rep'.
+--
+-- * @frep@ - Value representation meant for 'frep'.
+--
+-- * @frep2@ - Value representation meant for 'frep2'.
+--
+-- * @frep3@ - Value representation meant for 'frep3'.
+--
+-- * @bifrep2@ - Value representation meant for 'bifrep2'.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM.Derive (

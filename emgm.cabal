@@ -28,8 +28,9 @@ description:
   were previously only available for lists.
   .
   Different generic functions work with different kinds of types as well. For
-  example, @collect@ works with any fully applied type while @bimap@ only works
-  with bifunctor types such as @Either@ or @(,)@ (pairs).
+  example, @collect@ ("Generics.EMGM.Functions.Collect") works with any fully
+  applied type while @bimap@ ("Generics.EMGM.Functions.Map") only works with
+  bifunctor types such as @Either@ or @(,)@ (pairs).
   .
   * /Support for standard and user-defined datatypes./
   .
@@ -38,7 +39,7 @@ description:
   Template Haskell functions provided in "Generics.EMGM.Derive", it is very
   simple to add support for using generic functions with your datatype
   .
-  For more information on EMGM, see the homepage:
+  For more information on EMGM, see
   <http://www.cs.uu.nl/wiki/GenericProgramming/EMGM>
 
 category:               Generics

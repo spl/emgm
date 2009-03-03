@@ -63,7 +63,7 @@ import Data.Generics (Data)
 --
 -- For datatypes to work with Everywhere, a special instance must be given. This
 -- instance is trivial to write. For a non-recursive type, the instance is the
--- same as described for 'Everywhere\''. For a recursive type @T@, the 'Rep'
+-- same as described for 'Everywhere''. For a recursive type @T@, the 'Rep'
 -- instance looks like this:
 --
 -- >   {-# LANGUAGE OverlappingInstances #-}
@@ -142,7 +142,6 @@ instance Rep (Everywhere Char) Char where
 -- @everywhere@ works by searching the datatype @b@ for values that are the same
 -- type as the function argument type @a@. Here are some examples using the
 -- datatype declared in the documentation for 'Everywhere'. 
-
 --
 -- @
 --   ghci> let f t = case t of { Val i -> Val (i+(1::'Int')); other -> other }
@@ -161,7 +160,7 @@ instance Rep (Everywhere Char) Char where
 -- @
 --
 -- Note the type annotations. Since numerical constants have the type @'Num' a
--- => a@, you may need to give explicit types. Also, the function @\x -> x@ has
+-- => a@, you may need to give explicit types. Also, the function @\\x -> x@ has
 -- type @a -> a@, but we need to give it some non-polymorphic type here. By
 -- design, there is no connection that can be inferred between the value type
 -- and the function type.
