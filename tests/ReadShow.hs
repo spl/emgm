@@ -1,6 +1,15 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  ReadShow
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module ReadShow (tests) where
 
 import Prelude hiding (Read, Show, readsPrec, reads, read, show)

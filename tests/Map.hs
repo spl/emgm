@@ -3,6 +3,15 @@
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# OPTIONS_GHC -fno-warn-orphans       #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Map
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Map (tests) where
 
 import Prelude hiding (map)

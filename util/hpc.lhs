@@ -2,6 +2,15 @@
 
 \begin{code}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Main
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Main (main) where
 
 import System.Cmd (system)

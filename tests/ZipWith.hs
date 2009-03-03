@@ -1,5 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  ZipWith
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module ZipWith (tests) where
 
 import Prelude hiding (zipWith, zip)

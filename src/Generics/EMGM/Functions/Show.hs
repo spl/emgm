@@ -8,7 +8,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Show
--- Copyright   :  (c) 2008 Universiteit Utrecht
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
 -- License     :  BSD3
 --
 -- Maintainer  :  generics@haskell.org

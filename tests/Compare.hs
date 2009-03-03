@@ -1,5 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Compare
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Compare where
 
 import Prelude hiding (Show, show, compare, min, max)

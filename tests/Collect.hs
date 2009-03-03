@@ -1,4 +1,13 @@
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Collect
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Collect (tests) where
 
 import Test.HUnit

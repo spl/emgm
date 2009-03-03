@@ -1,6 +1,15 @@
 {-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS -fno-warn-orphans #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Base
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Base where
 
 import Generics.EMGM

@@ -1,5 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Crush
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Crush (tests) where
 
 import Prelude as P

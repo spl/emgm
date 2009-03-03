@@ -7,6 +7,15 @@
 {-# LANGUAGE UndecidableInstances     #-}
 {-  OPTIONS -ddump-splices             -}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  TTree
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module TTree where
 
 import Prelude hiding (Read, Show)

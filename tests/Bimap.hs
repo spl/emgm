@@ -5,6 +5,15 @@
 {-# LANGUAGE Rank2Types                 #-}
 {-# OPTIONS_GHC -fno-warn-unused-binds  #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Bimap
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Bimap (tests) where
 
 import Test.HUnit ((~:))

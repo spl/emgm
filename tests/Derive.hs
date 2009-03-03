@@ -9,6 +9,15 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds  #-}
 {-  OPTIONS_GHC -ddump-splices           -}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Derive
+-- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- License     :  BSD3
+--
+-- Maintainer  :  generics@haskell.org
+-----------------------------------------------------------------------------
+
 module Derive (tests) where
 
 --------------------------------------------------------------------------------
