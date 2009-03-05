@@ -68,6 +68,9 @@ module Generics.EMGM.Derive (
   Modifier(..),
   Modifiers,
 
+  deriveMany,
+  deriveManyWith,
+
   deriveMono,
   deriveMonoWith,
 

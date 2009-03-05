@@ -22,6 +22,9 @@ module Generics.EMGM.Derive.Internal (
   Modifier(..),
   Modifiers,
 
+  deriveMany,
+  deriveManyWith,
+
   deriveMono,
   deriveMonoWith,
 
@@ -387,6 +390,20 @@ deriveWith = undefined
 
 derive :: Name -> Q [Dec]
 derive = deriveWith []
+
+--------------------------------------------------------------------------------
+
+-- | Same as 'deriveWith' for a list of type names. It may be necessary to use
+-- @deriveMany@ for a collection of mutually recursive datatypes.
+deriveManyWith :: Modifiers -> [Name] -> Q [Dec]
+deriveManyWith mods names = do
+  decLists <- mapM (deriveWith mods) names
+  return (concat decLists)
+
+-- | Same as 'derive' for a list of type names. It may be necessary to use
+-- @deriveMany@ for a collection of mutually recursive datatypes.
+deriveMany :: [Name] -> Q [Dec]
+deriveMany = deriveManyWith []
 
 --------------------------------------------------------------------------------
 
