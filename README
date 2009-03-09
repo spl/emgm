@@ -89,7 +89,7 @@ Examples
 You can find examples of using EMGM in the [`examples` directory] of the source
 distribution.
 
-[`examples` directory]: https://svn.cs.uu.nl:12443/viewvc/dgp-haskell/EMGM/examples/
+[`examples` directory]: https://svn.cs.uu.nl:12443/viewvc/dgp-haskell/EMGM/trunk/examples/
 
 
 Bugs & Support
