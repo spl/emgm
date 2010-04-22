@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP                    #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -23,8 +22,6 @@
 -- defining functions.
 --
 -- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
---
--- * "Generics.EMGM.Derive" - Generating the EMGM representation for a datatype.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM (
@@ -118,16 +115,6 @@ module Generics.EMGM (
   Generic(..),
   Generic2(..),
   Generic3(..),
-
-  -- ** Deriving Representation
-  --
-  -- | The necessary values and instances for using EMGM with a user-defined
-  -- datatype can be generated automatically using Template Haskell. By
-  -- necessity, there are a number of exported values for this process that are
-  -- unrelated to other uses of the EMGM library. In order to not export these
-  -- signatures more than necessary, you should import "Generics.EMGM.Derive"
-  -- for deriving the representation. Note that "Generics.EMGM" does not export
-  -- anything in "Generics.EMGM.Derive".
 
   -- * Generic Functions
   --

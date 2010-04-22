@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
@@ -31,7 +30,7 @@
 --
 -- @
 --   -- SYB
---   everywhere :: (forall a. 'Data' a => a -> a) -> forall a. 'Data' a => a -> a
+--   everywhere :: (forall a. Data a => a -> a) -> forall a. Data a => a -> a
 -- @
 --
 -- @
@@ -49,10 +48,6 @@ module Generics.EMGM.Functions.Everywhere (
 
 import Generics.EMGM.Common.Base
 import Generics.EMGM.Common.Representation
-
-#ifdef __HADDOCK__
-import Data.Generics (Data)
-#endif
 
 --------------------------------------------------------------------------------
 -- Types

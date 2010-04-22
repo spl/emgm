@@ -86,7 +86,9 @@ module Generics.EMGM.Data.Tuple (
 
 ) where
 
-import Generics.EMGM.Derive.Internal
+import Generics.EMGM.Common
+import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- 0: ()

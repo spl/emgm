@@ -1,10 +1,8 @@
-{-# LANGUAGE CPP                    #-}
-{-# LANGUAGE TemplateHaskell        #-}
 {-# LANGUAGE TypeOperators          #-}
 {-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE OverlappingInstances   #-}
-{-# LANGUAGE UndecidableInstances   #-}
 {-# OPTIONS -fno-warn-orphans       #-}
 {-  OPTIONS -ddump-splices           -}
 
@@ -32,15 +30,9 @@ module Generics.EMGM.Data.Bool (
   bifrep2Bool,
 ) where
 
-import Generics.EMGM.Derive.Internal
-
-#ifndef __HADDOCK__
-
-$(derive ''Bool)
-
-#else
--- The following code is used by Haddock to generate documentation. It may be
--- useful to keep around for debugging TH, so don't remove it.
+import Generics.EMGM.Common
+import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Everywhere
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -116,6 +108,4 @@ instance Rep (Everywhere Bool) Bool where
 
 instance Rep (Everywhere' Bool) Bool where
   rep = Everywhere' ($)
-
-#endif
 
