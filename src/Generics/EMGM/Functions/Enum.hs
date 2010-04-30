@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Enum
@@ -27,6 +24,11 @@
 -- @[0.0,-1.0,1.0,-2.0,..]@, thus skipping all non-integral values. Note that
 -- these may overflow, because they are unbounded.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 
 module Generics.EMGM.Functions.Enum (
   Enum(..),
@@ -116,16 +118,15 @@ rtypeEnum :: EP b a -> Enum a -> [b]
 rtypeEnum ep ra = map (to ep) $ selEnum ra
 
 instance Generic Enum where
-  rconstant      = error "Unreachable"
-  rint           = Enum intEnum
-  rinteger       = Enum numEnum
-  rfloat         = Enum numEnum
-  rdouble        = Enum numEnum
-  rchar          = Enum [minBound..maxBound]
-  runit          = Enum [Unit]
-  rsum     ra rb = Enum (rsumEnum ra rb)
-  rprod    ra rb = Enum (rprodEnum ra rb)
-  rtype ep ra    = Enum (rtypeEnum ep ra)
+  rint           = Enum $ intEnum
+  rinteger       = Enum $ numEnum
+  rfloat         = Enum $ numEnum
+  rdouble        = Enum $ numEnum
+  rchar          = Enum $ [minBound..maxBound]
+  runit          = Enum $ [Unit]
+  rsum     ra rb = Enum $ rsumEnum ra rb
+  rprod    ra rb = Enum $ rprodEnum ra rb
+  rtype ep ra    = Enum $ rtypeEnum ep ra
 
 -----------------------------------------------------------------------------
 -- Exported functions

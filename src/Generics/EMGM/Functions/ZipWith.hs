@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.ZipWith
@@ -35,6 +32,11 @@
 -- See also "Generics.EMGM.Functions.UnzipWith".
 -----------------------------------------------------------------------------
 
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+
 module Generics.EMGM.Functions.ZipWith (
   ZipWith(..),
   zipWith,
@@ -42,6 +44,7 @@ module Generics.EMGM.Functions.ZipWith (
 ) where
 
 import Prelude hiding (zipWith, zip)
+import Control.Monad (liftM)
 
 import Generics.EMGM.Base
 
@@ -57,11 +60,8 @@ newtype ZipWith a b c = ZipWith { selZipWith :: a -> b -> Maybe c }
 -- Generic3 instance declaration
 -----------------------------------------------------------------------------
 
-rconstantZipWith :: (Eq a) => a -> a -> Maybe a
-rconstantZipWith x y = if x == y then Just x else Nothing
-
-runitZipWith :: Unit -> Unit -> Maybe Unit
-runitZipWith _ _ = Just Unit
+check :: (Eq a) => a -> a -> Maybe a
+check x y = if x == y then Just x else Nothing
 
 rsumZipWith ::
   ZipWith a1 a2 a3
@@ -69,8 +69,8 @@ rsumZipWith ::
   -> a1 :+: b1
   -> a2 :+: b2
   -> Maybe (a3 :+: b3)
-rsumZipWith ra _  (L a1) (L a2) = selZipWith ra a1 a2 >>= return . L
-rsumZipWith _  rb (R b1) (R b2) = selZipWith rb b1 b2 >>= return . R
+rsumZipWith ra _  (L a1) (L a2) = liftM L $ selZipWith ra a1 a2
+rsumZipWith _  rb (R b1) (R b2) = liftM R $ selZipWith rb b1 b2
 rsumZipWith _  _  _      _      = Nothing
 
 rprodZipWith ::
@@ -93,18 +93,18 @@ rtypeZipWith ::
   -> b2
   -> Maybe b3
 rtypeZipWith ep1 ep2 ep3 ra b1 b2 =
-  selZipWith ra (from ep1 b1) (from ep2 b2) >>= return . to ep3
-
-rconZipWith :: ConDescr -> ZipWith a1 a2 a3 -> a1 -> a2 -> Maybe a3
-rconZipWith _ = selZipWith
+  liftM (to ep3) $ selZipWith ra (from ep1 b1) (from ep2 b2)
 
 instance Generic3 ZipWith where
-  rconstant3               = ZipWith rconstantZipWith
-  runit3                   = ZipWith runitZipWith
-  rsum3              ra rb = ZipWith (rsumZipWith ra rb)
-  rprod3             ra rb = ZipWith (rprodZipWith ra rb)
-  rcon3  cd          ra    = ZipWith (rconZipWith cd ra)
-  rtype3 ep1 ep2 ep3 ra    = ZipWith (rtypeZipWith ep1 ep2 ep3 ra)
+  rint3                    = ZipWith $ check
+  rinteger3                = ZipWith $ check
+  rfloat3                  = ZipWith $ check
+  rdouble3                 = ZipWith $ check
+  rchar3                   = ZipWith $ check
+  runit3                   = ZipWith $ check
+  rsum3              ra rb = ZipWith $ rsumZipWith ra rb
+  rprod3             ra rb = ZipWith $ rprodZipWith ra rb
+  rtype3 ep1 ep2 ep3 ra    = ZipWith $ rtypeZipWith ep1 ep2 ep3 ra
 
 -----------------------------------------------------------------------------
 -- Exported functions

@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Compare
@@ -26,6 +23,11 @@
 -- (Eq, Ord)@ is that you can write ad-hoc cases for certain datatypes while
 -- most of the functionality is handled generically.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 
 module Generics.EMGM.Functions.Compare (
 
@@ -73,9 +75,6 @@ newtype Compare a = Compare { selCompare :: a -> a -> Ordering }
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rconstantCompare :: (Ord a) => a -> a -> Ordering
-rconstantCompare = P.compare
-
 rsumCompare :: Compare a -> Compare b -> a :+: b -> a :+: b -> Ordering
 rsumCompare ra _  (L a1) (L a2) = {-EQ-} selCompare ra a1 a2
 rsumCompare _  rb (R b1) (R b2) = {-EQ-} selCompare rb b1 b2
@@ -88,18 +87,19 @@ rprodCompare ra rb (a1 :*: b1) (a2 :*: b2) =
     EQ    -> selCompare rb b1 b2
     other -> other
 
-rconCompare :: ConDescr -> Compare a -> a -> a -> Ordering
-rconCompare _ = selCompare
-
 rtypeCompare :: EP a b -> Compare b -> a -> a -> Ordering
 rtypeCompare ep rb a1 a2 = selCompare rb (from ep a1) (from ep a2)
 
 instance Generic Compare where
-  rconstant      = Compare rconstantCompare
-  rsum     ra rb = Compare (rsumCompare ra rb)
-  rprod    ra rb = Compare (rprodCompare ra rb)
-  rcon  cd ra    = Compare (rconCompare cd ra)
-  rtype ep ra    = Compare (rtypeCompare ep ra)
+  rint           = Compare $ P.compare
+  rinteger       = Compare $ P.compare
+  rfloat         = Compare $ P.compare
+  rdouble        = Compare $ P.compare
+  rchar          = Compare $ P.compare
+  runit          = Compare $ P.compare
+  rsum     ra rb = Compare $ rsumCompare ra rb
+  rprod    ra rb = Compare $ rprodCompare ra rb
+  rtype ep ra    = Compare $ rtypeCompare ep ra
 
 -----------------------------------------------------------------------------
 -- Exported functions

@@ -83,20 +83,7 @@ infixr 6 :*:
 
 data Unit
   = Unit -- ^ The only value of type @Unit@ (ignoring @_|_@).
-    deriving (Enum, Eq, Ord)
-
--- | The Read instance for Unit should always return a value and consume nothing
--- of the input, because there is no string representation for it. This allows
--- us to use 'readPrec' in the 'rconstant' method of the generic 'Read'
--- definition.
-instance Read Unit where
-  readsPrec _ s = [(Unit, s)]
-
--- | The Show instance for Unit should return an empty string, because there is
--- no representation for it. This allows us to use 'showsPrec' in the
--- 'rconstant' method of the generic 'Show' definition.
-instance Show Unit where
-  showsPrec _ _ = id
+    deriving (Enum, Eq, Ord, Show)
 
 -- | The \"sum\" encodes 2 constructor alternatives. An analogous standard
 -- Haskell type is @'Either' a b@.

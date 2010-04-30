@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Crush
@@ -33,6 +30,11 @@
 -- typically produce the expected values. See examples in the comments for
 -- 'flattenr' and 'firstr'.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 
 module Generics.EMGM.Functions.Crush (
 
@@ -95,9 +97,6 @@ newtype Crush b a = Crush { selCrush :: Assoc -> a -> b -> b }
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rconstantCrush :: Assoc -> a -> b -> b
-rconstantCrush _ _ = id
-
 rsumCrush :: Crush d a -> Crush d b -> Assoc -> a :+: b -> d -> d
 rsumCrush ra _  asc (L a) = selCrush ra asc a
 rsumCrush _  rb asc (R b) = selCrush rb asc b
@@ -106,18 +105,19 @@ rprodCrush :: Crush d a -> Crush d b -> Assoc -> a :*: b -> d -> d
 rprodCrush ra rb asc@AssocLeft  (a :*: b) = selCrush rb asc b . selCrush ra asc a
 rprodCrush ra rb asc@AssocRight (a :*: b) = selCrush ra asc a . selCrush rb asc b
 
-rconCrush :: ConDescr -> Crush d a -> Assoc -> a -> d -> d
-rconCrush _ = selCrush
-
 rtypeCrush :: EP b a -> Crush d a -> Assoc -> b -> d -> d
 rtypeCrush ep ra asc = selCrush ra asc . from ep
 
 instance Generic (Crush b) where
-  rconstant      = Crush rconstantCrush
-  rsum     ra rb = Crush (rsumCrush ra rb)
-  rprod    ra rb = Crush (rprodCrush ra rb)
-  rcon  cd ra    = Crush (rconCrush cd ra)
-  rtype ep ra    = Crush (rtypeCrush ep ra)
+  rint           = Crush $ \_ _ -> id
+  rinteger       = Crush $ \_ _ -> id
+  rfloat         = Crush $ \_ _ -> id
+  rdouble        = Crush $ \_ _ -> id
+  rchar          = Crush $ \_ _ -> id
+  runit          = Crush $ \_ _ -> id
+  rsum     ra rb = Crush $ rsumCrush ra rb
+  rprod    ra rb = Crush $ rprodCrush ra rb
+  rtype ep ra    = Crush $ rtypeCrush ep ra
 
 -----------------------------------------------------------------------------
 -- Exported functions

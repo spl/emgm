@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.UnzipWith
@@ -22,6 +19,11 @@
 --
 -- See also "Generics.EMGM.Functions.ZipWith".
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 
 module Generics.EMGM.Functions.UnzipWith (
   UnzipWith(..),
@@ -45,11 +47,8 @@ newtype UnzipWith a b c = UnzipWith { selUnzipWith :: a -> (b, c) }
 -- Generic3 instance declaration
 -----------------------------------------------------------------------------
 
-rconstantUnzipWith :: a -> (a, a)
-rconstantUnzipWith x = (x, x)
-
-runitUnzipWith :: Unit -> (Unit, Unit)
-runitUnzipWith _ = (Unit, Unit)
+pair :: a -> (a, a)
+pair x = (x, x)
 
 rsumUnzipWith ::
      UnzipWith a1 a2 a3
@@ -80,16 +79,16 @@ rtypeUnzipWith ::
 rtypeUnzipWith ep1 ep2 ep3 ra b1 = let (a2, a3) = selUnzipWith ra (from ep1 b1) 
                                    in (to ep2 a2, to ep3 a3)
 
-rconUnzipWith :: ConDescr -> UnzipWith a1 a2 a3 -> a1 -> (a2, a3)
-rconUnzipWith _ = selUnzipWith
-
 instance Generic3 UnzipWith where
-  rconstant3               = UnzipWith rconstantUnzipWith
-  runit3                   = UnzipWith runitUnzipWith
-  rsum3              ra rb = UnzipWith (rsumUnzipWith ra rb)
-  rprod3             ra rb = UnzipWith (rprodUnzipWith ra rb)
-  rcon3  cd          ra    = UnzipWith (rconUnzipWith cd ra)
-  rtype3 ep1 ep2 ep3 ra    = UnzipWith (rtypeUnzipWith ep1 ep2 ep3 ra)
+  rint3                    = UnzipWith $ pair
+  rinteger3                = UnzipWith $ pair
+  rfloat3                  = UnzipWith $ pair
+  rdouble3                 = UnzipWith $ pair
+  rchar3                   = UnzipWith $ pair
+  runit3                   = UnzipWith $ pair
+  rsum3              ra rb = UnzipWith $ rsumUnzipWith ra rb
+  rprod3             ra rb = UnzipWith $ rprodUnzipWith ra rb
+  rtype3 ep1 ep2 ep3 ra    = UnzipWith $ rtypeUnzipWith ep1 ep2 ep3 ra
 
 -----------------------------------------------------------------------------
 -- Exported functions

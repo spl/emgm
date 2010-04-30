@@ -236,8 +236,6 @@ module Generics.EMGM (
 
   map,
 
-  replace,
-
   bimap,
 
   cast,

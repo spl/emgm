@@ -1,9 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-{-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE OverlappingInstances       #-}
-
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Everywhere
@@ -38,6 +32,14 @@
 --   everywhere :: (Rep (Everywhere a) b) => (a -> a) -> b -> b
 -- @
 --------------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverlappingInstances       #-}
 
 module Generics.EMGM.Functions.Everywhere (
   Everywhere(..),
@@ -87,9 +89,6 @@ newtype Everywhere a b = Everywhere { selEverywhere :: (a -> a) -> b -> b }
 -- Generic instance declaration
 --------------------------------------------------------------------------------
 
-rconstantEverywhere :: (a -> a) -> b -> b
-rconstantEverywhere _ = id
-
 rsumEverywhere :: Everywhere a b1 -> Everywhere a b2 -> (a -> a) -> (b1 :+: b2) -> b1 :+: b2
 rsumEverywhere ra _  f (L a) = L (selEverywhere ra f a)
 rsumEverywhere _  rb f (R b) = R (selEverywhere rb f b)
@@ -101,10 +100,15 @@ rtypeEverywhere :: EP d b -> Everywhere a b -> (a -> a) -> d -> d
 rtypeEverywhere ep ra f = to ep . selEverywhere ra f . from ep
 
 instance Generic (Everywhere a) where
-  rconstant      = Everywhere rconstantEverywhere
-  rsum     ra rb = Everywhere (rsumEverywhere ra rb)
-  rprod    ra rb = Everywhere (rprodEverywhere ra rb)
-  rtype ep ra    = Everywhere (rtypeEverywhere ep ra)
+  rint           = Everywhere $ const id
+  rinteger       = Everywhere $ const id
+  rfloat         = Everywhere $ const id
+  rdouble        = Everywhere $ const id
+  rchar          = Everywhere $ const id
+  runit          = Everywhere $ const id
+  rsum     ra rb = Everywhere $ rsumEverywhere ra rb
+  rprod    ra rb = Everywhere $ rprodEverywhere ra rb
+  rtype ep ra    = Everywhere $ rtypeEverywhere ep ra
 
 --------------------------------------------------------------------------------
 -- Rep instance declarations
@@ -195,9 +199,6 @@ newtype Everywhere' a b = Everywhere' { selEverywhere' :: (a -> a) -> b -> b }
 -- Generic instance declaration
 --------------------------------------------------------------------------------
 
-rconstantEverywhere' :: (a -> a) -> b -> b
-rconstantEverywhere' _ = id
-
 rsumEverywhere' :: Everywhere' a b1 -> Everywhere' a b2 -> (a -> a) -> (b1 :+: b2) -> b1 :+: b2
 rsumEverywhere' ra _  f (L a) = L (selEverywhere' ra f a)
 rsumEverywhere' _  rb f (R b) = R (selEverywhere' rb f b)
@@ -209,10 +210,15 @@ rtypeEverywhere' :: EP d b -> Everywhere' a b -> (a -> a) -> d -> d
 rtypeEverywhere' ep ra f = to ep . selEverywhere' ra f . from ep
 
 instance Generic (Everywhere' a) where
-  rconstant      = Everywhere' rconstantEverywhere'
-  rsum     ra rb = Everywhere' (rsumEverywhere' ra rb)
-  rprod    ra rb = Everywhere' (rprodEverywhere' ra rb)
-  rtype ep ra    = Everywhere' (rtypeEverywhere' ep ra)
+  rint           = Everywhere' $ const id
+  rinteger       = Everywhere' $ const id
+  rfloat         = Everywhere' $ const id
+  rdouble        = Everywhere' $ const id
+  rchar          = Everywhere' $ const id
+  runit          = Everywhere' $ const id
+  rsum     ra rb = Everywhere' $ rsumEverywhere' ra rb
+  rprod    ra rb = Everywhere' $ rprodEverywhere' ra rb
+  rtype ep ra    = Everywhere' $ rtypeEverywhere' ep ra
 
 --------------------------------------------------------------------------------
 -- Rep instance declarations

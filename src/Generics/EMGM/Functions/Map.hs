@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Map
@@ -22,10 +19,14 @@
 -- type into a value of another using instances provided by the programmer.
 -----------------------------------------------------------------------------
 
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+
 module Generics.EMGM.Functions.Map (
   Map(..),
   map,
-  replace,
   bimap,
   cast,
 ) where
@@ -46,9 +47,6 @@ newtype Map a b = Map { selMap :: a -> b }
 -- Generic2 instance declaration
 -----------------------------------------------------------------------------
 
-rconstantMap :: a -> a
-rconstantMap = id
-
 rsumMap :: Map a1 a2 -> Map b1 b2 -> a1 :+: b1 -> a2 :+: b2
 rsumMap ra _  (L a) = L (selMap ra a)
 rsumMap _  rb (R b) = R (selMap rb b)
@@ -60,10 +58,15 @@ rtypeMap :: EP b r -> EP d a -> Map r a -> b -> d
 rtypeMap ep1 ep2 ra = to ep2 . selMap ra . from ep1
 
 instance Generic2 Map where
-  rconstant2           = Map rconstantMap
-  rsum2          ra rb = Map (rsumMap ra rb)
-  rprod2         ra rb = Map (rprodMap ra rb)
-  rtype2 ep1 ep2 ra    = Map (rtypeMap ep1 ep2 ra)
+  rint2                = Map $ id
+  rinteger2            = Map $ id
+  rfloat2              = Map $ id
+  rdouble2             = Map $ id
+  rchar2               = Map $ id
+  runit2               = Map $ id
+  rsum2          ra rb = Map $ rsumMap ra rb
+  rprod2         ra rb = Map $ rprodMap ra rb
+  rtype2 ep1 ep2 ra    = Map $ rtypeMap ep1 ep2 ra
 
 -----------------------------------------------------------------------------
 -- Exported functions
@@ -72,11 +75,6 @@ instance Generic2 Map where
 -- | Apply a function to all elements of a container datatype (kind @* -> *@).
 map :: (FRep2 Map f) => (a -> b) -> f a -> f b
 map = selMap . frep2 . Map
-
--- | Replace all @a@-values in @as@ with @b@. This is a convenience function for
--- the implementation @'map' ('const' b) as@.
-replace :: (FRep2 Map f) => f a -> b -> f b
-replace as b = map (const b) as
 
 -- | Given a datatype @F a b@, @bimap f g@ applies the function @f :: a -> c@ to
 -- every @a@-element and the function @g :: b -> d@ to every @b@-element. The

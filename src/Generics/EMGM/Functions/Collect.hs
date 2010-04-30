@@ -1,9 +1,3 @@
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE FlexibleContexts           #-}
-{-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE OverlappingInstances       #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Collect
@@ -18,6 +12,14 @@
 -- generic value.
 --
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverlappingInstances       #-}
 
 module Generics.EMGM.Functions.Collect (
   Collect(..),
@@ -54,9 +56,6 @@ newtype Collect b a = Collect { selCollect :: a -> [b] }
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rconstantCollect :: a -> [b]
-rconstantCollect _ = []
-
 rsumCollect :: Collect c a -> Collect c b -> a :+: b -> [c]
 rsumCollect ra _  (L a) = selCollect ra a
 rsumCollect _  rb (R b) = selCollect rb b
@@ -67,15 +66,16 @@ rprodCollect ra rb (a :*: b) = selCollect ra a ++ selCollect rb b
 rtypeCollect :: EP b a -> Collect c a -> b -> [c]
 rtypeCollect ep ra b = selCollect ra (from ep b)
 
-rconCollect :: ConDescr -> Collect c a -> a -> [c]
-rconCollect _ = selCollect
-
 instance Generic (Collect b) where
-  rconstant      = Collect rconstantCollect
-  rsum     ra rb = Collect (rsumCollect ra rb)
-  rprod    ra rb = Collect (rprodCollect ra rb)
-  rcon  cd ra    = Collect (rconCollect cd ra)
-  rtype ep ra    = Collect (rtypeCollect ep ra)
+  rint           = Collect $ const []
+  rinteger       = Collect $ const []
+  rfloat         = Collect $ const []
+  rdouble        = Collect $ const []
+  rchar          = Collect $ const []
+  runit          = Collect $ const []
+  rsum     ra rb = Collect $ rsumCollect ra rb
+  rprod    ra rb = Collect $ rprodCollect ra rb
+  rtype ep ra    = Collect $ rtypeCollect ep ra
 
 -----------------------------------------------------------------------------
 -- Rep instance declarations
