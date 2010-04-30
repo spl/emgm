@@ -25,7 +25,6 @@ module Generics.EMGM.Functions.Collect (
 ) where
 
 import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Representation
 
 -----------------------------------------------------------------------------
 -- Types

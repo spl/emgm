@@ -30,7 +30,7 @@ module Generics.EMGM.Data.Maybe (
   bifrep2Maybe,
 ) where
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
 

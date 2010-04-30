@@ -47,7 +47,6 @@ module Generics.EMGM.Functions.Everywhere (
 ) where
 
 import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Representation
 
 --------------------------------------------------------------------------------
 -- Types

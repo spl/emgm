@@ -30,7 +30,7 @@ module Generics.EMGM.Data.Either (
   bifrep2Either,
 ) where
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
 

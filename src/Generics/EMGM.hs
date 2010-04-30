@@ -302,7 +302,7 @@ module Generics.EMGM (
 
 import qualified Prelude
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 import Generics.EMGM.Functions
 
 -- Export the instances from these

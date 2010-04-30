@@ -13,15 +13,5 @@
 
 module Generics.EMGM.Common (
 
-  module Generics.EMGM.Common.Representation,
-  module Generics.EMGM.Common.Base,
-  module Generics.EMGM.Common.Base2,
-  module Generics.EMGM.Common.Base3,
-
 ) where
-
-import Generics.EMGM.Common.Representation
-import Generics.EMGM.Common.Base
-import Generics.EMGM.Common.Base2
-import Generics.EMGM.Common.Base3
 

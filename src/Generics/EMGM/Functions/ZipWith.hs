@@ -43,7 +43,7 @@ module Generics.EMGM.Functions.ZipWith (
 
 import Prelude hiding (zipWith, zip)
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 
 -----------------------------------------------------------------------------
 -- Types

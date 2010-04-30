@@ -31,7 +31,7 @@ module Generics.EMGM.Functions.UnzipWith (
 
 import Prelude hiding (unzip)
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 
 -----------------------------------------------------------------------------
 -- Types

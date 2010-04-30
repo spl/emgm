@@ -32,7 +32,7 @@ module Generics.EMGM.Functions.Map (
 
 import Prelude hiding (map)
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 
 -----------------------------------------------------------------------------
 -- Types
@@ -115,7 +115,7 @@ bimap f g = selMap (bifrep2 (Map f) (Map g))
 -- @
 --
 -- There are no pre-defined instances, and a call to @cast@ will not compile if
--- no instances for the input and output type pair is found, so you must define
+-- no instances for the input and output type pair are found, so you must define
 -- instances in order to use @cast@.
 cast :: (Rep (Map a) b) => a -> b
 cast = selMap rep

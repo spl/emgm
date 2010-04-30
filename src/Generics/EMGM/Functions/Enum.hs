@@ -39,7 +39,7 @@ import Prelude hiding (Enum)
 import qualified Prelude as P (Enum)
 import Data.List (genericTake)
 
-import Generics.EMGM.Common
+import Generics.EMGM.Common.Base
 
 -----------------------------------------------------------------------------
 -- Types

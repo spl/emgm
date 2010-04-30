@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators         #-}
@@ -15,54 +16,56 @@
 --
 -- Summary: Type classes used for generic functions with /one/ generic argument.
 --
--- Generic functions using one generic argument are defined as instances of
--- 'Generic'. This class contains all of the methods (called \"type cases\" in
--- datatype-generic language) used to define the run-time type representation of
--- a datatype.
+-- A /generic function/ is defined as an instance of 'Generic', 'Generic2', or
+-- 'Generic3'. Each method in the class serves for a case in the datatype
+-- representation
 --
--- To simplify generic functions, we use type classes for representation
--- dispatching. There are \"dispatchers\" for each category of function (see
--- below) and each category has one \"Rep\" class.
+-- A /representation dispatcher/ simplifies the use of a generic function. There
+-- must be an instance of each of the classes 'Rep', 'FRep', 'FRep2', etc. (that
+-- apply) for every datatype.
+-----------------------------------------------------------------------------
+
+module Generics.EMGM.Common.Base (
+
+  module Generics.EMGM.Common.Representation,
+
+  -- * Classes for Generic Functions
+
+  Generic(..),
+  Generic2(..),
+  Generic3(..),
+
+  -- * Classes for Representation Dispatchers
+
+  Rep(..),
+  FRep(..),
+  FRep2(..),
+  BiFRep2(..),
+  FRep3(..),
+
+) where
+
+import Generics.EMGM.Common.Representation
+
+-- | This class forms the foundation for defining generic functions with a
+-- single generic argument. Each method represents a type case. There are
+-- cases for primitive types, structural representation, and for user-defined
+-- datatypes ('rtype').
 --
--- Some 'Generic'-based functions operate on monomorphic values (using 'Rep').
--- The functions included with the library are:
+-- The functions included with EMGM that use 'Generic' are:
 --
 -- * "Generics.EMGM.Functions.Collect"
 --
 -- * "Generics.EMGM.Functions.Compare"
+--
+-- * "Generics.EMGM.Functions.Crush"
 --
 -- * "Generics.EMGM.Functions.Enum"
 --
 -- * "Generics.EMGM.Functions.Read"
 --
 -- * "Generics.EMGM.Functions.Show"
---
--- Other 'Generic'-based functions operate on types of the form @f a@ (using
--- 'FRep') where @f@ is the actual generic argument (the one that needs a
--- run-time representation). The functions included with the library are:
---
--- * "Generics.EMGM.Functions.Crush"
------------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Base (
-
-  -- * Generic function class
-  Generic(..),
-
-  -- * Representation dispatcher classes
-  Rep(..),
-  FRep(..),
-) where
-
-import Generics.EMGM.Common.Representation
-
-infixr 5 `rsum`
-infixr 6 `rprod`
-
--- | This class forms the foundation for defining generic functions with a
--- single generic argument. Each method represents a type case. The class
--- includes cases for primitive types, cases for the structural representation,
--- and the 'rtype' case for adding support for new datatypes.
 class Generic g where
 
   -- | Many functions perform the same operation on the non-structural cases (as
@@ -135,9 +138,91 @@ class Generic g where
 
   rcon     = const id
 
--- | The 'Generic' representation dispatcher for monomorphic types (kind @*@).
--- Every structure type and supported datatype should have an instance of
--- 'Rep'. (No default implementation.)
+infixr 5 `rsum`
+infixr 6 `rprod`
+
+-- | This class forms the foundation for defining generic functions with two
+-- generic arguments. See 'Generic' for details.
+--
+-- The functions included with EMGM that use 'Generic2' are:
+--
+-- * "Generics.EMGM.Functions.Map"
+
+class Generic2 g where
+
+  rconstant2 :: (Enum a, Eq a, Ord a, Read a, Show a) => g a a
+  rint2      :: g Int Int
+  rinteger2  :: g Integer Integer
+  rfloat2    :: g Float Float
+  rdouble2   :: g Double Double
+  rchar2     :: g Char Char
+  runit2     :: g Unit Unit
+  rsum2      :: g a1 a2 -> g b1 b2 -> g (a1 :+: b1) (a2 :+: b2)
+  rprod2     :: g a1 a2 -> g b1 b2 -> g (a1 :*: b1) (a2 :*: b2)
+  rcon2      :: ConDescr -> g a1 a2 -> g a1 a2
+
+  -- | See 'rtype'. This case is the primary difference that separates
+  -- 'Generic2' from 'Generic'. Since we have two generic type parameters, we
+  -- need to have two 'EP' values. Each translates between the Haskell type and
+  -- its generic representation.
+  rtype2     :: EP a2 a1 -> EP b2 b1 -> g a1 b1 -> g a2 b2
+
+  rint2      = rconstant2
+  rinteger2  = rconstant2
+  rfloat2    = rconstant2
+  rdouble2   = rconstant2
+  rchar2     = rconstant2
+  runit2     = rconstant2
+
+  rcon2      = const id
+
+infixr 5 `rsum2`
+infixr 6 `rprod2`
+
+-- | This class forms the foundation for defining generic functions with three
+-- generic arguments. See 'Generic' for details.
+--
+-- The functions included with EMGM that use 'Generic3' are:
+--
+-- * "Generics.EMGM.Functions.UnzipWith"
+--
+-- * "Generics.EMGM.Functions.ZipWith"
+
+class Generic3 g where
+
+  rconstant3 :: (Enum a, Eq a, Ord a, Read a, Show a) => g a a a
+  rint3      :: g Int Int Int
+  rinteger3  :: g Integer Integer Integer
+  rfloat3    :: g Float Float Float
+  rdouble3   :: g Double Double Double
+  rchar3     :: g Char Char Char
+  runit3     :: g Unit Unit Unit
+  rsum3      :: g a1 a2 a3 -> g b1 b2 b3 -> g (a1 :+: b1) (a2 :+: b2) (a3 :+: b3)
+  rprod3     :: g a1 a2 a3 -> g b1 b2 b3 -> g (a1 :*: b1) (a2 :*: b2) (a3 :*: b3)
+  rcon3      :: ConDescr -> g a1 a2 a3 -> g a1 a2 a3
+
+  -- | See 'rtype'. This case is the primary difference that separates
+  -- 'Generic3' from 'Generic'. Since we have three generic type parameters, we
+  -- need three 'EP' values. Each translates between the Haskell type and its
+  -- generic representation.
+  rtype3     :: EP a2 a1 -> EP b2 b1 -> EP c2 c1 -> g a1 b1 c1 -> g a2 b2 c2
+
+  rint3      = rconstant3
+  rinteger3  = rconstant3
+  rfloat3    = rconstant3
+  rdouble3   = rconstant3
+  rchar3     = rconstant3
+  runit3     = rconstant3
+
+  rcon3      = const id
+
+infixr 5 `rsum3`
+infixr 6 `rprod3`
+
+-- | Representation dispatcher for monomorphic types (kind @*@) used with
+-- 'Generic'. Every structure type and supported datatype should have an
+-- instance of 'Rep'.
+
 class Rep g a where
   rep :: g a
 
@@ -165,8 +250,27 @@ instance (Generic g, Rep g a, Rep g b) => Rep g (a :+: b) where
 instance (Generic g, Rep g a, Rep g b) => Rep g (a :*: b) where
   rep = rprod rep rep
 
--- | The 'Generic' representation dispatcher for functor types (kind @* -> *@),
--- sometimes called container types. (No default implementation.)
+-- | Representation dispatcher for functor types (kind @* -> *@) used with
+-- 'Generic'.
+
 class FRep g f where
   frep :: g a -> g (f a)
+
+-- | Representation dispatcher for functor types (kind @* -> *@) used with
+-- 'Generic2'.
+
+class FRep2 g f where
+  frep2 :: g a b -> g (f a) (f b)
+
+-- | Representation dispatcher for bifunctor types (kind @* -> *@) used with
+-- 'Generic2'.
+
+class BiFRep2 g f where
+  bifrep2 :: g a1 b1 -> g a2 b2 -> g (f a1 a2) (f b1 b2)
+
+-- | Representation dispatcher for functor types (kind @* -> *@) used with
+-- 'Generic3'.
+
+class FRep3 g f where
+  frep3 :: g a b c -> g (f a) (f b) (f c)
 
