@@ -18,15 +18,14 @@
 -- For more in-depth documentation, refer to one of the modules in these
 -- hierarchies:
 --
--- * "Generics.EMGM.Common" - Common infrastructure for supporting datatypes and
--- defining functions.
+-- * "Generics.EMGM.Base"
 --
 -- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
 -----------------------------------------------------------------------------
 
 module Generics.EMGM (
 
-  -- * Common Infrastructure
+  -- * Foundation
   --
   -- | This is the collection of types, classes, and functions used to define
   -- generic functions and to build representations for datatypes.
@@ -302,7 +301,7 @@ module Generics.EMGM (
 
 import qualified Prelude
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 import Generics.EMGM.Functions
 
 -- Export the instances from these

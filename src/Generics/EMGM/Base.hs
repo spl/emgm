@@ -6,7 +6,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Base
+-- Module      :  Generics.EMGM.Base
 -- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -25,9 +25,9 @@
 -- apply) for every datatype.
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Base (
+module Generics.EMGM.Base (
 
-  module Generics.EMGM.Common.Representation,
+  module Generics.EMGM.Representation,
 
   -- * Classes for Generic Functions
 
@@ -45,7 +45,7 @@ module Generics.EMGM.Common.Base (
 
 ) where
 
-import Generics.EMGM.Common.Representation
+import Generics.EMGM.Representation
 
 -- | This class forms the foundation for defining generic functions with a
 -- single generic argument. Each method represents a type case. There are

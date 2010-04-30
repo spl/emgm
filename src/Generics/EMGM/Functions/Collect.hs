@@ -24,7 +24,7 @@ module Generics.EMGM.Functions.Collect (
   collect,
 ) where
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
 -- Types

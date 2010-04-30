@@ -46,7 +46,7 @@ module Generics.EMGM.Functions.Everywhere (
   everywhere',
 ) where
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 --------------------------------------------------------------------------------
 -- Types

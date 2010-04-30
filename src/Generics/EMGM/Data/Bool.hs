@@ -30,7 +30,7 @@ module Generics.EMGM.Data.Bool (
   bifrep2Bool,
 ) where
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
 

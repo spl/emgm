@@ -59,7 +59,7 @@ module Generics.EMGM.Functions.Compare (
 import Prelude hiding (compare, min, max)
 import qualified Prelude as P (compare)
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
 -- Types

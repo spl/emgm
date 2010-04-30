@@ -2,7 +2,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Generics.EMGM.Common.Representation
+-- Module      :  Generics.EMGM.Representation
 -- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
 -- License     :  BSD3
 --
@@ -29,7 +29,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Generics.EMGM.Common.Representation (
+module Generics.EMGM.Representation (
 
   -- * Structure Representation
   --

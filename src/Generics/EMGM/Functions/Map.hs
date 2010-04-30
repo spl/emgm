@@ -32,7 +32,7 @@ module Generics.EMGM.Functions.Map (
 
 import Prelude hiding (map)
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
 -- Types

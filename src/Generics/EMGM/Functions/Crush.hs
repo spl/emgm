@@ -76,7 +76,7 @@ module Generics.EMGM.Functions.Crush (
 
 import Prelude hiding (and, or, any, all, elem, notElem, sum, product, max, min, maximum, minimum)
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 import Generics.EMGM.Functions.Compare
 
 -----------------------------------------------------------------------------

@@ -29,7 +29,7 @@ module Generics.EMGM.Data.List (
   bifrep2List,
 ) where
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
 

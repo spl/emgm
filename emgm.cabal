@@ -102,12 +102,9 @@ Library
 
   exposed-modules:      Generics.EMGM
 
-                        -- Common foundation
-                        Generics.EMGM.Common
-                        Generics.EMGM.Common.Representation
-                        Generics.EMGM.Common.Base
-                        Generics.EMGM.Common.Base2
-                        Generics.EMGM.Common.Base3
+                        -- Foundation
+                        Generics.EMGM.Representation
+                        Generics.EMGM.Base
 
                         -- Generic functions
                         Generics.EMGM.Functions

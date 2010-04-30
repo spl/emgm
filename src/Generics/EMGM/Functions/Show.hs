@@ -45,7 +45,7 @@ import qualified Prelude as P (Show, showsPrec, show)
 
 import qualified GHC.Show as GHC (showList__)
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
 -- Types

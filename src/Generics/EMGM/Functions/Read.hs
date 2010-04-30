@@ -59,7 +59,7 @@ import Text.Read.Lex (hsLex)
 
 import qualified GHC.Read as GHC (list)
 
-import Generics.EMGM.Common.Base
+import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
 -- Types
