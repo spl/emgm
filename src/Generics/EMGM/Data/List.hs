@@ -69,9 +69,11 @@ frepList ra =
     (rcon conNil runit `rsum` rcon conCons (ra `rprod` frepList ra))
 
 -- | Representation of lists for 'rep'.
-repList :: (Generic g, Rep g a) => g [a]
+repList :: (Generic g, Rep g a, Rep g [a]) => g [a]
 repList =
-  frepList rep
+  rtype
+    epList
+    (rcon conNil runit `rsum` rcon conCons (rep `rprod` rep))
 
 -- | Representation of lists for 'frep2'.
 frep2List :: (Generic2 g) => g a b -> g [a] [b]

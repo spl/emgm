@@ -72,7 +72,9 @@ frepMaybe ra =
 -- | Representation of 'Maybe' for 'rep'.
 repMaybe :: (Generic g, Rep g a) => g (Maybe a)
 repMaybe =
-  frepMaybe rep
+  rtype
+    epMaybe
+    (rcon conNothing rep `rsum` rcon conJust rep)
 
 -- | Representation of 'Maybe' for 'frep2'.
 frep2Maybe :: (Generic2 g) => g a b -> g (Maybe a) (Maybe b)

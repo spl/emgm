@@ -72,7 +72,9 @@ frepEither ra rb =
 -- | Representation of 'Either' for 'rep'.
 repEither :: (Generic g, Rep g a, Rep g b) => g (Either a b)
 repEither =
-  frepEither rep rep
+  rtype
+    epEither
+    (rcon conLeft rep `rsum` rcon conRight rep)
 
 -- | Representation of 'Either' for 'frep2'.
 frep2Either :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g (Either a1 b1) (Either a2 b2)

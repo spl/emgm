@@ -201,7 +201,9 @@ frepTuple3 ra rb rc =
 -- | Representation of @(,,)@ for 'rep'.
 repTuple3 :: (Generic g, Rep g a, Rep g b, Rep g c) => g (a,b,c)
 repTuple3 =
-  frepTuple3 rep rep rep
+  rtype
+    epTuple3
+    (rcon conTuple3 (rep `rprod` rep `rprod` rep))
 
 -- | Representation of @(,,)@ for 'frep2'.
 frep2Tuple3 :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g c1 c2 -> g (a1,b1,c1) (a2,b2,c2)
@@ -245,7 +247,9 @@ frepTuple4 ra rb rc rd =
 -- | Representation of @(,,,)@ for 'rep'.
 repTuple4 :: (Generic g, Rep g a, Rep g b, Rep g c, Rep g d) => g (a,b,c,d)
 repTuple4 =
-  frepTuple4 rep rep rep rep
+  rtype
+    epTuple4
+    (rcon conTuple4 (rep `rprod` rep `rprod` rep `rprod` rep))
 
 -- | Representation of @(,,,)@ for 'frep2'.
 frep2Tuple4 :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g c1 c2 -> g d1 d2 -> g (a1,b1,c1,d1) (a2,b2,c2,d2)
@@ -289,7 +293,9 @@ frepTuple5 ra rb rc rd re =
 -- | Representation of @(,,,,)@ for 'rep'.
 repTuple5 :: (Generic g, Rep g a, Rep g b, Rep g c, Rep g d, Rep g e) => g (a,b,c,d,e)
 repTuple5 =
-  frepTuple5 rep rep rep rep rep
+  rtype
+    epTuple5
+    (rcon conTuple5 (rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep))
 
 -- | Representation of @(,,,,)@ for 'frep2'.
 frep2Tuple5 :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g c1 c2 -> g d1 d2 -> g e1 e2 -> g (a1,b1,c1,d1,e1) (a2,b2,c2,d2,e2)
@@ -333,7 +339,9 @@ frepTuple6 ra rb rc rd re rf =
 -- | Representation of @(,,,,,)@ for 'rep'.
 repTuple6 :: (Generic g, Rep g a, Rep g b, Rep g c, Rep g d, Rep g e, Rep g f) => g (a,b,c,d,e,f)
 repTuple6 =
-  frepTuple6 rep rep rep rep rep rep
+  rtype
+    epTuple6
+    (rcon conTuple6 (rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep))
 
 -- | Representation of @(,,,,,)@ for 'frep2'.
 frep2Tuple6 :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g c1 c2 -> g d1 d2 -> g e1 e2 -> g f1 f2 -> g (a1,b1,c1,d1,e1,f1) (a2,b2,c2,d2,e2,f2)
@@ -378,7 +386,9 @@ frepTuple7 ra rb rc rd re rf rh =
 -- | Representation of @(,,,,,,)@ for 'rep'.
 repTuple7 :: (Generic g, Rep g a, Rep g b, Rep g c, Rep g d, Rep g e, Rep g f, Rep g h) => g (a,b,c,d,e,f,h)
 repTuple7 =
-  frepTuple7 rep rep rep rep rep rep rep
+  rtype
+    epTuple7
+    (rcon conTuple7 (rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep `rprod` rep))
 
 -- | Representation of @(,,,,,,)@ for 'frep2'.
 frep2Tuple7 :: (Generic2 g) => g a1 a2 -> g b1 b2 -> g c1 c2 -> g d1 d2 -> g e1 e2 -> g f1 f2 -> g h1 h2 -> g (a1,b1,c1,d1,e1,f1,h1) (a2,b2,c2,d2,e2,f2,h2)
