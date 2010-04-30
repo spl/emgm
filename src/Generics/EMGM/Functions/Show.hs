@@ -1,10 +1,3 @@
-{-# LANGUAGE TypeOperators         #-}
-{-# LANGUAGE TypeSynonymInstances  #-}
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverlappingInstances  #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Show
@@ -33,6 +26,15 @@
 -- See also "Generics.EMGM.Functions.Read".
 -----------------------------------------------------------------------------
 
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverlappingInstances  #-}
+
 module Generics.EMGM.Functions.Show (
   Show(..),
   showsPrec,
@@ -55,15 +57,15 @@ type ShowsPrec a = Int -> a -> ShowS
 
 -- | The type of a generic function that takes a constructor-type argument, a
 -- number (precedence), and a value and returns a 'ShowS' function.
+
 newtype Show a = Show { selShow :: ConType -> Int -> a -> ShowS }
--- NOTE: Use full type here instead of 'ShowsPrec' for Haddock.
 
 -----------------------------------------------------------------------------
 -- Utility functions
 -----------------------------------------------------------------------------
 
-showSpace :: ShowS
-showSpace = showChar ' '
+showSpace :: Bool -> ShowS
+showSpace c = if c then showChar ' ' else id
 
 showBraces :: ShowsPrec a -> ShowsPrec a
 showBraces showsPrec' p x =
@@ -75,58 +77,38 @@ showTuple :: [ShowS] -> ShowS
 showTuple ss = showParen True $
                foldr1 (\s r -> s . showChar ',' . r) ss
 
-recEntry :: Bool -> String -> ShowsPrec a -> ShowsPrec a
-recEntry comma label showsPrec' _ x =
-  showString label .
-  showString " = " .
-  showsPrec' minPrec x .  -- Reset precedence for record fields
-  showString (if comma then ", " else "")
-
 -----------------------------------------------------------------------------
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rconstantShow :: (P.Show a) => ConType -> ShowsPrec a
-rconstantShow ct =
-  case ct of
-
-    -- Standard constructor
-    ConStd -> P.showsPrec
-
-    -- Record-style constructor with 1 label
-    ConRec (label:[]) -> recEntry False label P.showsPrec
-
-    -- No other patterns expected
-    other ->
-      error $ "rconstantShow: Unexpected constructor: '" ++ P.show other ++ "'"
-
 rsumShow :: Show a -> Show b -> ConType -> ShowsPrec (a :+: b)
-rsumShow ra _  _ p (L a) = selShow ra ConStd p a
-rsumShow _  rb _ p (R b) = selShow rb ConStd p b
+rsumShow ra _  _ p (L a) = selShow ra UnknownC p a
+rsumShow _  rb _ p (R b) = selShow rb UnknownC p b
 
 rprodShow :: Show a -> Show b -> ConType -> ShowsPrec (a :*: b)
 rprodShow ra rb ct p (a :*: b) =
   case ct of
 
-    -- Standard nonfix constructor
-    ConStd ->
-      selShowStep ra ConStd p a .
-      showSpace .
-      selShowStep rb ConStd p b
+    -- Normal prefix
+    NormalC ->
+      selShowStep ra NormalC p a .
+      showSpace True .
+      selShowStep rb NormalC p b
 
-    -- Standard infix constructor
-    ConIfx symbol ->
-      selShowStep ra ConStd p a .
-      showSpace .
+    -- Infix without record syntax
+    InfixC symbol ->
+      selShowStep ra NormalC p a .
+      showSpace True .
       showString symbol .
-      showSpace .
-      selShowStep rb ConStd p b
+      showSpace True .
+      selShowStep rb NormalC p b
 
-    -- Record-style constructor
-    ConRec (label:labels) ->
+    -- Record-style
+    RecordC ->
       let p' = p + 1 in
-      recEntry True label (selShowStep ra ConStd) p' a .
-      selShowStep rb (ConRec (labels)) p' b
+      selShowStep ra RecordC p' a .
+      showString ", " .
+      selShowStep rb RecordC p' b
 
     -- No other patterns expected
     other ->
@@ -138,64 +120,65 @@ rconShow :: ConDescr -> Show a -> ConType -> ShowsPrec a
 rconShow cd ra _ p a =
   case cd of
 
-    -- Standard nonfix constructor
-    ConDescr name arity [] Nonfix ->
+    -- Normal prefix
+    ConDescr name arity False Prefix ->
       let hasArgs = arity > 0 in
       -- Don't show parens if constructor has no arguments
       showParen (p > appPrec && hasArgs) $
       showString name .
-      showString (if hasArgs then " " else "") .
-      showConStep ConStd appPrec a
+      showSpace hasArgs .
+      step NormalC appPrec a
 
-    -- Standard infix constructor
-    ConDescr name _ [] fixity ->
+    -- Infix without record syntax
+    ConDescr name _ False fixity ->
       let conPrec = prec fixity in
       showParen (p > conPrec) $
-      showConStep (ConIfx name) conPrec a
+      step (InfixC name) conPrec a
 
-    -- Record-style nonfix constructor
-    ConDescr name _ labels Nonfix ->
-      -- NOTE: Technically, we can use 'recPrec' below, because the precedence
-      -- for record construction is higher than function application. However,
-      -- since GHC puts parens for 'appRec', we'll put them. That way, we can
-      -- compare string output to deriving Show for testing.
+    -- Record-style prefix
+    ConDescr name _ True Prefix ->
+
+      -- NOTE: Technically, we can use 'recPrec' instead of 'appRec' here. The
+      -- precedence for record construction is higher than function application.
+      -- However, since GHC puts parens for application, we'll put them, too.
+      -- That way, we can test the output with a derived Show instance.
+
       showParen (p > appPrec) $
       showString name .
-      showSpace .
-      showBraces (selShow ra (ConRec labels)) minPrec a
+      showSpace True .
+      showBraces (selShow ra RecordC) minPrec a
 
-    -- Record-style infix constructor
-    ConDescr name _ labels _ ->
+    -- Record-style infix: We don't actually use the fixity info here. We just
+    -- need to wrap the symbol name in parens.
+    ConDescr name _ True _ ->
       showParen True (showString name) .
-      showSpace .
-      showBraces (showConStep (ConRec labels)) p a
+      showSpace True .
+      showBraces (step RecordC) p a
 
-  where showConStep ct = selShow ra ct . (+1)
+  where
+    step ct = selShow ra ct . (+1)
+
+rlabelShow :: LblDescr -> Show a -> ConType -> ShowsPrec a
+rlabelShow (LblDescr label) ra _ _ a =
+  showString label .
+  showString " = " .
+  selShow ra UnknownC minPrec a  -- Reset precedence in the field
 
 rtypeShow :: EP b a -> Show a -> ConType -> ShowsPrec b
-rtypeShow ep ra ct =
-  case ct of
-
-    -- Standard constructor
-    ConStd ->
-      selShowFrom ConStd
-
-    -- Record-style constructor
-    ConRec (label:[]) ->
-      recEntry False label (selShowFrom ConStd)
-
-    -- No other patterns expected
-    other ->
-      error $ "rtypeShow: Unexpected constructor: '" ++ P.show other ++ "'"
-
-  where selShowFrom ct' p = selShow ra ct' p . from ep
+rtypeShow ep ra ct p = selShow ra ct p . from ep
 
 instance Generic Show where
-  rconstant      = Show rconstantShow
-  rsum     ra rb = Show (rsumShow ra rb)
-  rprod    ra rb = Show (rprodShow ra rb)
-  rcon  cd ra    = Show (rconShow cd ra)
-  rtype ep ra    = Show (rtypeShow ep ra)
+  rint            = Show $ const P.showsPrec
+  rinteger        = Show $ const P.showsPrec
+  rfloat          = Show $ const P.showsPrec
+  rdouble         = Show $ const P.showsPrec
+  rchar           = Show $ const P.showsPrec
+  runit           = Show $ \_ _ _ -> id
+  rsum      ra rb = Show $ rsumShow ra rb
+  rprod     ra rb = Show $ rprodShow ra rb
+  rcon   cd ra    = Show $ rconShow cd ra
+  rlabel ld ra    = Show $ rlabelShow ld ra
+  rtype  ep ra    = Show $ rtypeShow ep ra
 
 -----------------------------------------------------------------------------
 -- Rep instance declarations
@@ -203,7 +186,7 @@ instance Generic Show where
 
 -- | Ad-hoc instance for lists
 instance (Rep Show a) => Rep Show [a] where
-  rep = Show $ const $ const $ GHC.showList__ $ selShow rep ConStd minPrec
+  rep = Show $ const $ const $ GHC.showList__ $ selShow rep UnknownC minPrec
 
 -- | Ad-hoc instance for strings
 instance Rep Show String where
@@ -271,7 +254,7 @@ showsPrec ::
   => Int      -- ^ Operator precedence of the enclosing context (a number from 0 to 11).
   -> a        -- ^ The value to be converted to a 'String'.
   -> ShowS
-showsPrec = selShow rep ConStd
+showsPrec = selShow rep UnknownC
 
 -- | A variant of 'showsPrec' with the minimum precedence (0).
 shows :: (Rep Show a) => a -> ShowS

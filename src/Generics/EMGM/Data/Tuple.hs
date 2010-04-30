@@ -1,10 +1,3 @@
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FlexibleContexts       #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverlappingInstances   #-}
-{-# OPTIONS -fno-warn-orphans       #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Data.Tuple
@@ -18,6 +11,15 @@
 -- Summary: Generic representation and instances for tuples of arity 0
 -- (''unit'') and 2 to 7.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverlappingInstances   #-}
+{-# OPTIONS -fno-warn-orphans       #-}
 
 module Generics.EMGM.Data.Tuple (
 
@@ -101,7 +103,7 @@ epTuple0 = EP (\() -> Unit)
 
 -- | Constructor description for @()@.
 conTuple0 :: ConDescr
-conTuple0 = ConDescr "()" 0 [] Nonfix
+conTuple0 = ConDescr "()" 0 False Prefix
 
 -- | Representation of @()@ for 'rep'.
 repTuple0 :: (Generic g) => g ()
@@ -145,7 +147,7 @@ epTuple2 = EP (\(a,b) -> a :*: b)
 
 -- | Constructor description for @(,)@.
 conTuple2 :: ConDescr
-conTuple2 = ConDescr "(,)" 2 [] Nonfix
+conTuple2 = ConDescr "(,)" 2 False Prefix
 
 -- | Representation of @(,)@ for 'frep'.
 frepTuple2 :: (Generic g) => g a -> g b -> g (a,b)
@@ -189,7 +191,7 @@ epTuple3 = EP (\(a,b,c) -> a :*: b :*: c)
 
 -- | Constructor description for @(,,)@.
 conTuple3 :: ConDescr
-conTuple3 = ConDescr "(,,)" 3 [] Nonfix
+conTuple3 = ConDescr "(,,)" 3 False Prefix
 
 -- | Representation of @(,,)@ for 'frep'.
 frepTuple3 :: (Generic g) => g a -> g b -> g c -> g (a,b,c)
@@ -235,7 +237,7 @@ epTuple4 = EP (\(a,b,c,d) -> a :*: b :*: c :*: d)
 
 -- | Constructor description for @(,,,)@.
 conTuple4 :: ConDescr
-conTuple4 = ConDescr "(,,,)" 4 [] Nonfix
+conTuple4 = ConDescr "(,,,)" 4 False Prefix
 
 -- | Representation of @(,,,)@ for 'frep'.
 frepTuple4 :: (Generic g) => g a -> g b -> g c -> g d -> g (a,b,c,d)
@@ -281,7 +283,7 @@ epTuple5 = EP (\(a,b,c,d,e) -> a :*: b :*: c :*: d :*: e)
 
 -- | Constructor description for @(,,,,)@.
 conTuple5 :: ConDescr
-conTuple5 = ConDescr "(,,,,)" 5 [] Nonfix
+conTuple5 = ConDescr "(,,,,)" 5 False Prefix
 
 -- | Representation of @(,,,,)@ for 'frep'.
 frepTuple5 :: (Generic g) => g a -> g b -> g c -> g d -> g e -> g (a,b,c,d,e)
@@ -327,7 +329,7 @@ epTuple6 = EP (\(a,b,c,d,e,f) -> a :*: b :*: c :*: d :*: e :*: f)
 
 -- | Constructor description for @(,,,,,)@.
 conTuple6 :: ConDescr
-conTuple6 = ConDescr "(,,,,,)" 6 [] Nonfix
+conTuple6 = ConDescr "(,,,,,)" 6 False Prefix
 
 -- | Representation of @(,,,,,)@ for 'frep'.
 frepTuple6 :: (Generic g) => g a -> g b -> g c -> g d -> g e -> g f -> g (a,b,c,d,e,f)
@@ -374,7 +376,7 @@ epTuple7 = EP (\(a,b,c,d,e,f,h) -> a :*: b :*: c :*: d :*: e :*: f :*: h)
 
 -- | Constructor description for @(,,,,,,)@.
 conTuple7 :: ConDescr
-conTuple7 = ConDescr "(,,,,,)" 7 [] Nonfix
+conTuple7 = ConDescr "(,,,,,)" 7 False Prefix
 
 -- | Representation of @(,,,,,,)@ for 'frep'.
 frepTuple7 :: (Generic g) => g a -> g b -> g c -> g d -> g e -> g f -> g h -> g (a,b,c,d,e,f,h)

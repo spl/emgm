@@ -1,9 +1,3 @@
-{-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators         #-}
-{-# LANGUAGE OverlappingInstances  #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Base
@@ -24,6 +18,13 @@
 -- must be an instance of each of the classes 'Rep', 'FRep', 'FRep2', etc. (that
 -- apply) for every datatype.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE OverlappingInstances  #-}
 
 module Generics.EMGM.Base (
 
@@ -77,6 +78,7 @@ class Generic g where
   --
   -- The class context represents the intersection set of supported type
   -- classes.
+
   rconstant :: (Enum a, Eq a, Ord a, Read a, Show a) => g a
 
   -- | Case for the primitive type 'Int'. (Default implementation:
@@ -85,41 +87,60 @@ class Generic g where
 
   -- | Case for the primitive type 'Integer'. (Default implementation:
   -- 'rconstant'.)
+
   rinteger  :: g Integer
 
   -- | Case for the primitive type 'Float'. (Default implementation:
   -- 'rconstant'.)
+
   rfloat    :: g Float
 
   -- | Case for the primitive type 'Double'. (Default implementation:
   -- 'rconstant'.)
+
   rdouble   :: g Double
 
   -- | Case for the primitive type 'Char'. (Default implementation:
   -- 'rconstant'.)
+
   rchar     :: g Char
 
   -- | Case for the structural representation type 'Unit'. It is used to
   -- represent a constructor with no arguments. (Default implementation:
   -- 'rconstant'.)
+
   runit     :: g Unit
 
   -- | Case for the structural representation type @:+:@ (sum). It
   -- is used to represent alternative choices between constructors. (No
   -- default implementation.)
+
   rsum      :: g a -> g b -> g (a :+: b)
 
   -- | Case for the structural representation type @:*:@ (product).
   -- It is used to represent multiple arguments to a constructor. (No
   -- default implementation.)
+
   rprod     :: g a -> g b -> g (a :*: b)
 
-  -- | Case for constructors. While not necessary for every generic function,
-  -- this method is required for 'Read' and 'Show'. It is used to hold the
-  -- meta-information about a constructor ('ConDescr'), e.g. name, arity,
-  -- fixity, etc. (Since most generic functions do not use 'rcon' and simply pass
-  -- the value through, the default implementation is @const id@.)
+  -- | Case for constructors. It is used to hold the meta-information about a
+  -- constructor, e.g. name, arity, fixity, etc. This is not needed for many
+  -- generic functions, so the default implementation is:
+  --
+  -- @
+  --   rcon = const id
+  -- @
+
   rcon      :: ConDescr -> g a -> g a
+
+  -- | Case for labeled field. Contains the label string. This is not needed for
+  -- many generic functions, so the default implementation is:
+  --
+  -- @
+  --   rlabel = const id
+  -- @
+
+  rlabel    :: LblDescr -> g a -> g a
 
   -- | Case for datatypes. This method is used to define the structural
   -- representation of an arbitrary Haskell datatype. The first argument is the
@@ -127,6 +148,7 @@ class Generic g where
   -- between datatype and representation. The second argument is the
   -- run-time representation using the methods of 'Generic'. (No default
   -- implementation.)
+
   rtype     :: EP b a -> g a -> g b
 
   rint     = rconstant
@@ -137,6 +159,7 @@ class Generic g where
   runit    = rconstant
 
   rcon     = const id
+  rlabel   = const id
 
 infixr 5 `rsum`
 infixr 6 `rprod`
@@ -160,6 +183,7 @@ class Generic2 g where
   rsum2      :: g a1 a2 -> g b1 b2 -> g (a1 :+: b1) (a2 :+: b2)
   rprod2     :: g a1 a2 -> g b1 b2 -> g (a1 :*: b1) (a2 :*: b2)
   rcon2      :: ConDescr -> g a1 a2 -> g a1 a2
+  rlabel2    :: LblDescr -> g a1 a2 -> g a1 a2
 
   -- | See 'rtype'. This case is the primary difference that separates
   -- 'Generic2' from 'Generic'. Since we have two generic type parameters, we
@@ -175,6 +199,7 @@ class Generic2 g where
   runit2     = rconstant2
 
   rcon2      = const id
+  rlabel2    = const id
 
 infixr 5 `rsum2`
 infixr 6 `rprod2`
@@ -200,6 +225,7 @@ class Generic3 g where
   rsum3      :: g a1 a2 a3 -> g b1 b2 b3 -> g (a1 :+: b1) (a2 :+: b2) (a3 :+: b3)
   rprod3     :: g a1 a2 a3 -> g b1 b2 b3 -> g (a1 :*: b1) (a2 :*: b2) (a3 :*: b3)
   rcon3      :: ConDescr -> g a1 a2 a3 -> g a1 a2 a3
+  rlabel3    :: LblDescr -> g a1 a2 a3 -> g a1 a2 a3
 
   -- | See 'rtype'. This case is the primary difference that separates
   -- 'Generic3' from 'Generic'. Since we have three generic type parameters, we
@@ -215,6 +241,7 @@ class Generic3 g where
   runit3     = rconstant3
 
   rcon3      = const id
+  rlabel3    = const id
 
 infixr 5 `rsum3`
 infixr 6 `rprod3`

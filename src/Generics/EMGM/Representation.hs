@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeOperators #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Representation
@@ -29,6 +27,10 @@
 --
 -----------------------------------------------------------------------------
 
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators #-}
+
 module Generics.EMGM.Representation (
 
   -- * Structure Representation
@@ -40,13 +42,6 @@ module Generics.EMGM.Representation (
   (:+:)(..),
   (:*:)(..),
 
-  -- * Embedding-Projection Pair
-  --
-  -- | A pair of a function and its inverse form the isomorphism between a
-  -- datatype and its structure representation.
-
-  EP(..),
-
   -- * Constructor Description
   --
   -- | A description of the syntax of each constructor provides useful auxiliary
@@ -54,12 +49,21 @@ module Generics.EMGM.Representation (
 
   ConDescr(..),
   ConType(..),
+  LblDescr(..),
+
+  -- * Embedding-Projection Pair
+  --
+  -- | A pair of a function and its inverse form the isomorphism between a
+  -- datatype and its structure representation.
+
+  EP(..),
 
   -- * Fixity and Precedence
   -- | These are used to determine whether a constructor is infix or not and, if
   -- it is infix, what its associativity and precedence are.
 
   Fixity(..),
+  Associativity(..),
   Prec,
   prec,
   minPrec,
@@ -74,8 +78,9 @@ import Text.ParserCombinators.ReadPrec (minPrec, Prec)
 infixr 5 :+:
 infixr 6 :*:
 
--- | The \"unit\" encodes a constructor with no arguments. An analogous standard
--- Haskell type is @()@.
+-- | Encodes a constructor with no arguments. An analogous standard Haskell type
+-- is @()@.
+
 data Unit
   = Unit -- ^ The only value of type @Unit@ (ignoring @_|_@).
     deriving (Enum, Eq, Ord)
@@ -106,6 +111,12 @@ data a :*: b
   = a :*: b -- ^ A pair of arguments
   deriving (Eq, Ord, Read, Show)
 
+-- | Encodes the string label for a field in a constructor defined with labeled
+-- fields (a.k.a. record syntax).
+
+newtype LblDescr = LblDescr String
+  deriving (Eq, Ord, Read, Show)
+
 -- | The embedding-projection pair contains two functions for converting between
 -- the datatype and its representation. An @EP@ value preserves an isomorphism
 -- (ignoring @_|_@s) between a datatype and its structure representation.
@@ -115,60 +126,68 @@ data EP d r
     , to   :: (r -> d) -- ^ Project @d@atatype from its @r@epresentation.
     }
 
--- | A constructor description containing useful meta-information about the
--- syntax used in the data declaration. This is particularly useful in 'Read'
--- and 'Show' but may also be helpful in other generic functions.
+-- | Contains useful meta-information about the syntax used in a constructor
+-- declaration.
 --
 -- NOTE: It is important that the 'ConDescr' value accurately describe the
 -- syntax in a constructor declaration. An incorrect description may lead to
 -- faulty 'Read' or 'Show' operation.
+
 data ConDescr
   = ConDescr
-    { conName     :: String   -- ^ Name of the constructor. If it is infix,
-                              -- don't provide parentheses.
+    { -- | Name of the constructor (without parenthesese if infix).
+      conName     :: String,
 
-    , conArity    :: Int      -- ^ Arity or number of arguments.
+      -- | Number of fields.
+      conArity    :: Int,
 
-    , conLabels   :: [String] -- ^ A list of labels used in record syntax.
-                              -- They must be declared in the same order as
-                              -- the @data@ declaration. The list should be
-                              -- empty if the constructor is not a record.
+      -- | Uses labeled fields (a.k.a. record syntax).
+      conRecord   :: Bool,
 
-    , conFixity   :: Fixity   -- ^ Infix or not, associativity, precedence.
+      -- | Fixity, associativity, precedence.
+      conFixity   :: Fixity
     }
   deriving (Eq, Show)
 
--- | The constructor type used in 'Read' and 'Show' to determine how to parse or
--- print the constructor.
+-- | Type of constructor syntax. Used in the generic functions 'Read' and
+-- 'Show'.
+
 data ConType
-  = ConStd             -- ^ Standard (function-type, nonfix)
-  | ConRec [String]    -- ^ Record-style (nonfix or infix)
-  | ConIfx String      -- ^ Infix (no record syntax)
+  = UnknownC       -- ^ Have not seen the rcon yet
+  | NormalC        -- ^ Normal prefix-style constructor
+  | InfixC String  -- ^ Infix with symbol (no record syntax)
+  | RecordC        -- ^ Record-style (any fixity)
   deriving (Eq, Show)
+
+-- | A constructor's fixity, associativity, and precedence.
+data Fixity
+  -- | Associativity and precedence are the same as function application.
+  = Prefix
+  | Infix Associativity Prec
+  deriving (Eq, Ord, Read, Show)
+
+-- | A constructor's associativity.
+data Associativity
+  -- | Declared with infixl
+  = LeftAssoc
+
+  -- | Declared with infixr
+  | RightAssoc
+
+  -- | Declared with infix
+  | NotAssoc
+  deriving (Eq, Ord, Read, Show)
 
 -- TODO: Need smart constructor(s) for ConDescr, so we can verify things.
 
--- | An identifier's fixity, associativity, and precedence. If not infix
--- ('Nonfix'), the associativity and precedence of the identifier is the same as
--- function application. If infix, the associativity is indicated by the
--- constructor and the precedence is an argument to it.
-data Fixity
-  = Nonfix      -- ^ Not infix. Associativity and precedence are the same as function application.
-  | Infix Prec  -- ^ Non-associative infix with precedence.
-  | Infixl Prec -- ^ Left-associative infix with precedence.
-  | Infixr Prec -- ^ Right-associative Infix with precedence.
-  deriving (Eq, Show)
-
 -- | Get the precedence of a fixity value.
 prec :: Fixity -> Prec
-prec Nonfix     = appPrec
-prec (Infix  n) = n
-prec (Infixl n) = n
-prec (Infixr n) = n
+prec Prefix     = appPrec
+prec (Infix _ n) = n
 
 -- | Maximum precedence: 11
 maxPrec :: Prec
-maxPrec = 11
+maxPrec = recPrec
 
 -- | Precedence for function application: 10
 appPrec :: Prec

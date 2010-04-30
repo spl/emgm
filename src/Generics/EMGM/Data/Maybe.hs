@@ -1,11 +1,3 @@
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FlexibleContexts       #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverlappingInstances   #-}
-{-# OPTIONS -fno-warn-orphans       #-}
-{-  OPTIONS -ddump-splices           -}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Data.Maybe
@@ -18,6 +10,16 @@
 --
 -- Summary: Generic representation and instances for 'Maybe'.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverlappingInstances   #-}
+{-# OPTIONS -fno-warn-orphans       #-}
+{-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Maybe (
   epMaybe,
@@ -56,11 +58,11 @@ epMaybe = EP fromMaybe toMaybe
 
 -- | Constructor description for 'Nothing'.
 conNothing :: ConDescr
-conNothing = ConDescr "Nothing" 0 [] Nonfix
+conNothing = ConDescr "Nothing" 0 False Prefix
 
 -- | Constructor description for 'Just'.
 conJust :: ConDescr
-conJust = ConDescr "Just" 1 [] Nonfix
+conJust = ConDescr "Just" 1 False Prefix
 
 -- | Representation of 'Maybe' for 'frep'.
 frepMaybe :: (Generic g) => g a -> g (Maybe a)

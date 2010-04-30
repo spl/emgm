@@ -60,7 +60,7 @@ f_list_char2 []    = []
 f_unit :: () -> ()
 f_unit = id
 
-f_ttree1 :: TTree Int -> TTree Int
+f_ttree1 :: T Int -> T Int
 f_ttree1 (L1 4)         = L1 7
 f_ttree1 (L2 5 (L1 4))  = L1 9
 f_ttree1 x              = x
@@ -94,8 +94,8 @@ tests =
        , test_e "(,,,,)" f_unit ((),(),(),(),()) id
        , test_e "(,,,,,)" f_unit ((),(),(),(),(),()) id
        , test_e "(,,,,,,)" f_unit ((),(),(),(),(),(),()) id
-       , test_e "TTree1" f_ttree1 (L1 4) f_ttree1
-       , test_e "TTree2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L2 5 (L1 7)))
+       , test_e "T1" f_ttree1 (L1 4) f_ttree1
+       , test_e "T2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L2 5 (L1 7)))
        ]
 
     , "Everywhere'" ~:
@@ -120,8 +120,8 @@ tests =
        , test_e' "(,,,,)" f_unit ((),(),(),(),()) id
        , test_e' "(,,,,,)" f_unit ((),(),(),(),(),()) id
        , test_e' "(,,,,,,)" f_unit ((),(),(),(),(),(),()) id
-       , test_e' "TTree1" f_ttree1 (L1 4) f_ttree1
-       , test_e' "TTree2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L1 9))
+       , test_e' "T1" f_ttree1 (L1 4) f_ttree1
+       , test_e' "T2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L1 9))
        ]
 
     ]

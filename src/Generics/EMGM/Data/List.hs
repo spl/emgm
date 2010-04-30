@@ -1,10 +1,3 @@
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FlexibleContexts       #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverlappingInstances   #-}
-{-# OPTIONS -fno-warn-orphans       #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Data.List
@@ -17,6 +10,15 @@
 --
 -- Summary: Generic representation and instances for lists.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverlappingInstances   #-}
+{-# OPTIONS -fno-warn-orphans       #-}
 
 module Generics.EMGM.Data.List (
   epList,
@@ -55,11 +57,11 @@ epList = EP fromList toList
 
 -- | Constructor description for ''nil'': @[]@.
 conNil :: ConDescr
-conNil = ConDescr "[]" 0 [] Nonfix
+conNil = ConDescr "[]" 0 False Prefix
 
 -- | Constructor description for ''cons'': @(:)@.
 conCons :: ConDescr
-conCons = ConDescr ":" 2 [] (Infixr 5)
+conCons = ConDescr ":" 2 False (Infix RightAssoc 5)
 
 -- | Representation of lists for 'frep'.
 frepList :: (Generic g) => g a -> g [a]

@@ -1,11 +1,3 @@
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FlexibleContexts       #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverlappingInstances   #-}
-{-# OPTIONS -fno-warn-orphans       #-}
-{-  OPTIONS -ddump-splices           -}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Data.Either
@@ -18,6 +10,16 @@
 --
 -- Summary: Generic representation and instances for 'Either'.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverlappingInstances   #-}
+{-# OPTIONS -fno-warn-orphans       #-}
+{-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Either (
   epEither,
@@ -56,11 +58,11 @@ epEither = EP fromEither toEither
 
 -- | Constructor description for 'Left'.
 conLeft :: ConDescr
-conLeft = ConDescr "Left" 1 [] Nonfix
+conLeft = ConDescr "Left" 1 False Prefix
 
 -- | Constructor description for 'Right'.
 conRight :: ConDescr
-conRight = ConDescr "Right" 1 [] Nonfix
+conRight = ConDescr "Right" 1 False Prefix
 
 -- | Representation of 'Either' for 'frep'.
 frepEither :: (Generic g) => g a -> g b -> g (Either a b)

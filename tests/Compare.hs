@@ -56,7 +56,7 @@ test_min = test_f min P.min
 test_max :: (P.Show a, Data a, Ord a, Rep Compare a) => a -> a -> Test
 test_max = test_f max P.max
 
-t1, t2 :: TTree (TTree Float)
+t1, t2 :: T (T Float)
 t1 = L1 (L3 8.8 :^: 9.9) :<>: L4 (L4 (L2 (L3 11.11) (L1 (L1 22.22))) (L3 33.33)) (L5 0.44 (L3 55.55) 0.66)
 t2 = L1 (L3 8.8 :^: 9.9) :<>: L4 (L4 (L2 (L3 11.11) (L1 (L3 22.22))) (L3 33.33)) (L5 0.44 (L3 55.55) 0.66)
 

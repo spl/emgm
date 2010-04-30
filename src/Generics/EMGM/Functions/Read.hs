@@ -1,10 +1,3 @@
-{-# LANGUAGE TypeOperators         #-}
-{-# LANGUAGE TypeSynonymInstances  #-}
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverlappingInstances  #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Functions.Read
@@ -34,6 +27,15 @@
 -- See also "Generics.EMGM.Functions.Show".
 -----------------------------------------------------------------------------
 
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverlappingInstances  #-}
+
 module Generics.EMGM.Functions.Read (
   Read(..),
   readPrec,
@@ -44,13 +46,10 @@ module Generics.EMGM.Functions.Read (
 ) where
 
 import Prelude hiding (Read, read, reads, readsPrec)
-import qualified Prelude as P (Read)
 import Data.List (find)
-import Control.Monad
-import Debug.Trace
 
 import Text.ParserCombinators.ReadPrec (ReadPrec, step, (+++), pfail, lift,
-                                        look, readPrec_to_S, readPrec_to_P)
+                                        readPrec_to_S, readPrec_to_P)
 import qualified Text.ParserCombinators.ReadPrec as RP (prec)
 import Text.ParserCombinators.ReadP (ReadP)
 import Text.Read (Lexeme(Punc), lexP, parens, reset)
@@ -67,20 +66,12 @@ import Generics.EMGM.Base
 
 -- | The type of a generic function that takes a constructor-type argument and
 -- returns a parser combinator for some type.
+
 newtype Read a = Read { selRead :: ConType -> ReadPrec a }
 
 -----------------------------------------------------------------------------
 -- Utility functions
 -----------------------------------------------------------------------------
-
--- | "Look and trace" - print the unconsumed part of the input string
-ltrace :: String -> ReadPrec ()
-ltrace =
-  let debug = False
-  in if debug
-        then \s -> do la <- look
-                      (trace $ "<<" ++ la ++ ">> " ++ s) $ return ()
-        else const $ do return ()
 
 comma :: ReadPrec ()
 comma = do Punc "," <- lexP
@@ -127,173 +118,102 @@ tuple4 pa pb pc pd =
 
 -- | @(paren p)@ parses \"{P0}\" where @p@ parses \"P0\" at precedence 0
 braces :: ReadPrec a -> ReadPrec a
-braces p = do ltraceme "{ before"
-              Punc "{" <- lexP
-              ltraceme "{ after"
+braces p = do Punc "{" <- lexP
               x <- reset p
-              ltraceme "} before"
               Punc "}" <- lexP
-              ltraceme "} after"
               return x
-  where ltraceme s = ltrace $ "braces: " ++ s
 
 -- | Parse a Haskell token and verify that it is the one expected.
 lexT :: String -> ReadPrec ()
 lexT expected =
   do found <- lift hsLex
      if found == expected
-        then do ltraceme "success"
-                return ()
-        else do ltraceme $ "fnd=" ++ found ++ " FAIL"
-                pfail
-  where ltraceme s = ltrace $ "lexT: exp=" ++ expected ++ " -> " ++ s
-
--- | Parse a record entry: "label = x[,]" where x comes from the parameter
--- parser @p@.
-recEntry :: Bool -> String -> ReadPrec a -> ReadPrec a
-recEntry isComma label p =
-  do lexT label
-     ltraceme "before ="
-     equals
-     ltraceme "after ="
-     x <- p
-     ltraceme "after p"
-     if isComma
-        then do ltraceme "before ,"
-                comma
-                return x
-        else do ltraceme "no ,"
-                return x
-  where ltraceme s =
-          ltrace $ "recEntry: com=" ++ show isComma ++
-                            " lbl=" ++ label ++ " " ++ s
+        then return ()
+        else pfail
 
 -----------------------------------------------------------------------------
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rconstantRead :: (P.Read a) => ConType -> ReadPrec a
-rconstantRead ct =
-  case ct of
-
-    -- Standard constructor
-    ConStd ->
-      do ltraceme "ConStd"
-         TR.readPrec
-
-    -- Record-style constructor with 1 label
-    ConRec (label:[]) ->
-      do ltraceme "ConRec1"
-         recEntry False label TR.readPrec
-
-    -- No other patterns expected
-    _ ->
-      do ltraceme "FAIL"
-         pfail
-
-  where ltraceme s = ltrace $ "rconstantRead: " ++ s
-
 rsumRead :: Read a -> Read b -> ConType -> ReadPrec (a :+: b)
 rsumRead ra rb _ =
-  do ltrace "rsumRead:"
-     (return . L =<< selRead ra ConStd) +++ (return . R =<< selRead rb ConStd)
+  (fmap L $ selRead ra UnknownC) +++ (fmap R $ selRead rb UnknownC)
 
 rprodRead :: Read a -> Read b -> ConType -> ReadPrec (a :*: b)
 rprodRead ra rb ct =
   case ct of
 
     -- Standard nonfix constructor
-    ConStd ->
-      do ltraceme "ConStd (a)"
-         a <- step (selRead ra ConStd)
-         ltraceme "ConStd (b)"
-         b <- step (selRead rb ConStd)
+    NormalC ->
+      do a <- step (selRead ra NormalC)
+         b <- step (selRead rb NormalC)
          return (a :*: b)
 
     -- Standard infix constructor
-    ConIfx symbol ->
-      do ltraceme "ConIfx (a)"
-         a <- step (selRead ra ConStd)
+    InfixC symbol ->
+      do a <- step (selRead ra NormalC)
          lexT symbol
-         ltraceme "ConIfx (b)"
-         b <- step (selRead rb ConStd)
+         b <- step (selRead rb NormalC)
          return (a :*: b)
 
     -- Record-style constructor
-    ConRec (label:labels) ->
-      do ltraceme "ConRec2 (a)"
-         a <- step (recEntry True label (selRead ra ConStd))
-         ltraceme "ConRec2 (b)"
-         b <- step $ selRead rb (ConRec (labels))
+    RecordC ->
+      do a <- step $ selRead ra RecordC
+         comma
+         b <- step $ selRead rb RecordC
          return (a :*: b)
 
     -- No other patterns expected
     _ ->
-      do ltraceme "FAIL"
-         pfail
-
-  where
-    ltraceme s = ltrace $ "rprodRead: " ++ show ct ++ " " ++ s
+      pfail
 
 rconRead :: ConDescr -> Read a -> ConType -> ReadPrec a
 rconRead cd ra _ =
   parens $
     case cd of
 
-      -- Standard nonfix constructor
-      ConDescr name _ [] Nonfix ->
-        do ltraceme "ConStd"
-           lexT name
-           step $ selRead ra ConStd
+      -- Normal prefix
+      ConDescr name _ False Prefix ->
+        do lexT name
+           step $ selRead ra NormalC
 
-      -- Standard infix constructor
-      ConDescr name _ [] fixity ->
-        do ltraceme "ConIfx"
-           let p = prec fixity
-           RP.prec p $ step $ selRead ra $ ConIfx name
+      -- Infix without record syntax
+      ConDescr name _ False fixity ->
+        do let p = prec fixity
+           RP.prec p $ step $ selRead ra $ InfixC name
 
-      -- Record-style nonfix constructor
-      ConDescr name _ labels Nonfix ->
-        do ltraceme "ConRec (a)"
-           lexT name
-           braces $ step $ selRead ra $ ConRec labels
+      -- Record-style prefix
+      ConDescr name _ True Prefix ->
+        do lexT name
+           braces $ step $ selRead ra RecordC
 
-      -- Record-style infix constructor
-      ConDescr name _ labels _ ->
-        do ltraceme "ConRec (b)"
-           paren (lexT name)
-           braces $ step $ selRead ra $ ConRec labels
+      -- Record-style infix: We don't actually use the fixity info here. We just
+      -- need to wrap the symbol name in parens.
+      ConDescr name _ True _ ->
+        do paren (lexT name)
+           braces $ step $ selRead ra RecordC
 
-  where ltraceme s = ltrace $ "rconRead: " ++ show cd ++ " " ++ s
+rlabelRead :: LblDescr -> Read a -> ConType -> ReadPrec a
+rlabelRead (LblDescr label) ra _ =
+  do lexT label
+     equals
+     selRead ra UnknownC
 
 rtypeRead :: EP d a -> Read a -> ConType -> ReadPrec d
-rtypeRead ep ra ct =
-  case ct of
-
-    -- Standard constructor
-    ConStd ->
-      do ltraceme "ConStd"
-         fmap (to ep) $ selRead ra ConStd
-
-    -- Record-style constructor
-    ConRec (label:[]) ->
-      do ltraceme "ConRec"
-         fmap (to ep) $ recEntry False label (selRead ra ConStd)
-
-    -- No other patterns expected
-    _ ->
-      do ltraceme "FAIL"
-         pfail
-
-  where
-    ltraceme s = ltrace $ "rtypeRead: " ++ show ct ++ " " ++ s
+rtypeRead ep ra = fmap (to ep) . selRead ra
 
 instance Generic Read where
-  rconstant      = Read rconstantRead
-  rsum     ra rb = Read (rsumRead ra rb)
-  rprod    ra rb = Read (rprodRead ra rb)
-  rcon  cd ra    = Read (rconRead cd ra)
-  rtype ep ra    = Read (rtypeRead ep ra)
+  rint            = Read $ const TR.readPrec
+  rinteger        = Read $ const TR.readPrec
+  rfloat          = Read $ const TR.readPrec
+  rdouble         = Read $ const TR.readPrec
+  rchar           = Read $ const TR.readPrec
+  runit           = Read $ const $ return Unit
+  rsum      ra rb = Read $ rsumRead ra rb
+  rprod     ra rb = Read $ rprodRead ra rb
+  rcon  cd  ra    = Read $ rconRead cd ra
+  rlabel ld ra    = Read $ rlabelRead ld ra
+  rtype ep  ra    = Read $ rtypeRead ep ra
 
 -----------------------------------------------------------------------------
 -- Rep instance declarations
@@ -366,7 +286,7 @@ instance (Rep Read a, Rep Read b, Rep Read c, Rep Read d, Rep Read e,
 -- "Text.ParserCombinators.ReadPrec" and should be similar to a derived
 -- implementation of 'Text.Read.readPrec'.
 readPrec :: (Rep Read a) => ReadPrec a
-readPrec = selRead rep ConStd
+readPrec = selRead rep UnknownC
 
 -- | Attempt to parse a value from the front of the string using the given
 -- precedence. 'readsPrec' returns a list of (parsed value, remaining string)

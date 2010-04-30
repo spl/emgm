@@ -1,11 +1,3 @@
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FlexibleContexts       #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverlappingInstances   #-}
-{-# OPTIONS -fno-warn-orphans       #-}
-{-  OPTIONS -ddump-splices           -}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM.Data.Bool
@@ -18,6 +10,16 @@
 --
 -- Summary: Generic representation and instances for 'Bool'.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
+
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverlappingInstances   #-}
+{-# OPTIONS -fno-warn-orphans       #-}
+{-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Bool (
   epBool,
@@ -56,11 +58,11 @@ epBool = EP fromBool toBool
 
 -- | Constructor description for 'False'.
 conFalse :: ConDescr
-conFalse = ConDescr "False" 0 [] Nonfix
+conFalse = ConDescr "False" 0 False Prefix
 
 -- | Constructor description for 'True'.
 conTrue :: ConDescr
-conTrue = ConDescr "True" 0 [] Nonfix
+conTrue = ConDescr "True" 0 False Prefix
 
 -- | Representation of 'Bool' for 'rep'.
 repBool :: (Generic g) => g Bool
