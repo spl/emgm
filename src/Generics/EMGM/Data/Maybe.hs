@@ -14,6 +14,7 @@
 {-# OPTIONS_GHC -Wall #-}
 
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
@@ -22,7 +23,6 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Maybe (
-  epMaybe,
   conNothing,
   conJust,
   repMaybe,
@@ -40,17 +40,18 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
-fromMaybe :: Maybe a -> Unit :+: a
-fromMaybe Nothing   =  L Unit
-fromMaybe (Just a)  =  R a
+type MaybeS a = Unit :+: a
 
-toMaybe :: Unit :+: a -> Maybe a
-toMaybe (L Unit)  =  Nothing
-toMaybe (R a)     =  Just a
-
--- | Embedding-projection pair for 'Maybe'.
-epMaybe :: EP (Maybe a) (Unit :+: a)
+epMaybe :: EP (Maybe a) (MaybeS a)
 epMaybe = EP fromMaybe toMaybe
+  where
+    fromMaybe Nothing  =  L Unit
+    fromMaybe (Just a) =  R a
+    toMaybe (L Unit) =  Nothing
+    toMaybe (R a)    =  Just a
+
+instance Deduce (Maybe a) (MaybeS a) where
+  deduceEP _ = epMaybe
 
 -----------------------------------------------------------------------------
 -- Representation values

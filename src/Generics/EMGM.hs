@@ -50,6 +50,7 @@ module Generics.EMGM (
   -- datatype and its structure representation.
 
   EP(..),
+  Deduce(..),
 
   -- *** Constructor Description
   --

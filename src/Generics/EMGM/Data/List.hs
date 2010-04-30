@@ -14,6 +14,7 @@
 {-# OPTIONS_GHC -Wall #-}
 
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
@@ -21,7 +22,6 @@
 {-# OPTIONS -fno-warn-orphans       #-}
 
 module Generics.EMGM.Data.List (
-  epList,
   conNil,
   conCons,
   repList,
@@ -39,17 +39,18 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
-fromList :: [a] -> Unit :+: (a :*: [a])
-fromList []        =  L Unit
-fromList (a : as)  =  R (a :*: as)
+type ListS a = Unit :+: a :*: [a]
 
-toList :: Unit :+: (a :*: [a]) -> [a]
-toList (L Unit)        =  []
-toList (R (a :*: as))  =  a : as
-
--- | Embedding-projection pair for lists.
-epList :: EP [a] (Unit :+: (a :*: [a]))
+epList :: EP [a] (ListS a)
 epList = EP fromList toList
+  where
+    fromList []        =  L Unit
+    fromList (a : as)  =  R (a :*: as)
+    toList (L Unit)        =  []
+    toList (R (a :*: as))  =  a : as
+
+instance Deduce [a] (ListS a) where
+  deduceEP _ = epList
 
 -----------------------------------------------------------------------------
 -- Representation values

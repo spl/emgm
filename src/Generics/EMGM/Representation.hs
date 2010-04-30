@@ -29,7 +29,9 @@
 
 {-# OPTIONS_GHC -Wall #-}
 
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE FunctionalDependencies     #-}
 
 module Generics.EMGM.Representation (
 
@@ -57,6 +59,7 @@ module Generics.EMGM.Representation (
   -- datatype and its structure representation.
 
   EP(..),
+  Deduce(..),
 
   -- * Fixity and Precedence
   -- | These are used to determine whether a constructor is infix or not and, if
@@ -112,6 +115,13 @@ data EP d r
     { from :: (d -> r) -- ^ Embed a @d@atatype into its @r@epresentation.
     , to   :: (r -> d) -- ^ Project @d@atatype from its @r@epresentation.
     }
+
+-- | A utility class to deduce the embedding-projection pair for a given
+-- datatype.
+
+class Deduce a b | a -> b where
+  -- | The parameter is never evaluated, so @undefined@ is acceptable.
+  deduceEP :: a -> EP a b
 
 -- | Contains useful meta-information about the syntax used in a constructor
 -- declaration.

@@ -14,6 +14,7 @@
 {-# OPTIONS_GHC -Wall #-}
 
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
@@ -22,7 +23,6 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Bool (
-  epBool,
   conFalse,
   conTrue,
   repBool,
@@ -40,17 +40,18 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
-fromBool :: Bool -> Unit :+: Unit
-fromBool False = L Unit
-fromBool True  = R Unit
+type BoolS = Unit :+: Unit
 
-toBool :: Unit :+: Unit -> Bool
-toBool (L Unit) = False
-toBool (R Unit) = True
-
--- | Embedding-projection pair for 'Bool'.
-epBool :: EP Bool (Unit :+: Unit)
+epBool :: EP Bool BoolS
 epBool = EP fromBool toBool
+  where
+    fromBool False = L Unit
+    fromBool True  = R Unit
+    toBool (L Unit) = False
+    toBool (R Unit) = True
+
+instance Deduce Bool BoolS where
+  deduceEP _ = epBool
 
 -----------------------------------------------------------------------------
 -- Representation values

@@ -14,6 +14,7 @@
 {-# OPTIONS_GHC -Wall #-}
 
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
@@ -22,7 +23,6 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Either (
-  epEither,
   conLeft,
   conRight,
   repEither,
@@ -40,17 +40,18 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
-fromEither :: Either a b -> a :+: b
-fromEither (Left a)  = L a
-fromEither (Right b) = R b
+type EitherS a b = a :+: b
 
-toEither :: a :+: b -> Either a b
-toEither (L a) = Left a
-toEither (R b) = Right b
-
--- | Embedding-projection pair for 'Either'.
-epEither :: EP (Either a b) (a :+: b)
+epEither :: EP (Either a b) (EitherS a b)
 epEither = EP fromEither toEither
+  where
+    fromEither (Left a)  = L a
+    fromEither (Right b) = R b
+    toEither (L a) = Left a
+    toEither (R b) = Right b
+
+instance Deduce (Either a b) (EitherS a b) where
+  deduceEP _ = epEither
 
 -----------------------------------------------------------------------------
 -- Representation values

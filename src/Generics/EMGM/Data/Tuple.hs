@@ -15,6 +15,7 @@
 {-# OPTIONS_GHC -Wall #-}
 
 {-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE TypeSynonymInstances   #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
@@ -24,7 +25,6 @@
 module Generics.EMGM.Data.Tuple (
 
   -- * Unit: @()@
-  epTuple0,
   conTuple0,
   repTuple0,
   frepTuple0,
@@ -33,7 +33,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple0,
 
   -- * Pair: @(a,b)@
-  epTuple2,
   conTuple2,
   repTuple2,
   frepTuple2,
@@ -42,7 +41,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple2,
 
   -- * Triple: @(a,b,c)@
-  epTuple3,
   conTuple3,
   repTuple3,
   frepTuple3,
@@ -51,7 +49,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple3,
 
   -- * Quadruple: @(a,b,c,d)@
-  epTuple4,
   conTuple4,
   repTuple4,
   frepTuple4,
@@ -60,7 +57,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple4,
 
   -- * Quintuple: @(a,b,c,d,e)@
-  epTuple5,
   conTuple5,
   repTuple5,
   frepTuple5,
@@ -69,7 +65,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple5,
 
   -- * Sextuple: @(a,b,c,d,e,f)@
-  epTuple6,
   conTuple6,
   repTuple6,
   frepTuple6,
@@ -78,7 +73,6 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple6,
 
   -- * Septuple: @(a,b,c,d,e,f,h)@
-  epTuple7,
   conTuple7,
   repTuple7,
   frepTuple7,
@@ -96,10 +90,12 @@ import Generics.EMGM.Functions.Everywhere
 -- 0: ()
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @()@.
 epTuple0 :: EP () Unit
 epTuple0 = EP (\() -> Unit)
               (\Unit -> ())
+
+instance Deduce () Unit where
+  deduceEP _ = epTuple0
 
 -- | Constructor description for @()@.
 conTuple0 :: ConDescr
@@ -140,10 +136,12 @@ frep3Tuple0 =
 -- 2: (a,b)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,)@.
 epTuple2 :: EP (a,b) (a :*: b)
 epTuple2 = EP (\(a,b) -> a :*: b)
               (\(a :*: b) -> (a,b))
+
+instance Deduce (a,b) (a :*: b) where
+  deduceEP _ = epTuple2
 
 -- | Constructor description for @(,)@.
 conTuple2 :: ConDescr
@@ -184,10 +182,12 @@ frep3Tuple2 ra rb =
 -- 3: (a,b,c)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,,)@.
 epTuple3 :: EP (a,b,c) (a :*: b :*: c)
 epTuple3 = EP (\(a,b,c) -> a :*: b :*: c)
               (\(a :*: b :*: c) -> (a,b,c))
+
+instance Deduce (a,b,c) (a :*: b :*: c) where
+  deduceEP _ = epTuple3
 
 -- | Constructor description for @(,,)@.
 conTuple3 :: ConDescr
@@ -230,10 +230,12 @@ frep3Tuple3 ra rb rc =
 -- 4: (a,b,c,d)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,,,)@.
 epTuple4 :: EP (a,b,c,d) (a :*: b :*: c :*: d)
 epTuple4 = EP (\(a,b,c,d) -> a :*: b :*: c :*: d)
               (\(a :*: b :*: c :*: d) -> (a,b,c,d))
+
+instance Deduce (a,b,c,d) (a :*: b :*: c :*: d) where
+  deduceEP _ = epTuple4
 
 -- | Constructor description for @(,,,)@.
 conTuple4 :: ConDescr
@@ -276,10 +278,12 @@ frep3Tuple4 ra rb rc rd =
 -- 5: (a,b,c,d,e)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,,,,)@.
 epTuple5 :: EP (a,b,c,d,e) (a :*: b :*: c :*: d :*: e)
 epTuple5 = EP (\(a,b,c,d,e) -> a :*: b :*: c :*: d :*: e)
               (\(a :*: b :*: c :*: d :*: e) -> (a,b,c,d,e))
+
+instance Deduce (a,b,c,d,e) (a :*: b :*: c :*: d :*: e) where
+  deduceEP _ = epTuple5
 
 -- | Constructor description for @(,,,,)@.
 conTuple5 :: ConDescr
@@ -322,10 +326,12 @@ frep3Tuple5 ra rb rc rd re =
 -- 6: (a,b,c,d,e,f)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,,,,,)@.
 epTuple6 :: EP (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f)
 epTuple6 = EP (\(a,b,c,d,e,f) -> a :*: b :*: c :*: d :*: e :*: f)
               (\(a :*: b :*: c :*: d :*: e :*: f) -> (a,b,c,d,e,f))
+
+instance Deduce (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f) where
+  deduceEP _ = epTuple6
 
 -- | Constructor description for @(,,,,,)@.
 conTuple6 :: ConDescr
@@ -369,10 +375,12 @@ frep3Tuple6 ra rb rc rd re rf =
 -- 7: (a,b,c,d,e,f,h)
 -----------------------------------------------------------------------------
 
--- | Embedding-projection pair for @(,,,,,,)@.
 epTuple7 :: EP (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h)
 epTuple7 = EP (\(a,b,c,d,e,f,h) -> a :*: b :*: c :*: d :*: e :*: f :*: h)
               (\(a :*: b :*: c :*: d :*: e :*: f :*: h) -> (a,b,c,d,e,f,h))
+
+instance Deduce (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h) where
+  deduceEP _ = epTuple7
 
 -- | Constructor description for @(,,,,,,)@.
 conTuple7 :: ConDescr
