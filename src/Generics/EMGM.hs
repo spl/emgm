@@ -13,13 +13,6 @@
 --
 -- This module exports the most commonly used types, classes, and functions. The
 -- documentation is organized by topic for convenient access.
---
--- For more in-depth documentation, refer to one of the modules in these
--- hierarchies:
---
--- * "Generics.EMGM.Base"
---
--- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
 -----------------------------------------------------------------------------
 
 {-# OPTIONS_GHC -Wall #-}
@@ -59,14 +52,26 @@ module Generics.EMGM (
   -- information for some generic functions.
 
   ConDescr(..),
-  ConType(..),
-
+  LblDescr(..),
   Fixity(..),
+  Associativity(..),
+  Prec,
   prec,
-  minPrec,
-  maxPrec,
-  appPrec,
-  recPrec,
+
+  -- ** Generic Function Classes
+  --
+  -- | Generic functions are instances of these classes. The value-level
+  -- structure representation of datatypes is implemented using the members of
+  -- these classes. Thus, a generic function is simply a case statement on the
+  -- value-level structure.
+  --
+  -- Note that the numerical suffix represents the number of generic type
+  -- variables used in the generic function. No suffix represents 1 generic type
+  -- variable.
+
+  Generic(..),
+  Generic2(..),
+  Generic3(..),
 
   -- ** Representation Dispatchers
   --
@@ -102,21 +107,6 @@ module Generics.EMGM (
 
   BiFRep2(..),
 
-  -- ** Generic Function Definition
-  --
-  -- | Generic functions are instances of these classes. The value-level
-  -- structure representation of datatypes is implemented using the members of
-  -- these classes. Thus, a generic function is simply a case statement on the
-  -- value-level structure.
-  --
-  -- Note that the numerical suffix represents the number of generic type
-  -- variables used in the generic function. No suffix represents 1 generic type
-  -- variable.
-
-  Generic(..),
-  Generic2(..),
-  Generic3(..),
-
   -- * Generic Functions
   --
   -- | The following collection of functions use the common EMGM infrastructure
@@ -134,8 +124,6 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Collect".
 
-  Collect(..),
-
   collect,
 
   -- ** Compare Functions
@@ -144,19 +132,13 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Compare".
 
-  Compare(..),
-
   compare,
-
   eq,
   neq,
-
   lt,
   lteq,
-
   gt,
   gteq,
-
   min,
   max,
 
@@ -166,9 +148,7 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Constructor".
 
-  Constructor,
   constructor,
-  Labels,
   labels,
 
   -- ** Crush Functions
@@ -178,33 +158,24 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Crush".
 
-  Crush(..),
   Assoc(..),
-
   crush,
   crushl,
   crushr,
-
   flatten,
   flattenl,
   flattenr,
-
   first,
   firstl,
   firstr,
-
   and,
   or,
-
   any,
   all,
-
   sum,
   product,
-
   minimum,
   maximum,
-
   elem,
   notElem,
 
@@ -214,11 +185,8 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Enum".
 
-  Enum(..),
-
   enum,
   enumN,
-
   empty,
 
   -- ** Everywhere Functions
@@ -228,12 +196,7 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Everywhere".
 
-  Everywhere(..),
-
   everywhere,
-
-  Everywhere'(..),
-
   everywhere',
 
   -- ** Map Functions
@@ -245,45 +208,33 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Map".
 
-  Map(..),
-
   map,
-
   replace,
-
   bimap,
-
   cast,
 
   -- ** Read Functions
   --
-  -- | Functions similar to @deriving 'Prelude.Read'@ that parse a string and return a
+  -- | Functions similar to @deriving Prelude.Read@ that parse a string and return a
   -- value of a datatype.
   --
   -- For more details, see "Generics.EMGM.Functions.Read".
 
-  Read(..),
-
   readPrec,
   readP,
-
   readsPrec,
   reads,
-
   read,
 
   -- ** Show Functions
   --
-  -- | Functions similar to @deriving 'Prelude.Show'@ that return a string
+  -- | Functions similar to @deriving Prelude.Show@ that return a string
   -- representation of a value of a datatype.
   --
   -- For more details, see "Generics.EMGM.Functions.Show".
 
-  Show(..),
-
   showsPrec,
   shows,
-
   show,
 
   -- ** Transpose Functions
@@ -292,7 +243,6 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.Transpose".
 
-  Transpose,
   transpose,
   transposeE,
 
@@ -303,8 +253,6 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.UnzipWith".
 
-  UnzipWith(..),
-
   unzip,
   unzipWith,
 
@@ -314,8 +262,6 @@ module Generics.EMGM (
   -- values into one.
   --
   -- For more details, see "Generics.EMGM.Functions.ZipWith".
-
-  ZipWith(..),
 
   zipWithM,
   zipWith,
@@ -338,7 +284,6 @@ import Generics.EMGM.Functions.Show
 import Generics.EMGM.Functions.Transpose
 import Generics.EMGM.Functions.UnzipWith
 import Generics.EMGM.Functions.ZipWith
-
 
 -- Export the instances from these
 import Generics.EMGM.Data.Bool()
