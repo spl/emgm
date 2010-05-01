@@ -110,6 +110,7 @@ Library
                         Generics.EMGM.Functions
                         Generics.EMGM.Functions.Collect
                         Generics.EMGM.Functions.Compare
+                        Generics.EMGM.Functions.Constructor
                         Generics.EMGM.Functions.Crush
                         Generics.EMGM.Functions.Enum
                         Generics.EMGM.Functions.Everywhere
