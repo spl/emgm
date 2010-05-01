@@ -94,8 +94,8 @@ epTuple0 :: EP () Unit
 epTuple0 = EP (\() -> Unit)
               (\Unit -> ())
 
-instance Deduce () Unit where
-  deduceEP _ = epTuple0
+instance Representable () Unit where
+  epOf _ = epTuple0
 
 -- | Constructor description for @()@.
 conTuple0 :: ConDescr
@@ -140,8 +140,8 @@ epTuple2 :: EP (a,b) (a :*: b)
 epTuple2 = EP (\(a,b) -> a :*: b)
               (\(a :*: b) -> (a,b))
 
-instance Deduce (a,b) (a :*: b) where
-  deduceEP _ = epTuple2
+instance Representable (a,b) (a :*: b) where
+  epOf _ = epTuple2
 
 -- | Constructor description for @(,)@.
 conTuple2 :: ConDescr
@@ -186,8 +186,8 @@ epTuple3 :: EP (a,b,c) (a :*: b :*: c)
 epTuple3 = EP (\(a,b,c) -> a :*: b :*: c)
               (\(a :*: b :*: c) -> (a,b,c))
 
-instance Deduce (a,b,c) (a :*: b :*: c) where
-  deduceEP _ = epTuple3
+instance Representable (a,b,c) (a :*: b :*: c) where
+  epOf _ = epTuple3
 
 -- | Constructor description for @(,,)@.
 conTuple3 :: ConDescr
@@ -234,8 +234,8 @@ epTuple4 :: EP (a,b,c,d) (a :*: b :*: c :*: d)
 epTuple4 = EP (\(a,b,c,d) -> a :*: b :*: c :*: d)
               (\(a :*: b :*: c :*: d) -> (a,b,c,d))
 
-instance Deduce (a,b,c,d) (a :*: b :*: c :*: d) where
-  deduceEP _ = epTuple4
+instance Representable (a,b,c,d) (a :*: b :*: c :*: d) where
+  epOf _ = epTuple4
 
 -- | Constructor description for @(,,,)@.
 conTuple4 :: ConDescr
@@ -282,8 +282,8 @@ epTuple5 :: EP (a,b,c,d,e) (a :*: b :*: c :*: d :*: e)
 epTuple5 = EP (\(a,b,c,d,e) -> a :*: b :*: c :*: d :*: e)
               (\(a :*: b :*: c :*: d :*: e) -> (a,b,c,d,e))
 
-instance Deduce (a,b,c,d,e) (a :*: b :*: c :*: d :*: e) where
-  deduceEP _ = epTuple5
+instance Representable (a,b,c,d,e) (a :*: b :*: c :*: d :*: e) where
+  epOf _ = epTuple5
 
 -- | Constructor description for @(,,,,)@.
 conTuple5 :: ConDescr
@@ -330,8 +330,8 @@ epTuple6 :: EP (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f)
 epTuple6 = EP (\(a,b,c,d,e,f) -> a :*: b :*: c :*: d :*: e :*: f)
               (\(a :*: b :*: c :*: d :*: e :*: f) -> (a,b,c,d,e,f))
 
-instance Deduce (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f) where
-  deduceEP _ = epTuple6
+instance Representable (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f) where
+  epOf _ = epTuple6
 
 -- | Constructor description for @(,,,,,)@.
 conTuple6 :: ConDescr
@@ -379,8 +379,8 @@ epTuple7 :: EP (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h)
 epTuple7 = EP (\(a,b,c,d,e,f,h) -> a :*: b :*: c :*: d :*: e :*: f :*: h)
               (\(a :*: b :*: c :*: d :*: e :*: f :*: h) -> (a,b,c,d,e,f,h))
 
-instance Deduce (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h) where
-  deduceEP _ = epTuple7
+instance Representable (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h) where
+  epOf _ = epTuple7
 
 -- | Constructor description for @(,,,,,,)@.
 conTuple7 :: ConDescr

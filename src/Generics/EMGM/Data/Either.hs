@@ -50,8 +50,8 @@ epEither = EP fromEither toEither
     toEither (L a) = Left a
     toEither (R b) = Right b
 
-instance Deduce (Either a b) (EitherS a b) where
-  deduceEP _ = epEither
+instance Representable (Either a b) (EitherS a b) where
+  epOf _ = epEither
 
 -----------------------------------------------------------------------------
 -- Representation values

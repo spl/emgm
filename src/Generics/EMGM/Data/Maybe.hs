@@ -50,8 +50,8 @@ epMaybe = EP fromMaybe toMaybe
     toMaybe (L Unit) =  Nothing
     toMaybe (R a)    =  Just a
 
-instance Deduce (Maybe a) (MaybeS a) where
-  deduceEP _ = epMaybe
+instance Representable (Maybe a) (MaybeS a) where
+  epOf _ = epMaybe
 
 -----------------------------------------------------------------------------
 -- Representation values

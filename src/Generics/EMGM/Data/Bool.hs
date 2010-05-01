@@ -50,8 +50,8 @@ epBool = EP fromBool toBool
     toBool (L Unit) = False
     toBool (R Unit) = True
 
-instance Deduce Bool BoolS where
-  deduceEP _ = epBool
+instance Representable Bool BoolS where
+  epOf _ = epBool
 
 -----------------------------------------------------------------------------
 -- Representation values

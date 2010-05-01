@@ -49,8 +49,8 @@ epList = EP fromList toList
     toList (L Unit)        =  []
     toList (R (a :*: as))  =  a : as
 
-instance Deduce [a] (ListS a) where
-  deduceEP _ = epList
+instance Representable [a] (ListS a) where
+  epOf _ = epList
 
 -----------------------------------------------------------------------------
 -- Representation values

@@ -59,7 +59,7 @@ module Generics.EMGM.Representation (
   -- datatype and its structure representation.
 
   EP(..),
-  Deduce(..),
+  Representable(..),
 
   -- * Fixity and Precedence
   -- | These are used to determine whether a constructor is infix or not and, if
@@ -116,12 +116,12 @@ data EP d r
     , to   :: (r -> d) -- ^ Project @d@atatype from its @r@epresentation.
     }
 
--- | A utility class to deduce the embedding-projection pair for a given
--- datatype.
+-- | A class to reveal the embedding-projection pair for a given datatype and
+-- its isomorphic representation type.
 
-class Deduce a b | a -> b where
+class Representable a b | a -> b where
   -- | The parameter is never evaluated, so @undefined@ is acceptable.
-  deduceEP :: a -> EP a b
+  epOf :: a -> EP a b
 
 -- | Contains useful meta-information about the syntax used in a constructor
 -- declaration.
