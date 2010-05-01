@@ -27,6 +27,7 @@
 module Generics.EMGM.Functions.Map (
   Map(..),
   map,
+  replace,
   bimap,
   cast,
 ) where
@@ -73,8 +74,14 @@ instance Generic2 Map where
 -----------------------------------------------------------------------------
 
 -- | Apply a function to all elements of a container datatype (kind @* -> *@).
+
 map :: (FRep2 Map f) => (a -> b) -> f a -> f b
 map = selMap . frep2 . Map
+
+-- | Replace all values in a container with the same value. This is a
+-- convenience function for the implementation @'map' . 'const'@.
+replace :: (FRep2 Map f) => a -> f b -> f a
+replace = map . const
 
 -- | Given a datatype @F a b@, @bimap f g@ applies the function @f :: a -> c@ to
 -- every @a@-element and the function @g :: b -> d@ to every @b@-element. The
