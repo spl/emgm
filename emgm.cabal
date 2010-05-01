@@ -117,8 +117,9 @@ Library
                         Generics.EMGM.Functions.Map
                         Generics.EMGM.Functions.Read
                         Generics.EMGM.Functions.Show
-                        Generics.EMGM.Functions.ZipWith
+                        Generics.EMGM.Functions.Transpose
                         Generics.EMGM.Functions.UnzipWith
+                        Generics.EMGM.Functions.ZipWith
 
                         -- Supported datatypes
                         Generics.EMGM.Data.Bool
