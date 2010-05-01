@@ -172,7 +172,7 @@ data Associativity
   | RightAssoc
 
   -- | Declared with infix
-  | NotAssoc
+  | NonAssoc
   deriving (Eq, Ord, Read, Show)
 
 -- TODO: Need smart constructor(s) for ConDescr, so we can verify things.
