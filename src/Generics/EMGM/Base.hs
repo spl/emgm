@@ -49,15 +49,17 @@ module Generics.EMGM.Base (
 import Generics.EMGM.Representation
 
 -- | This class forms the foundation for defining generic functions with a
--- single generic argument. Each method represents a type case. There are
--- cases for primitive types, structural representation, and for user-defined
--- datatypes ('rtype').
+-- single generic argument. Each method represents a type case. There are cases
+-- for primitive types, structural representation types, and for user-defined
+-- datatypes.
 --
--- The functions included with EMGM that use 'Generic' are:
+-- The included modules using @Generic@ are:
 --
 -- * "Generics.EMGM.Functions.Collect"
 --
 -- * "Generics.EMGM.Functions.Compare"
+--
+-- * "Generics.EMGM.Functions.Constructor"
 --
 -- * "Generics.EMGM.Functions.Crush"
 --
@@ -139,9 +141,11 @@ infixr 6 `rprod`
 -- | This class forms the foundation for defining generic functions with two
 -- generic arguments. See 'Generic' for details.
 --
--- The functions included with EMGM that use 'Generic2' are:
+-- The included modules using @Generic2@ are:
 --
 -- * "Generics.EMGM.Functions.Map"
+--
+-- * "Generics.EMGM.Functions.Transpose"
 
 class Generic2 g where
 
@@ -173,7 +177,7 @@ infixr 6 `rprod2`
 -- | This class forms the foundation for defining generic functions with three
 -- generic arguments. See 'Generic' for details.
 --
--- The functions included with EMGM that use 'Generic3' are:
+-- The included modules using @Generic3@ are:
 --
 -- * "Generics.EMGM.Functions.UnzipWith"
 --

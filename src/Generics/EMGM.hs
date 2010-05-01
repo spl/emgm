@@ -160,6 +160,17 @@ module Generics.EMGM (
   min,
   max,
 
+  -- ** Constructor Functions
+  --
+  -- | Functions that extract metadata about the constructor representation.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Constructor".
+
+  Constructor,
+  constructor,
+  Labels,
+  labels,
+
   -- ** Crush Functions
   --
   -- | Functions that crush a polymorphic functor container into an iteration
@@ -275,6 +286,16 @@ module Generics.EMGM (
 
   show,
 
+  -- ** Transpose Functions
+  --
+  -- | Functions that transpose polymorphic functor values.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Transpose".
+
+  Transpose,
+  transpose,
+  transposeE,
+
   -- ** UnzipWith Functions
   --
   -- | Functions that split a polymorphic functor values into two structurally
@@ -305,7 +326,19 @@ module Generics.EMGM (
 import qualified Prelude ()
 
 import Generics.EMGM.Base
-import Generics.EMGM.Functions
+import Generics.EMGM.Functions.Collect
+import Generics.EMGM.Functions.Compare
+import Generics.EMGM.Functions.Constructor
+import Generics.EMGM.Functions.Crush
+import Generics.EMGM.Functions.Enum
+import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Map
+import Generics.EMGM.Functions.Read
+import Generics.EMGM.Functions.Show
+import Generics.EMGM.Functions.Transpose
+import Generics.EMGM.Functions.UnzipWith
+import Generics.EMGM.Functions.ZipWith
+
 
 -- Export the instances from these
 import Generics.EMGM.Data.Bool()
