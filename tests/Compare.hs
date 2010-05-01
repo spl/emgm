@@ -1,13 +1,13 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Compare
--- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- Copyright   :  (c) 2008 - 2010 Universiteit Utrecht
 -- License     :  BSD3
 --
 -- Maintainer  :  generics@haskell.org
 -----------------------------------------------------------------------------
+
+{-# LANGUAGE FlexibleContexts #-}
 
 module Compare where
 
@@ -17,9 +17,10 @@ import Test.HUnit
 import Data.Generics (Data)
 
 import Generics.EMGM
+import Generics.EMGM.Functions.Compare
 
 import Base
-import TTree
+import A
 
 -----------------------------------------------------------------------------
 -- Utility functions
@@ -56,9 +57,9 @@ test_min = test_f min P.min
 test_max :: (P.Show a, Data a, Ord a, Rep Compare a) => a -> a -> Test
 test_max = test_f max P.max
 
-t1, t2 :: T (T Float)
-t1 = L1 (L3 8.8 :^: 9.9) :<>: L4 (L4 (L2 (L3 11.11) (L1 (L1 22.22))) (L3 33.33)) (L5 0.44 (L3 55.55) 0.66)
-t2 = L1 (L3 8.8 :^: 9.9) :<>: L4 (L4 (L2 (L3 11.11) (L1 (L3 22.22))) (L3 33.33)) (L5 0.44 (L3 55.55) 0.66)
+t1, t2 :: A (A Float)
+t1 = A1 (A3 8.8 :^: 9.9) :<>: A4 (A4 (A2 11 (A1 (A1 22.22))) 33) 44
+t2 = A1 (A3 8.8 :^: 9.9) :<>: A4 (A4 (A2 11 (A1 (A3 22.22))) 33) 44
 
 -----------------------------------------------------------------------------
 -- Test collections

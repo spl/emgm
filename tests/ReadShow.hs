@@ -1,14 +1,14 @@
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  ReadShow
--- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- Copyright   :  (c) 2008 - 2010 Universiteit Utrecht
 -- License     :  BSD3
 --
 -- Maintainer  :  generics@haskell.org
 -----------------------------------------------------------------------------
+
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
 
 module ReadShow (tests) where
 
@@ -18,9 +18,11 @@ import Data.Generics (Data)
 import Test.HUnit
 
 import Generics.EMGM
+import Generics.EMGM.Functions.Read
+import Generics.EMGM.Functions.Show
 
 import Base
-import TTree
+import A
 
 -----------------------------------------------------------------------------
 -- Utility functions
@@ -59,17 +61,17 @@ tests =
     , test_all True  (Right '2' :: Either Float Char)
     , test_all True  (Nothing :: Maybe Double)
     , test_all True  (Just 256 :: Maybe Int)
-    , test_all True  (L1 5 :: T Int)
-    , test_all True  (L1 (Just 5) :: T (Maybe Int))
-    , test_all True  (L2 88 (L1 99) :: T Int)
-    , test_all True  (L3 654 :: T Int)
-    , test_all True  (Just (L3 654) :: Maybe (T Int))
-    , test_all True  (L4 (L2 1 (L3 2)) 3 :: T Int)
-    , test_all True  (L5 'a' (L4 (L3 102) 103) 104 :: T Int)
-    , test_all True  (L3 8.0 :^: 8.0 :: T Char)
-    , test_all True  ((L3 (-0.2) :^: 0.2) :^: 2.0 :: T Char)
-    , test_all False (L1 1.1 :<>: L1 1.2 :^: 1.3 :: T Float)
-    , test_all False (L1 (L3 8.8 :^: 9.9) :<>: L4 (L4 (L2 101 (L1 (L1 22.22))) (-1)) 55 :: T (T Float))
+    , test_all True  (A1 5 :: A Int)
+    , test_all True  (A1 (Just 5) :: A (Maybe Int))
+    , test_all True  (A2 88 (A1 99) :: A Int)
+    , test_all True  (A3 654 :: A Int)
+    , test_all True  (Just (A3 654) :: Maybe (A Int))
+    , test_all True  (A4 (A2 1 (A3 2)) 3 :: A Int)
+    , test_all True  (A5 'a' (A4 (A3 102) 103) 104 :: A Int)
+    , test_all True  (A3 8.0 :^: 8.0 :: A Char)
+    , test_all True  ((A3 (-0.2) :^: 0.2) :^: 2.0 :: A Char)
+    , test_all False (A1 1.1 :<>: A1 1.2 :^: 1.3 :: A Float)
+    , test_all False (A1 (A3 8.8 :^: 9.9) :<>: A4 (A4 (A2 101 (A1 (A1 22.22))) (-1)) 55 :: A (A Float))
     , test_all True  [1,2,3,4,5 :: Int]
     , test_all True  [[5.3,3.5],[35.0],[0.53 :: Float]]
     , test_all True  "abcdefgh"
@@ -80,6 +82,6 @@ tests =
     , test_all True  (1::Int,2::Float,3::Double,'4')
     , test_all True  (1::Int,2::Float,3::Double,'4',False)
     , test_all True  (1::Int,2::Float,3::Double,'4',False,Just (6::Int))
-    , test_all True  (1::Int,2::Float,3::Double,'4',False,Just (6::Int),L1 (7::Float))
+    , test_all True  (1::Int,2::Float,3::Double,'4',False,Just (6::Int),A1 (7::Float))
     ]
 

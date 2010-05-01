@@ -1,8 +1,7 @@
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Everywhere
--- Copyright   :  (c) 2008, 2009 Universiteit Utrecht
+-- Copyright   :  (c) 2008 - 2010 Universiteit Utrecht
 -- License     :  BSD3
 --
 -- Maintainer  :  generics@haskell.org
@@ -10,7 +9,7 @@
 
 module Everywhere (tests) where
 
-import TTree
+import A
 import Generics.EMGM as G
 
 import Test.HUnit
@@ -60,9 +59,9 @@ f_list_char2 []    = []
 f_unit :: () -> ()
 f_unit = id
 
-f_ttree1 :: T Int -> T Int
-f_ttree1 (L1 4)         = L1 7
-f_ttree1 (L2 5 (L1 4))  = L1 9
+f_ttree1 :: A Int -> A Int
+f_ttree1 (A1 4)         = A1 7
+f_ttree1 (A2 5 (A1 4))  = A1 9
 f_ttree1 x              = x
 
 -----------------------------------------------------------------------------
@@ -94,8 +93,8 @@ tests =
        , test_e "(,,,,)" f_unit ((),(),(),(),()) id
        , test_e "(,,,,,)" f_unit ((),(),(),(),(),()) id
        , test_e "(,,,,,,)" f_unit ((),(),(),(),(),(),()) id
-       , test_e "T1" f_ttree1 (L1 4) f_ttree1
-       , test_e "T2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L2 5 (L1 7)))
+       , test_e "T1" f_ttree1 (A1 4) f_ttree1
+       , test_e "T2" f_ttree1 (A2 5 (A1 4) :: A Int) (const (A2 5 (A1 7)))
        ]
 
     , "Everywhere'" ~:
@@ -120,8 +119,8 @@ tests =
        , test_e' "(,,,,)" f_unit ((),(),(),(),()) id
        , test_e' "(,,,,,)" f_unit ((),(),(),(),(),()) id
        , test_e' "(,,,,,,)" f_unit ((),(),(),(),(),(),()) id
-       , test_e' "T1" f_ttree1 (L1 4) f_ttree1
-       , test_e' "T2" f_ttree1 (L2 (5::Int) (L1 4)) (const (L1 9))
+       , test_e' "T1" f_ttree1 (A1 4) f_ttree1
+       , test_e' "T2" f_ttree1 (A2 5 (A1 4) :: A Int) (const (A1 9))
        ]
 
     ]
