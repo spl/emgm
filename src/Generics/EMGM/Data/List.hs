@@ -31,6 +31,8 @@ module Generics.EMGM.Data.List (
   bifrep2List,
 ) where
 
+import Control.Monad (MonadPlus)
+
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
@@ -113,8 +115,8 @@ instance (Generic2 g) => FRep2 g [] where
 instance (Generic3 g) => FRep3 g [] where
   frep3 = frep3List
 
-instance Rep (Collect [a]) [a] where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m [a]) [a] where
+  rep = Collect return
 
 instance (Rep (Everywhere [a]) a) => Rep (Everywhere [a]) [a] where
   rep = Everywhere app

@@ -32,6 +32,8 @@ module Generics.EMGM.Data.Maybe (
   bifrep2Maybe,
 ) where
 
+import Control.Monad (MonadPlus)
+
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
@@ -114,8 +116,8 @@ instance (Generic2 g) => FRep2 g Maybe where
 instance (Generic3 g) => FRep3 g Maybe where
   frep3 = frep3Maybe
 
-instance Rep (Collect (Maybe a)) (Maybe a) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (Maybe a)) (Maybe a) where
+  rep = Collect return
 
 instance (Rep (Everywhere (Maybe a)) a) => Rep (Everywhere (Maybe a)) (Maybe a) where
   rep = Everywhere app

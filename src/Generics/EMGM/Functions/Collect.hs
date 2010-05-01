@@ -8,7 +8,7 @@
 -- Stability   :  experimental
 -- Portability :  non-portable
 --
--- Summary: Generic function that collects all values of a specified type from a
+-- Summary: Generic function that collects values of a specified type from a
 -- generic value.
 --
 -----------------------------------------------------------------------------
@@ -26,6 +26,8 @@ module Generics.EMGM.Functions.Collect (
   collect,
 ) where
 
+import Control.Monad (MonadPlus(..))
+
 import Generics.EMGM.Base
 
 -----------------------------------------------------------------------------
@@ -33,7 +35,7 @@ import Generics.EMGM.Base
 -----------------------------------------------------------------------------
 
 -- | The type of a generic function that takes a value of one type and returns a
--- list of values of another type.
+-- collection of values of another type.
 --
 -- For datatypes to work with Collect, a special instance must be given. This
 -- instance is trivial to write. Given a type @T@, the 'Rep' instance looks like
@@ -43,36 +45,37 @@ import Generics.EMGM.Base
 -- >
 -- >  data T = ...
 -- >
--- >  instance Rep (Collect T) T where
--- >    rep = Collect (:[])
+-- >  instance (MonadPlus m) => Rep (Collect m T) T where
+-- >    rep = Collect return
 --
--- (Note the requirement of overlapping instances.) This instance triggers when
--- the result type (the first @T@) matches some value type (the second @T@)
--- contained within the argument to 'collect'. See the source of this module for
--- more examples.
-newtype Collect b a = Collect { selCollect :: a -> [b] }
+-- (Note that overlapping instances are required.) This instance triggers when
+-- the result type (the @T@ in @Collect m T@) matches the value type (the second
+-- @T@) contained within the argument to 'collect'. See the source of this
+-- module for more examples.
+
+newtype (MonadPlus m) => Collect m b a = Collect { selCollect :: a -> m b }
 
 -----------------------------------------------------------------------------
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rsumCollect :: Collect c a -> Collect c b -> a :+: b -> [c]
+rsumCollect :: (MonadPlus m) => Collect m c a -> Collect m c b -> a :+: b -> m c
 rsumCollect ra _  (L a) = selCollect ra a
 rsumCollect _  rb (R b) = selCollect rb b
 
-rprodCollect :: Collect c a -> Collect c b -> a :*: b -> [c]
-rprodCollect ra rb (a :*: b) = selCollect ra a ++ selCollect rb b
+rprodCollect :: (MonadPlus m) => Collect m c a -> Collect m c b -> a :*: b -> m c
+rprodCollect ra rb (a :*: b) = selCollect ra a `mplus` selCollect rb b
 
-rtypeCollect :: EP b a -> Collect c a -> b -> [c]
+rtypeCollect :: (MonadPlus m) => EP b a -> Collect m c a -> b -> m c
 rtypeCollect ep ra b = selCollect ra (from ep b)
 
-instance Generic (Collect b) where
-  rint           = Collect $ const []
-  rinteger       = Collect $ const []
-  rfloat         = Collect $ const []
-  rdouble        = Collect $ const []
-  rchar          = Collect $ const []
-  runit          = Collect $ const []
+instance (MonadPlus m) => Generic (Collect m b) where
+  rint           = Collect $ const mzero
+  rinteger       = Collect $ const mzero
+  rfloat         = Collect $ const mzero
+  rdouble        = Collect $ const mzero
+  rchar          = Collect $ const mzero
+  runit          = Collect $ const mzero
   rsum     ra rb = Collect $ rsumCollect ra rb
   rprod    ra rb = Collect $ rprodCollect ra rb
   rtype ep ra    = Collect $ rtypeCollect ep ra
@@ -81,20 +84,20 @@ instance Generic (Collect b) where
 -- Rep instance declarations
 -----------------------------------------------------------------------------
 
-instance Rep (Collect Int) Int where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m Int) Int where
+  rep = Collect return
 
-instance Rep (Collect Integer) Integer where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m Integer) Integer where
+  rep = Collect return
 
-instance Rep (Collect Float) Float where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m Float) Float where
+  rep = Collect return
 
-instance Rep (Collect Double) Double where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m Double) Double where
+  rep = Collect return
 
-instance Rep (Collect Char) Char where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m Char) Char where
+  rep = Collect return
 
 -----------------------------------------------------------------------------
 -- Exported functions
@@ -126,6 +129,6 @@ instance Rep (Collect Char) Char where
 --
 -- @collect@ only works if there is an instance for the return type as described
 -- in the @newtype 'Collect'@.
-collect :: (Rep (Collect b) a) => a -> [b]
+collect :: (MonadPlus m, Rep (Collect m b) a) => a -> m b
 collect = selCollect rep
 

@@ -82,6 +82,8 @@ module Generics.EMGM.Data.Tuple (
 
 ) where
 
+import Control.Monad (MonadPlus)
+
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
@@ -447,26 +449,26 @@ instance (Generic g, Rep g a, Rep g b, Rep g c, Rep g d, Rep g e, Rep g f, Rep g
 instance (Generic2 g) => BiFRep2 g (,) where
   bifrep2 = frep2Tuple2
 
-instance Rep (Collect ()) () where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m ()) () where
+  rep = Collect return
 
-instance Rep (Collect (a,b)) (a,b) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b)) (a,b) where
+  rep = Collect return
 
-instance Rep (Collect (a,b,c)) (a,b,c) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b,c)) (a,b,c) where
+  rep = Collect return
 
-instance Rep (Collect (a,b,c,d)) (a,b,c,d) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b,c,d)) (a,b,c,d) where
+  rep = Collect return
 
-instance Rep (Collect (a,b,c,d,e)) (a,b,c,d,e) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b,c,d,e)) (a,b,c,d,e) where
+  rep = Collect return
 
-instance Rep (Collect (a,b,c,d,e,f)) (a,b,c,d,e,f) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b,c,d,e,f)) (a,b,c,d,e,f) where
+  rep = Collect return
 
-instance Rep (Collect (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
-  rep = Collect (:[])
+instance (MonadPlus m) => Rep (Collect m (a,b,c,d,e,f,h)) (a,b,c,d,e,f,h) where
+  rep = Collect return
 
 instance Rep (Everywhere' ()) () where
   rep = Everywhere' ($)
