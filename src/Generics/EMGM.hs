@@ -1,4 +1,3 @@
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Generics.EMGM
@@ -22,6 +21,8 @@
 --
 -- * "Generics.EMGM.Functions" - Generic functions included with EMGM.
 -----------------------------------------------------------------------------
+
+{-# OPTIONS_GHC -Wall #-}
 
 module Generics.EMGM (
 
@@ -293,12 +294,13 @@ module Generics.EMGM (
 
   ZipWith(..),
 
-  zip,
+  zipWithM,
   zipWith,
+  zip,
 
 ) where
 
-import qualified Prelude
+import qualified Prelude ()
 
 import Generics.EMGM.Base
 import Generics.EMGM.Functions
