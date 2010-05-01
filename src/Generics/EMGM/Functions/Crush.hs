@@ -166,26 +166,25 @@ flattenr = flatten AssocRight
 flattenl :: (FRep (Crush [a]) f) => f a -> [a]
 flattenl = flatten AssocLeft
 
--- | Extract the first element of a container. If the container is empty, return
--- @Nothing@.
+-- | Extract the first element of a container. 'fail' if the container is empty.
 --
 -- This is the most general form in which you must specify the associativity.
 -- You may prefer to use 'firstr' or 'firstl'.
-first :: (FRep (Crush [a]) f) => Assoc -> f a -> Maybe a
+first :: (Monad m, FRep (Crush [a]) f) => Assoc -> f a -> m a
 first asc as = case flatten asc as of
-                 []  -> Nothing
-                 a:_ -> Just a
+                 []  -> fail "first: argument is empty"
+                 a:_ -> return a
 
 -- | A right-associative variant of 'first'.
 --
 -- Note that, for a list @ls :: [a]@, @fromJust (firstr ls) == head ls@.
-firstr :: (FRep (Crush [a]) f) => f a -> Maybe a
+firstr :: (Monad m, FRep (Crush [a]) f) => f a -> m a
 firstr = first AssocRight
 
 -- | A left-associative variant of 'first'.
 --
 -- Note that, for a list @ls :: [a]@, @fromJust (firstl ls) == last ls@.
-firstl :: (FRep (Crush [a]) f) => f a -> Maybe a
+firstl :: (Monad m, FRep (Crush [a]) f) => f a -> m a
 firstl = first AssocLeft
 
 -- | Determine if an element is a member of a container. This is a
