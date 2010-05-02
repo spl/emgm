@@ -32,7 +32,7 @@ module Generics.EMGM.Data.Either (
   bifrep2Either,
 ) where
 
-import Control.Monad (MonadPlus)
+import Control.Applicative (Alternative, pure)
 
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
@@ -110,8 +110,8 @@ instance (Generic g, Rep g a, Rep g b) => Rep g (Either a b) where
 instance (Generic2 g) => BiFRep2 g Either where
   bifrep2 = bifrep2Either
 
-instance (MonadPlus m) => Rep (Collect m (Either a b)) (Either a b) where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f (Either a b)) (Either a b) where
+  rep = Collect pure
 
 instance (Rep (Everywhere (Either a b)) a, Rep (Everywhere (Either a b)) b)
          => Rep (Everywhere (Either a b)) (Either a b) where

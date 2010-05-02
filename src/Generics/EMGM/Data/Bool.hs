@@ -32,7 +32,7 @@ module Generics.EMGM.Data.Bool (
   bifrep2Bool,
 ) where
 
-import Control.Monad (MonadPlus)
+import Control.Applicative (Alternative, pure)
 
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
@@ -105,8 +105,8 @@ bifrep2Bool =
 instance (Generic g) => Rep g Bool where
   rep = repBool
 
-instance (MonadPlus m) => Rep (Collect m Bool) Bool where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Bool) Bool where
+  rep = Collect pure
 
 instance Rep (Everywhere Bool) Bool where
   rep = Everywhere ($)

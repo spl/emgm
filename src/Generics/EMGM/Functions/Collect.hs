@@ -26,7 +26,7 @@ module Generics.EMGM.Functions.Collect (
   collect,
 ) where
 
-import Control.Monad (MonadPlus(..))
+import Control.Applicative (Alternative, empty, pure, (<|>))
 
 import Generics.EMGM.Base
 
@@ -45,37 +45,37 @@ import Generics.EMGM.Base
 -- >
 -- >  data T = ...
 -- >
--- >  instance (MonadPlus m) => Rep (Collect m T) T where
--- >    rep = Collect return
+-- >  instance (Alternative f) => Rep (Collect f T) T where
+-- >    rep = Collect pure
 --
 -- (Note that overlapping instances are required.) This instance triggers when
--- the result type (the @T@ in @Collect m T@) matches the value type (the second
+-- the result type (the @T@ in @Collect f T@) matches the value type (the second
 -- @T@) contained within the argument to 'collect'. See the source of this
 -- module for more examples.
 
-newtype (MonadPlus m) => Collect m b a = Collect { selCollect :: a -> m b }
+newtype (Alternative f) => Collect f b a = Collect { selCollect :: a -> f b }
 
 -----------------------------------------------------------------------------
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rsumCollect :: (MonadPlus m) => Collect m c a -> Collect m c b -> a :+: b -> m c
+rsumCollect :: (Alternative f) => Collect f c a -> Collect f c b -> a :+: b -> f c
 rsumCollect ra _  (L a) = selCollect ra a
 rsumCollect _  rb (R b) = selCollect rb b
 
-rprodCollect :: (MonadPlus m) => Collect m c a -> Collect m c b -> a :*: b -> m c
-rprodCollect ra rb (a :*: b) = selCollect ra a `mplus` selCollect rb b
+rprodCollect :: (Alternative f) => Collect f c a -> Collect f c b -> a :*: b -> f c
+rprodCollect ra rb (a :*: b) = selCollect ra a <|> selCollect rb b
 
-rtypeCollect :: (MonadPlus m) => EP b a -> Collect m c a -> b -> m c
+rtypeCollect :: (Alternative f) => EP b a -> Collect f c a -> b -> f c
 rtypeCollect ep ra b = selCollect ra (from ep b)
 
-instance (MonadPlus m) => Generic (Collect m b) where
-  rint           = Collect $ const mzero
-  rinteger       = Collect $ const mzero
-  rfloat         = Collect $ const mzero
-  rdouble        = Collect $ const mzero
-  rchar          = Collect $ const mzero
-  runit          = Collect $ const mzero
+instance (Alternative f) => Generic (Collect f b) where
+  rint           = Collect $ const empty
+  rinteger       = Collect $ const empty
+  rfloat         = Collect $ const empty
+  rdouble        = Collect $ const empty
+  rchar          = Collect $ const empty
+  runit          = Collect $ const empty
   rsum     ra rb = Collect $ rsumCollect ra rb
   rprod    ra rb = Collect $ rprodCollect ra rb
   rtype ep ra    = Collect $ rtypeCollect ep ra
@@ -84,20 +84,20 @@ instance (MonadPlus m) => Generic (Collect m b) where
 -- Rep instance declarations
 -----------------------------------------------------------------------------
 
-instance (MonadPlus m) => Rep (Collect m Int) Int where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Int) Int where
+  rep = Collect pure
 
-instance (MonadPlus m) => Rep (Collect m Integer) Integer where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Integer) Integer where
+  rep = Collect pure
 
-instance (MonadPlus m) => Rep (Collect m Float) Float where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Float) Float where
+  rep = Collect pure
 
-instance (MonadPlus m) => Rep (Collect m Double) Double where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Double) Double where
+  rep = Collect pure
 
-instance (MonadPlus m) => Rep (Collect m Char) Char where
-  rep = Collect return
+instance (Alternative f) => Rep (Collect f Char) Char where
+  rep = Collect pure
 
 -----------------------------------------------------------------------------
 -- Exported functions
@@ -129,6 +129,6 @@ instance (MonadPlus m) => Rep (Collect m Char) Char where
 --
 -- @collect@ only works if there is an instance for the return type as described
 -- in the @newtype 'Collect'@.
-collect :: (MonadPlus m, Rep (Collect m b) a) => a -> m b
+collect :: (Alternative f, Rep (Collect f b) a) => a -> f b
 collect = selCollect rep
 
