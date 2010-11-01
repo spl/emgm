@@ -28,7 +28,6 @@ newtype Empty a = Empty { selEmpty :: a }
 
 -- Instance of Generic
 instance Generic Empty where
-  rconstant      = error "Unreachable"
   rint           = Empty 0
   rinteger       = Empty 0
   rfloat         = Empty 0

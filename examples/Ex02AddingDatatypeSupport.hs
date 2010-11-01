@@ -25,8 +25,8 @@
 
 module Ex02AddingDatatypeSupport where
 
-import Generics.EMGM.Derive
-import qualified Generics.EMGM.Functions as G
+import qualified Generics.EMGM as G
+import Generics.EMGM.Base
 
 -- Using generic functions on your own datatypes
 
@@ -46,11 +46,12 @@ epTree = EP from' to' where
 conLeaf, conBranch :: ConDescr
 conLeaf = ConDescr {
   conName = "Leaf",
-  conArity = 1, conLabels = [], conFixity = Nonfix
+  conArity = 1, conRecord = False, conFixity = Prefix
   }
+
 conBranch = ConDescr {
   conName = "Branch",
-  conArity = 2, conLabels = [], conFixity = Nonfix
+  conArity = 2, conRecord = False, conFixity = Prefix
   }
 
 --    More structural definition:
