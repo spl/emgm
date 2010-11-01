@@ -123,7 +123,7 @@ transpose
   => f (g a)
   -> m (g (f a))
 transpose xs =
-  firstr xs >>= selTranspose (frep2 (Transpose (const . return))) xs
+  first AssocRight xs >>= selTranspose (frep2 (Transpose (const . return))) xs
 
 -- | A convenient version of 'transpose' that returns the 'empty' value on
 -- failure.

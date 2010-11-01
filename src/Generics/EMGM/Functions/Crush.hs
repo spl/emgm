@@ -86,11 +86,13 @@ import Generics.EMGM.Functions.Compare
 -----------------------------------------------------------------------------
 
 -- | Associativity of the binary operator used for 'crush'
+
 data Assoc = AssocLeft  -- ^ Left-associative
            | AssocRight -- ^ Right-associative
 
 -- | The type of a generic function that takes an associativity and two
 -- arguments of different types and returns a value of the type of the second.
+
 newtype Crush b a = Crush { selCrush :: Assoc -> a -> b -> b }
 
 -----------------------------------------------------------------------------
@@ -128,6 +130,7 @@ instance Generic (Crush b) where
 --
 -- This is the most general form in which you must specify the associativity.
 -- You may prefer to use 'crushr' or 'crushl'.
+
 crush ::
   (FRep (Crush b) f)
   => Assoc         -- ^ Associativity of the binary operator (left or right).
@@ -140,10 +143,12 @@ crush asc f z x = selCrush (frep (Crush f')) asc x z
   where f' _ = f -- necessary to skip the asc arg
 
 -- | A right-associative variant of 'crush'.
+
 crushr :: (FRep (Crush b) f) => (a -> b -> b) -> b -> f a -> b
 crushr = crush AssocRight
 
 -- | A left-associative variant of 'crush'.
+
 crushl :: (FRep (Crush b) f) => (a -> b -> b) -> b -> f a -> b
 crushl = crush AssocLeft
 
@@ -151,65 +156,77 @@ crushl = crush AssocLeft
 --
 -- This is the most general form in which you must specify the associativity.
 -- You may prefer to use 'flattenr' or 'flattenl'.
+
 flatten :: (FRep (Crush [a]) f) => Assoc -> f a -> [a]
 flatten asc = crush asc (:) []
 
 -- | A right-associative variant of 'flatten'.
 --
 -- Note that, for a list @ls :: [a]@, @flattenr ls == ls@.
+
 flattenr :: (FRep (Crush [a]) f) => f a -> [a]
 flattenr = flatten AssocRight
 
 -- | A left-associative variant of 'flatten'.
 --
 -- Note that, for a list @ls :: [a]@, @flattenl ls == reverse ls@.
+
 flattenl :: (FRep (Crush [a]) f) => f a -> [a]
 flattenl = flatten AssocLeft
 
 -- | Extract the first element of a container. 'fail' if the container is empty.
 --
--- This is the most general form in which you must specify the associativity.
--- You may prefer to use 'firstr' or 'firstl'.
+-- This is the most general form in which you must specify the associativity and
+-- the 'Monad' instance. You may prefer to use the more convenient 'firstr' or
+-- 'firstl'.
+
 first :: (Monad m, FRep (Crush [a]) f) => Assoc -> f a -> m a
 first asc as = case flatten asc as of
                  []  -> fail "first: argument is empty"
                  a:_ -> return a
 
--- | A right-associative variant of 'first'.
+-- | A right-associative 'Maybe' variant of 'first'.
 --
 -- Note that, for a list @ls :: [a]@, @fromJust (firstr ls) == head ls@.
-firstr :: (Monad m, FRep (Crush [a]) f) => f a -> m a
+
+firstr :: (FRep (Crush [a]) f) => f a -> Maybe a
 firstr = first AssocRight
 
--- | A left-associative variant of 'first'.
+-- | A left-associative 'Maybe' variant of 'first'.
 --
 -- Note that, for a list @ls :: [a]@, @fromJust (firstl ls) == last ls@.
-firstl :: (Monad m, FRep (Crush [a]) f) => f a -> m a
+
+firstl :: (FRep (Crush [a]) f) => f a -> Maybe a
 firstl = first AssocLeft
 
 -- | Determine if an element is a member of a container. This is a
 -- generalization of the 'Prelude' function of the same name.
+
 elem :: (Rep Compare a, FRep (Crush Bool) f) => a -> f a -> Bool
 elem x = any (eq x)
 
 -- | Determine if an element is not a member of a container. This is a
 -- generalization of the 'Prelude' function of the same name.
+
 notElem :: (Rep Compare a, FRep (Crush Bool) f) => a -> f a -> Bool
 notElem x = all (neq x)
 
 -- | Compute the sum of all elements in a container. This is a generalization of
 -- the 'Prelude' function of the same name.
+
 sum :: (Num a, FRep (Crush a) f) => f a -> a
 sum = crushr (+) 0
 
 -- | Compute the product of all elements in a container. This is a
 -- generalization of the 'Prelude' function of the same name.
+
 product :: (Num a, FRep (Crush a) f) => f a -> a
 product = crushr (*) 1
 
 -- | Determine the maximum element of a container. If the container is empty,
 -- return 'Nothing'. This is a generalization of the 'Prelude' function of the
 -- same name.
+
 maximum :: (Rep Compare a, FRep (Crush (Maybe a)) f) => f a -> Maybe a
 maximum = crushr f Nothing
   where f x Nothing  = Just x
@@ -218,6 +235,7 @@ maximum = crushr f Nothing
 -- | Determine the minimum element of a container. If the container is empty,
 -- return 'Nothing'. This is a generalization of the 'Prelude' function of the
 -- same name.
+
 minimum :: (Rep Compare a, FRep (Crush (Maybe a)) f) => f a -> Maybe a
 minimum = crushr f Nothing
   where f x Nothing  = Just x
@@ -225,21 +243,25 @@ minimum = crushr f Nothing
 
 -- | Compute the conjunction of all elements in a container. This is a
 -- generalization of the 'Prelude' function of the same name.
+
 and :: (FRep (Crush Bool) f) => f Bool -> Bool
 and = crushr (&&) True
 
 -- | Compute the disjunction of all elements in a container. This is a
 -- generalization of the 'Prelude' function of the same name.
+
 or :: (FRep (Crush Bool) f) => f Bool -> Bool
 or = crushr (||) False
 
 -- | Determine if any element in a container satisfies the predicate @p@. This
 -- is a generalization of the 'Prelude' function of the same name.
+
 any :: (FRep (Crush Bool) f) => (a -> Bool) -> f a -> Bool
 any p = crushr (\x b -> b || p x) False
 
 -- | Determine if all elements in a container satisfy the predicate @p@. This
 -- is a generalization the 'Prelude' function of the same name.
+
 all :: (FRep (Crush Bool) f) => (a -> Bool) -> f a -> Bool
 all p = crushr (\x b -> b && p x) True
 
