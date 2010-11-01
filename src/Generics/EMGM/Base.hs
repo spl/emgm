@@ -28,6 +28,9 @@
 
 module Generics.EMGM.Base (
 
+  -- | Re-export the types and related functions for the structure
+  -- representation.
+
   module Generics.EMGM.Representation,
 
   -- * Classes for Generic Functions
