@@ -53,20 +53,20 @@ import Generics.EMGM.Base
 -- @T@) contained within the argument to 'collect'. See the source of this
 -- module for more examples.
 
-newtype (Alternative f) => Collect f b a = Collect { selCollect :: a -> f b }
+newtype Collect f b a = Collect { selCollect :: a -> f b }
 
 -----------------------------------------------------------------------------
 -- Generic instance declaration
 -----------------------------------------------------------------------------
 
-rsumCollect :: (Alternative f) => Collect f c a -> Collect f c b -> a :+: b -> f c
+rsumCollect :: Collect f c a -> Collect f c b -> a :+: b -> f c
 rsumCollect ra _  (L a) = selCollect ra a
 rsumCollect _  rb (R b) = selCollect rb b
 
 rprodCollect :: (Alternative f) => Collect f c a -> Collect f c b -> a :*: b -> f c
 rprodCollect ra rb (a :*: b) = selCollect ra a <|> selCollect rb b
 
-rtypeCollect :: (Alternative f) => EP b a -> Collect f c a -> b -> f c
+rtypeCollect :: EP b a -> Collect f c a -> b -> f c
 rtypeCollect ep ra b = selCollect ra (from ep b)
 
 instance (Alternative f) => Generic (Collect f b) where
@@ -103,7 +103,7 @@ instance (Alternative f) => Rep (Collect f Char) Char where
 -- Exported functions
 -----------------------------------------------------------------------------
 
--- | Collect values of type @b@ from some value of type @a@. An empty list means
+-- | Collect values of type @b@ from some value of type @a@. An 'empty' means
 -- no values were collected. If you expected otherwise, be sure that you have an
 -- instance such as @'Rep' ('Collect' B) B@ for the type @B@ that you are
 -- collecting.
