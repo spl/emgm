@@ -91,6 +91,7 @@ Library
                         Generics.EMGM.Data.Either
                         Generics.EMGM.Data.List
                         Generics.EMGM.Data.Maybe
+                        Generics.EMGM.Data.Ratio
                         Generics.EMGM.Data.Tuple
 
   build-depends:        base >= 3.0 && < 5.0
