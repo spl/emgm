@@ -37,6 +37,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -53,7 +54,7 @@ epList = EP fromList toList
     toList (L Unit)        =  []
     toList (R (a :*: as))  =  a : as
 
-instance Representable [a] (ListS a) where
+instance HasEP [a] (ListS a) where
   epOf _ = epList
 
 -----------------------------------------------------------------------------

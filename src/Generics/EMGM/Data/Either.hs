@@ -38,6 +38,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -54,7 +55,7 @@ epEither = EP fromEither toEither
     toEither (L a) = Left a
     toEither (R b) = Right b
 
-instance Representable (Either a b) (EitherS a b) where
+instance HasEP (Either a b) (EitherS a b) where
   epOf _ = epEither
 
 -----------------------------------------------------------------------------

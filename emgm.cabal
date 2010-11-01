@@ -75,11 +75,11 @@ Library
                         -- Generic functions
                         Generics.EMGM.Functions.Collect
                         Generics.EMGM.Functions.Compare
-                        Generics.EMGM.Functions.Constructor
                         Generics.EMGM.Functions.Crush
                         Generics.EMGM.Functions.Enum
                         Generics.EMGM.Functions.Everywhere
                         Generics.EMGM.Functions.Map
+                        Generics.EMGM.Functions.Meta
                         Generics.EMGM.Functions.Read
                         Generics.EMGM.Functions.Show
                         Generics.EMGM.Functions.Transpose

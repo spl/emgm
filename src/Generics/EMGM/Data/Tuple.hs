@@ -94,6 +94,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- 0: ()
@@ -105,7 +106,7 @@ epTuple0 :: EP () Tuple0S
 epTuple0 = EP (\() -> Unit)
               (\Unit -> ())
 
-instance Representable () Tuple0S where
+instance HasEP () Tuple0S where
   epOf _ = epTuple0
 
 -- | Constructor description for @()@.
@@ -153,7 +154,7 @@ epTuple2 :: EP (a,b) (Tuple2S a b)
 epTuple2 = EP (\(a,b) -> a :*: b)
               (\(a :*: b) -> (a,b))
 
-instance Representable (a,b) (Tuple2S a b) where
+instance HasEP (a,b) (Tuple2S a b) where
   epOf _ = epTuple2
 
 -- | Constructor description for @(,)@.
@@ -201,7 +202,7 @@ epTuple3 :: EP (a,b,c) (Tuple3S a b c)
 epTuple3 = EP (\(a,b,c) -> a :*: b :*: c)
               (\(a :*: b :*: c) -> (a,b,c))
 
-instance Representable (a,b,c) (Tuple3S a b c) where
+instance HasEP (a,b,c) (Tuple3S a b c) where
   epOf _ = epTuple3
 
 -- | Constructor description for @(,,)@.
@@ -251,7 +252,7 @@ epTuple4 :: EP (a,b,c,d) (Tuple4S a b c d)
 epTuple4 = EP (\(a,b,c,d) -> a :*: b :*: c :*: d)
               (\(a :*: b :*: c :*: d) -> (a,b,c,d))
 
-instance Representable (a,b,c,d) (Tuple4S a b c d) where
+instance HasEP (a,b,c,d) (Tuple4S a b c d) where
   epOf _ = epTuple4
 
 -- | Constructor description for @(,,,)@.
@@ -301,7 +302,7 @@ epTuple5 :: EP (a,b,c,d,e) (Tuple5S a b c d e)
 epTuple5 = EP (\(a,b,c,d,e) -> a :*: b :*: c :*: d :*: e)
               (\(a :*: b :*: c :*: d :*: e) -> (a,b,c,d,e))
 
-instance Representable (a,b,c,d,e) (Tuple5S a b c d e) where
+instance HasEP (a,b,c,d,e) (Tuple5S a b c d e) where
   epOf _ = epTuple5
 
 -- | Constructor description for @(,,,,)@.
@@ -351,7 +352,7 @@ epTuple6 :: EP (a,b,c,d,e,f) (Tuple6S a b c d e f)
 epTuple6 = EP (\(a,b,c,d,e,f) -> a :*: b :*: c :*: d :*: e :*: f)
               (\(a :*: b :*: c :*: d :*: e :*: f) -> (a,b,c,d,e,f))
 
-instance Representable (a,b,c,d,e,f) (Tuple6S a b c d e f) where
+instance HasEP (a,b,c,d,e,f) (Tuple6S a b c d e f) where
   epOf _ = epTuple6
 
 -- | Constructor description for @(,,,,,)@.
@@ -402,7 +403,7 @@ epTuple7 :: EP (a,b,c,d,e,f,h) (Tuple7S a b c d e f h)
 epTuple7 = EP (\(a,b,c,d,e,f,h) -> a :*: b :*: c :*: d :*: e :*: f :*: h)
               (\(a :*: b :*: c :*: d :*: e :*: f :*: h) -> (a,b,c,d,e,f,h))
 
-instance Representable (a,b,c,d,e,f,h) (Tuple7S a b c d e f h) where
+instance HasEP (a,b,c,d,e,f,h) (Tuple7S a b c d e f h) where
   epOf _ = epTuple7
 
 -- | Constructor description for @(,,,,,,)@.

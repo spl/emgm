@@ -38,6 +38,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -54,7 +55,7 @@ epMaybe = EP fromMaybe toMaybe
     toMaybe (L Unit) =  Nothing
     toMaybe (R a)    =  Just a
 
-instance Representable (Maybe a) (MaybeS a) where
+instance HasEP (Maybe a) (MaybeS a) where
   epOf _ = epMaybe
 
 -----------------------------------------------------------------------------

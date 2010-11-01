@@ -36,6 +36,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -48,6 +49,9 @@ epRatio = EP f t
   where
     f r = numerator r :*: denominator r
     t (num :*: det) = num % det
+
+instance (Integral a) => HasEP (Ratio a) (RatioS a) where
+  epOf _ = epRatio
 
 -----------------------------------------------------------------------------
 -- Representation values
@@ -86,9 +90,6 @@ bifrep2Ratio a = rtype2 epRatio epRatio (rcon2 conRatio (a `rprod2` a))
 -----------------------------------------------------------------------------
 -- Instance declarations
 -----------------------------------------------------------------------------
-
-instance (Integral a) => Representable (Ratio a) (RatioS a) where
-  epOf _ = epRatio
 
 instance (Integral a, Generic g, Rep g a) => Rep g (Ratio a) where
   rep = repRatio

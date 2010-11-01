@@ -44,7 +44,6 @@ module Generics.EMGM (
   -- datatype and its structure representation.
 
   EP(..),
-  Representable(..),
 
   -- *** Constructor Description
   --
@@ -117,7 +116,7 @@ module Generics.EMGM (
   --
   -- More information for each of these is available in its respective module.
 
-  -- ** Collect Function
+  -- ** Collect
   --
   -- | Function that collects values of one type from values of a possibly
   -- different type.
@@ -126,7 +125,7 @@ module Generics.EMGM (
 
   collect,
 
-  -- ** Compare Functions
+  -- ** Compare
   --
   -- | Functions that compare two values to determine an ordering.
   --
@@ -142,16 +141,7 @@ module Generics.EMGM (
   min,
   max,
 
-  -- ** Constructor Functions
-  --
-  -- | Functions that extract metadata about the constructor representation.
-  --
-  -- For more details, see "Generics.EMGM.Functions.Constructor".
-
-  constructor,
-  labels,
-
-  -- ** Crush Functions
+  -- ** Crush
   --
   -- | Functions that crush a polymorphic functor container into an iteration
   -- over its elements.
@@ -179,7 +169,7 @@ module Generics.EMGM (
   elem,
   notElem,
 
-  -- ** Enum Functions
+  -- ** Enum
   --
   -- | Functions that enumerate the values of a datatype.
   --
@@ -189,7 +179,7 @@ module Generics.EMGM (
   enumN,
   empty,
 
-  -- ** Everywhere Functions
+  -- ** Everywhere
   --
   -- | Functions that apply a transformation at every location of one type in a
   -- value of a possibly different type.
@@ -199,7 +189,7 @@ module Generics.EMGM (
   everywhere,
   everywhere',
 
-  -- ** Map Functions
+  -- ** Map
   --
   -- | Functions that translate values of one type to values of another. This
   -- includes map-like functions that apply non-generic functions to every
@@ -213,7 +203,17 @@ module Generics.EMGM (
   bimap,
   cast,
 
-  -- ** Read Functions
+  -- ** Meta
+  --
+  -- | Functions for extracting meta-information about the representation.
+  --
+  -- For more details, see "Generics.EMGM.Functions.Meta".
+
+  HasEP(..),
+  conDescr,
+  lblDescrs,
+
+  -- ** Read
   --
   -- | Functions similar to @deriving Prelude.Read@ that parse a string and return a
   -- value of a datatype.
@@ -226,7 +226,7 @@ module Generics.EMGM (
   reads,
   read,
 
-  -- ** Show Functions
+  -- ** Show
   --
   -- | Functions similar to @deriving Prelude.Show@ that return a string
   -- representation of a value of a datatype.
@@ -237,7 +237,7 @@ module Generics.EMGM (
   shows,
   show,
 
-  -- ** Transpose Functions
+  -- ** Transpose
   --
   -- | Functions that transpose polymorphic functor values.
   --
@@ -246,7 +246,7 @@ module Generics.EMGM (
   transpose,
   transposeE,
 
-  -- ** UnzipWith Functions
+  -- ** UnzipWith
   --
   -- | Functions that split a polymorphic functor values into two structurally
   -- equilvalent values.
@@ -256,7 +256,7 @@ module Generics.EMGM (
   unzip,
   unzipWith,
 
-  -- ** ZipWith Functions
+  -- ** ZipWith
   --
   -- | Functions that combine two structurally equilvalent, polymorphic functor
   -- values into one.
@@ -274,11 +274,11 @@ import qualified Prelude ()
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Compare
-import Generics.EMGM.Functions.Constructor
 import Generics.EMGM.Functions.Crush
 import Generics.EMGM.Functions.Enum
 import Generics.EMGM.Functions.Everywhere
 import Generics.EMGM.Functions.Map
+import Generics.EMGM.Functions.Meta
 import Generics.EMGM.Functions.Read
 import Generics.EMGM.Functions.Show
 import Generics.EMGM.Functions.Transpose

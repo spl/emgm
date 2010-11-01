@@ -38,6 +38,7 @@ import Control.Applicative (Alternative, pure)
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
 import Generics.EMGM.Functions.Everywhere
+import Generics.EMGM.Functions.Meta
 
 -----------------------------------------------------------------------------
 -- Embedding-projection pair
@@ -54,7 +55,7 @@ epBool = EP fromBool toBool
     toBool (L Unit) = False
     toBool (R Unit) = True
 
-instance Representable Bool BoolS where
+instance HasEP Bool BoolS where
   epOf _ = epBool
 
 -----------------------------------------------------------------------------
