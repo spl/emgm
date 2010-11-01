@@ -23,6 +23,7 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Either (
+  EitherS,
   conLeft,
   conRight,
   repEither,
@@ -42,6 +43,7 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
+-- Structure representation type for 'Either'.
 type EitherS a b = a :+: b
 
 epEither :: EP (Either a b) (EitherS a b)

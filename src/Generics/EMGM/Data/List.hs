@@ -22,6 +22,7 @@
 {-# OPTIONS -fno-warn-orphans       #-}
 
 module Generics.EMGM.Data.List (
+  ListS,
   conNil,
   conCons,
   repList,
@@ -41,6 +42,7 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
+-- Structure representation type for lists.
 type ListS a = Unit :+: a :*: [a]
 
 epList :: EP [a] (ListS a)

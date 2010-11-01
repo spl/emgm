@@ -23,6 +23,7 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Maybe (
+  MaybeS,
   conNothing,
   conJust,
   repMaybe,
@@ -42,6 +43,7 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
+-- Structure representation type for 'Maybe'.
 type MaybeS a = Unit :+: a
 
 epMaybe :: EP (Maybe a) (MaybeS a)

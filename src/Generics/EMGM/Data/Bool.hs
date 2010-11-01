@@ -23,6 +23,7 @@
 {-  OPTIONS -ddump-splices           -}
 
 module Generics.EMGM.Data.Bool (
+  BoolS,
   conFalse,
   conTrue,
   repBool,
@@ -42,6 +43,7 @@ import Generics.EMGM.Functions.Everywhere
 -- Embedding-projection pair
 -----------------------------------------------------------------------------
 
+-- Structure representation type for 'Bool'.
 type BoolS = Unit :+: Unit
 
 epBool :: EP Bool BoolS

@@ -25,6 +25,7 @@
 module Generics.EMGM.Data.Tuple (
 
   -- * Unit: @()@
+  Tuple0S,
   conTuple0,
   repTuple0,
   frepTuple0,
@@ -33,6 +34,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple0,
 
   -- * Pair: @(a,b)@
+  Tuple2S,
   conTuple2,
   repTuple2,
   frepTuple2,
@@ -41,6 +43,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple2,
 
   -- * Triple: @(a,b,c)@
+  Tuple3S,
   conTuple3,
   repTuple3,
   frepTuple3,
@@ -49,6 +52,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple3,
 
   -- * Quadruple: @(a,b,c,d)@
+  Tuple4S,
   conTuple4,
   repTuple4,
   frepTuple4,
@@ -57,6 +61,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple4,
 
   -- * Quintuple: @(a,b,c,d,e)@
+  Tuple5S,
   conTuple5,
   repTuple5,
   frepTuple5,
@@ -65,6 +70,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple5,
 
   -- * Sextuple: @(a,b,c,d,e,f)@
+  Tuple6S,
   conTuple6,
   repTuple6,
   frepTuple6,
@@ -73,6 +79,7 @@ module Generics.EMGM.Data.Tuple (
   bifrep2Tuple6,
 
   -- * Septuple: @(a,b,c,d,e,f,h)@
+  Tuple7S,
   conTuple7,
   repTuple7,
   frepTuple7,
@@ -92,11 +99,13 @@ import Generics.EMGM.Functions.Everywhere
 -- 0: ()
 -----------------------------------------------------------------------------
 
-epTuple0 :: EP () Unit
+type Tuple0S = Unit
+
+epTuple0 :: EP () Tuple0S
 epTuple0 = EP (\() -> Unit)
               (\Unit -> ())
 
-instance Representable () Unit where
+instance Representable () Tuple0S where
   epOf _ = epTuple0
 
 -- | Constructor description for @()@.
@@ -138,11 +147,13 @@ frep3Tuple0 =
 -- 2: (a,b)
 -----------------------------------------------------------------------------
 
-epTuple2 :: EP (a,b) (a :*: b)
+type Tuple2S a b = a :*: b
+
+epTuple2 :: EP (a,b) (Tuple2S a b)
 epTuple2 = EP (\(a,b) -> a :*: b)
               (\(a :*: b) -> (a,b))
 
-instance Representable (a,b) (a :*: b) where
+instance Representable (a,b) (Tuple2S a b) where
   epOf _ = epTuple2
 
 -- | Constructor description for @(,)@.
@@ -184,11 +195,13 @@ frep3Tuple2 ra rb =
 -- 3: (a,b,c)
 -----------------------------------------------------------------------------
 
-epTuple3 :: EP (a,b,c) (a :*: b :*: c)
+type Tuple3S a b c = a :*: b :*: c
+
+epTuple3 :: EP (a,b,c) (Tuple3S a b c)
 epTuple3 = EP (\(a,b,c) -> a :*: b :*: c)
               (\(a :*: b :*: c) -> (a,b,c))
 
-instance Representable (a,b,c) (a :*: b :*: c) where
+instance Representable (a,b,c) (Tuple3S a b c) where
   epOf _ = epTuple3
 
 -- | Constructor description for @(,,)@.
@@ -232,11 +245,13 @@ frep3Tuple3 ra rb rc =
 -- 4: (a,b,c,d)
 -----------------------------------------------------------------------------
 
-epTuple4 :: EP (a,b,c,d) (a :*: b :*: c :*: d)
+type Tuple4S a b c d = a :*: b :*: c :*: d
+
+epTuple4 :: EP (a,b,c,d) (Tuple4S a b c d)
 epTuple4 = EP (\(a,b,c,d) -> a :*: b :*: c :*: d)
               (\(a :*: b :*: c :*: d) -> (a,b,c,d))
 
-instance Representable (a,b,c,d) (a :*: b :*: c :*: d) where
+instance Representable (a,b,c,d) (Tuple4S a b c d) where
   epOf _ = epTuple4
 
 -- | Constructor description for @(,,,)@.
@@ -280,11 +295,13 @@ frep3Tuple4 ra rb rc rd =
 -- 5: (a,b,c,d,e)
 -----------------------------------------------------------------------------
 
-epTuple5 :: EP (a,b,c,d,e) (a :*: b :*: c :*: d :*: e)
+type Tuple5S a b c d e = a :*: b :*: c :*: d :*: e
+
+epTuple5 :: EP (a,b,c,d,e) (Tuple5S a b c d e)
 epTuple5 = EP (\(a,b,c,d,e) -> a :*: b :*: c :*: d :*: e)
               (\(a :*: b :*: c :*: d :*: e) -> (a,b,c,d,e))
 
-instance Representable (a,b,c,d,e) (a :*: b :*: c :*: d :*: e) where
+instance Representable (a,b,c,d,e) (Tuple5S a b c d e) where
   epOf _ = epTuple5
 
 -- | Constructor description for @(,,,,)@.
@@ -328,11 +345,13 @@ frep3Tuple5 ra rb rc rd re =
 -- 6: (a,b,c,d,e,f)
 -----------------------------------------------------------------------------
 
-epTuple6 :: EP (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f)
+type Tuple6S a b c d e f = a :*: b :*: c :*: d :*: e :*: f
+
+epTuple6 :: EP (a,b,c,d,e,f) (Tuple6S a b c d e f)
 epTuple6 = EP (\(a,b,c,d,e,f) -> a :*: b :*: c :*: d :*: e :*: f)
               (\(a :*: b :*: c :*: d :*: e :*: f) -> (a,b,c,d,e,f))
 
-instance Representable (a,b,c,d,e,f) (a :*: b :*: c :*: d :*: e :*: f) where
+instance Representable (a,b,c,d,e,f) (Tuple6S a b c d e f) where
   epOf _ = epTuple6
 
 -- | Constructor description for @(,,,,,)@.
@@ -377,11 +396,13 @@ frep3Tuple6 ra rb rc rd re rf =
 -- 7: (a,b,c,d,e,f,h)
 -----------------------------------------------------------------------------
 
-epTuple7 :: EP (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h)
+type Tuple7S a b c d e f h = a :*: b :*: c :*: d :*: e :*: f :*: h
+
+epTuple7 :: EP (a,b,c,d,e,f,h) (Tuple7S a b c d e f h)
 epTuple7 = EP (\(a,b,c,d,e,f,h) -> a :*: b :*: c :*: d :*: e :*: f :*: h)
               (\(a :*: b :*: c :*: d :*: e :*: f :*: h) -> (a,b,c,d,e,f,h))
 
-instance Representable (a,b,c,d,e,f,h) (a :*: b :*: c :*: d :*: e :*: f :*: h) where
+instance Representable (a,b,c,d,e,f,h) (Tuple7S a b c d e f h) where
   epOf _ = epTuple7
 
 -- | Constructor description for @(,,,,,,)@.
