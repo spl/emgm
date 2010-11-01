@@ -50,7 +50,7 @@ import Generics.EMGM.Base
 
 -- | The type of a generic function that takes two arguments of two different
 -- types and returns a value of a third type in a Monad.
-newtype (Monad m) => ZipWith m a b c = ZipWith { selZipWith :: a -> b -> m c }
+newtype ZipWith m a b c = ZipWith { selZipWith :: a -> b -> m c }
 
 -----------------------------------------------------------------------------
 -- Generic3 instance declaration
