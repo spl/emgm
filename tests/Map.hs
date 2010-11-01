@@ -20,6 +20,7 @@ import Data.Char (ord, chr)
 import Test.HUnit
 
 import Generics.EMGM as G
+import Generics.EMGM.Functions.Map
 
 -----------------------------------------------------------------------------
 -- Utility functions

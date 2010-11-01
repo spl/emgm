@@ -21,8 +21,7 @@ import qualified Everywhere     (tests)
 import qualified ZipWith        (tests)
 import qualified UnzipWith      (tests)
 import qualified Map            (tests)
-import qualified Bimap          (tests)
-import qualified Derive         (tests)
+-- import qualified Bimap          (tests)
 
 -- Make sure the examples compile:
 import qualified Ex00StartHere  ()
@@ -37,8 +36,7 @@ tests =
            , ZipWith.tests
            , UnzipWith.tests
            , Map.tests
-           , Bimap.tests
-           , Derive.tests
+--         , Bimap.tests
            ]
 
 main =

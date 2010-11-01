@@ -18,6 +18,7 @@ import Test.HUnit
 
 import Base
 import Generics.EMGM
+import Generics.EMGM.Functions.Enum
 
 -----------------------------------------------------------------------------
 -- Utility functions
