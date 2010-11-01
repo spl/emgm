@@ -24,6 +24,7 @@ module B where
 import Prelude hiding (Read, Show)
 import qualified Prelude as P (Read, Show)
 import Data.Generics (Data, Typeable)
+import Control.Applicative (Alternative, pure)
 
 import Generics.EMGM.Base
 import Generics.EMGM.Functions.Collect
@@ -119,8 +120,8 @@ instance (Generic3 g) => FRep3 g B where
                          frep3Tuple6 ra ra ra ra ra ra `rprod3`
                          frep3Tuple7 ra ra ra ra ra ra ra)
 
-instance Rep (Collect (B a)) (B a) where
-  rep = Collect (:[])
+instance (Alternative f) => Rep (Collect f (B a)) (B a) where
+  rep = Collect pure
 
 instance (Rep (Everywhere (B a)) a, Rep (Everywhere (B a)) (B Double),
           Rep (Everywhere (B a)) (Maybe a), Rep (Everywhere (B a)) (Maybe [a]),
