@@ -73,7 +73,7 @@ instance Generic Con where
   rsum      ra rb = Con $ rsumConstructor ra rb
   rprod     _  _  = Con $ const Nothing
   rcon   cd _     = Con $ const $ Just cd
-  rlabel _  _     = Con $ const Nothing
+  rlbl   _  _     = Con $ const Nothing
   rtype  ep ra    = Con $ selConstructor ra . from ep
 
 --------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ instance Generic Lbls where
   rsum      ra rb = Lbls $ rsumLabels ra rb
   rprod     ra rb = Lbls $ rprodLabels ra rb
   rcon   cd ra    = Lbls $ rconLabels cd ra
-  rlabel ld _     = Lbls $ one ld
+  rlbl   ld _     = Lbls $ one ld
   rtype  ep ra    = Lbls $ rtypeLabels ep ra
 
 --------------------------------------------------------------------------------

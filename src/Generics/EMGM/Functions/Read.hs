@@ -193,8 +193,8 @@ rconRead cd ra _ =
         do paren (lexT name)
            braces $ step $ selRead ra RecordC
 
-rlabelRead :: LblDescr -> Read a -> ConType -> ReadPrec a
-rlabelRead (LblDescr label) ra _ =
+rlblRead :: LblDescr -> Read a -> ConType -> ReadPrec a
+rlblRead (LblDescr label) ra _ =
   do lexT label
      equals
      selRead ra UnknownC
@@ -212,7 +212,7 @@ instance Generic Read where
   rsum      ra rb = Read $ rsumRead ra rb
   rprod     ra rb = Read $ rprodRead ra rb
   rcon  cd  ra    = Read $ rconRead cd ra
-  rlabel ld ra    = Read $ rlabelRead ld ra
+  rlbl  ld  ra    = Read $ rlblRead ld ra
   rtype ep  ra    = Read $ rtypeRead ep ra
 
 -----------------------------------------------------------------------------

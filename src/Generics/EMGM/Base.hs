@@ -120,11 +120,11 @@ class Generic g where
   -- many generic functions, so the default implementation is:
   --
   -- @
-  --   rlabel = const id
+  --   rlbl = const id
   -- @
 
-  rlabel    :: LblDescr -> g a -> g a
-  rlabel    = const id
+  rlbl      :: LblDescr -> g a -> g a
+  rlbl      = const id
 
   -- | Case for datatypes. This method is used to define the structural
   -- representation of an arbitrary Haskell datatype. The first argument is the
@@ -161,8 +161,8 @@ class Generic2 g where
   rcon2      :: ConDescr -> g a1 a2 -> g a1 a2
   rcon2      = const id
 
-  rlabel2    :: LblDescr -> g a1 a2 -> g a1 a2
-  rlabel2    = const id
+  rlbl2      :: LblDescr -> g a1 a2 -> g a1 a2
+  rlbl2      = const id
 
   -- | See 'rtype'. This case is the primary difference that separates
   -- 'Generic2' from 'Generic'. Since we have two generic type parameters, we
@@ -197,8 +197,8 @@ class Generic3 g where
   rcon3      :: ConDescr -> g a1 a2 a3 -> g a1 a2 a3
   rcon3      = const id
 
-  rlabel3    :: LblDescr -> g a1 a2 a3 -> g a1 a2 a3
-  rlabel3    = const id
+  rlbl3      :: LblDescr -> g a1 a2 a3 -> g a1 a2 a3
+  rlbl3      = const id
 
   -- | See 'rtype'. This case is the primary difference that separates
   -- 'Generic3' from 'Generic'. Since we have three generic type parameters, we

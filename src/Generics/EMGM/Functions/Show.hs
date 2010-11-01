@@ -158,8 +158,8 @@ rconShow cd ra _ p a =
   where
     step ct = selShow ra ct . (+1)
 
-rlabelShow :: LblDescr -> Show a -> ConType -> ShowsPrec a
-rlabelShow (LblDescr label) ra _ _ a =
+rlblShow :: LblDescr -> Show a -> ConType -> ShowsPrec a
+rlblShow (LblDescr label) ra _ _ a =
   showString label .
   showString " = " .
   selShow ra UnknownC minPrec a  -- Reset precedence in the field
@@ -177,7 +177,7 @@ instance Generic Show where
   rsum      ra rb = Show $ rsumShow ra rb
   rprod     ra rb = Show $ rprodShow ra rb
   rcon   cd ra    = Show $ rconShow cd ra
-  rlabel ld ra    = Show $ rlabelShow ld ra
+  rlbl   ld ra    = Show $ rlblShow ld ra
   rtype  ep ra    = Show $ rtypeShow ep ra
 
 -----------------------------------------------------------------------------
