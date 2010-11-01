@@ -253,8 +253,9 @@ module Generics.EMGM (
   --
   -- For more details, see "Generics.EMGM.Functions.UnzipWith".
 
-  unzip,
+  unzipWithM,
   unzipWith,
+  unzip,
 
   -- ** ZipWith
   --
