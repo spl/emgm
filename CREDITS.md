@@ -2,10 +2,16 @@
 Credits for EMGM
 ================
 
-This is a list of those who have contributed to the research, concept, code,
-and/or other issues of the Extensible and Modular Generics for the Masses
-library.
+This is a list of those who have contributed to the design and development of
+Extensible and Modular Generics for the Masses library.
 
+History
+-------
+
+The research for EMGM originated with Ralf Hinze. It was extended with work by
+Bruno Oliveira and Andres Löh. More details of the library functionality
+were explored by Alexey Rodriguez. We are very grateful to all of these people
+for the foundation on which this library was built.
 
 Research
 --------
@@ -15,21 +21,16 @@ Research
 *  Andres Löh
 *  Alexey Rodriguez
 
-Concept
--------
-
-*  Alexey Rodriguez
-*  Sean Leather
-*  José Pedro Magalhães
-*  Andres Löh
-*  Johan Jeuring
-
-Code
-----
+Primary Contributors
+--------------------
 
 *  Sean Leather
 *  José Pedro Magalhães
-*  Alexey Rodriguez
+
+Current Maintainer
+------------------
+
+*  Sean Leather
 
 Other Contributions
 -------------------
