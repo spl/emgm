@@ -58,7 +58,7 @@ lift :: (Monad m) => (a -> b -> c) -> a -> b -> m c
 lift f x y = return $ f x y
 
 replaceM :: (Monad m, FRep2 Map f) => a -> f b -> m (f a)
-replaceM = lift replace
+replaceM = lift (flip replace)
 
 --------------------------------------------------------------------------------
 -- Generic instance declaration

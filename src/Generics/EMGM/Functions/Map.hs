@@ -78,10 +78,12 @@ instance Generic2 Map where
 map :: (FRep2 Map f) => (a -> b) -> f a -> f b
 map = selMap . frep2 . Map
 
--- | Replace all values in a container with the same value. This is a
--- convenience function for the implementation @'map' . 'const'@.
-replace :: (FRep2 Map f) => a -> f b -> f a
-replace = map . const
+-- | Replace all @a@-values in @f a@ with @b@. Defined as:
+-- @
+--   replace as b = map (const b) as
+-- @
+replace :: (FRep2 Map f) => f a -> b -> f b
+replace as b = map (const b) as
 
 -- | Given a datatype @F a b@, @bimap f g@ applies the function @f :: a -> c@ to
 -- every @a@-element and the function @g :: b -> d@ to every @b@-element. The
