@@ -8,7 +8,9 @@
 -- Maintainer  :  generics@haskell.org
 -----------------------------------------------------------------------------
 
-module Main where
+module Main (main) where
+
+import System.Exit (exitSuccess, exitFailure)
 
 import Test.HUnit
 
@@ -41,5 +43,8 @@ tests =
 
 main =
   do putStrLn "Running tests for EMGM..."
-     runTestTT tests
+     counts <- runTestTT tests
+     if errors counts > 0 || failures counts > 0
+       then exitFailure
+       else exitSuccess
 
